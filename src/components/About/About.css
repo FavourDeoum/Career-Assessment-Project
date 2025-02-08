@@ -1,0 +1,110 @@
+.about-page {
+    min-height: 100vh;
+    background-color: #f7fafc;
+    padding: 5rem 1rem 3rem;
+  }
+  
+  .about-container {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+  
+  .about-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #6b46c1;
+    margin-bottom: 3rem;
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .feature-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-icon {
+    font-size: 3rem;
+    color: #6b46c1;
+  }
+  
+  .feature-title {
+    font-size: 1.25rem;
+    font-weight: semibold;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    color: #2d3748;
+  }
+  
+  .feature-description {
+    color: #4a5568;
+    text-align: center;
+  }
+  
+  .mission-section {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+  
+  .mission-title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #6b46c1;
+    margin-bottom: 1.5rem;
+  }
+  
+  .mission-text {
+    font-size: 1.125rem;
+    text-align: center;
+    color: #4a5568;
+    line-height: 1.6;
+  }
+  
+  @media (max-width: 768px) {
+    .about-title {
+      font-size: 2rem;
+    }
+  
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .mission-title {
+      font-size: 1.75rem;
+    }
+  
+    .mission-text {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .about-title {
+      font-size: 1.75rem;
+    }
+  
+    .feature-title {
+      font-size: 1.1rem;
+    }
+  
+    .mission-title {
+      font-size: 1.5rem;
+    }
+  }
+  
+  

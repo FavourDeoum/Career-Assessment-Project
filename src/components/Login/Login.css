@@ -1,0 +1,272 @@
+/* .login-page {
+  min-height: 100vh;
+  background-color: #f7fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1rem 3rem;
+}
+
+.login-container {
+  max-width: 400px;
+  width: 100%;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #2d3748;
+  margin-bottom: 2rem;
+}
+
+.signup-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+.signup-link-text {
+  color: #6b46c1;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.signup-link-text:hover {
+  text-decoration: underline;
+} */
+
+/* Clerk component styling */
+/* .cl-component {
+  --cl-primary-color: #6b46c1;
+  --cl-primary-color-hover: #553c9a;
+  --cl-primary-color-active: #44337a;
+}
+
+.cl-component button {
+  background-color: #6b46c1;
+}
+
+.cl-component button:hover {
+  background-color: #553c9a;
+}
+
+.cl-component a {
+  color: #6b46c1;
+} */
+
+
+
+
+
+
+
+
+
+
+
+ .login-page {
+    min-height: 100vh;
+    background-color: #f7fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 1rem 3rem;
+  }
+  
+  .login-container {
+    max-width: 24rem;
+    width: 100%;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #2d3748;
+    margin-bottom: 2rem;
+  }
+  
+  .login-form {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .input-group {
+    position: relative;
+    width: 80%;
+  }
+  
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    color: #a0aec0;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    color: #2d3748;
+    transition: border-color 0.3s;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #6b46c1;
+    box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.2);
+  }
+  
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkbox {
+    margin-right: 0.5rem;
+  }
+  
+  .checkbox-label {
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+  
+  .forgot-password-link {
+    font-size: 0.875rem;
+    color: #6b46c1;
+    text-decoration: none;
+  }
+  
+  .forgot-password-link:hover {
+    text-decoration: underline;
+  }
+  
+  .submit-button {
+    width: 100%;
+    background-color: #6b46c1;
+    color: white;
+    font-weight: bold;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submit-button:hover {
+    background-color: #553c9a;
+  }
+  
+  .social-login {
+    margin-top: 2rem;
+  }
+  
+  .social-login-separator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .social-login-separator::before,
+  .social-login-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .separator-text {
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+    color: #a0aec0;
+  }
+  
+  .social-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: #4a5568;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  
+  .social-button:hover {
+    background-color: #edf2f7;
+  }
+  
+  .social-icon {
+    margin-right: 0.5rem;
+  }
+  
+  .google {
+    color: #ea4335;
+  }
+  
+  .facebook {
+    color: #1877f2;
+  }
+  
+  .signup-link {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+  
+  .signup-link-text {
+    color: #6b46c1;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .signup-link-text:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 1.5rem;
+    }
+  
+    .social-buttons {
+      grid-template-columns: 1fr;
+    }
+
+    .form-group{
+      text-align: left;
+    }
+  }

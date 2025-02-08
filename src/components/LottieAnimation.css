@@ -1,0 +1,27 @@
+/* LottieAnimation.css */
+.lottie-animation {
+    width: 100%; /* Full width */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 600px; /* Optional: Set a maximum width */
+    margin: 0 auto; /* Center the animation */
+  }
+
+  /* LottieAnimation.css */
+.lottie-animation {
+    width: 100%;
+    height: auto;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 768px) {
+    .lottie-animation {
+      max-width: 300px; /* Smaller max width for smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .lottie-animation {
+      max-width: 200px; /* Even smaller max width for very small screens */
+    }
+  }
