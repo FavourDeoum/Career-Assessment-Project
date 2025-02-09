@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaPaperPlane } from 'react-icons/fa';
+import emailjs from 'emailjs-com';
 import './Contact.css';
 
 const Contact = () => {
@@ -14,15 +15,28 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    alert('Form submitted:', formData);
-    // Reset form
-    setFormData({ name: '', email: '', message: '' });
-  };
 
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  emailjs
+    .send(
+      'service_56f423c', // Replace with your EmailJS service ID
+      'template_u9p26jh', // Replace with your EmailJS template ID
+      formData,
+      '4EZiQWGgEh74yrfH3' // Replace with your EmailJS user ID
+    )
+    .then(
+      (response) => {
+        alert('Message sent successfully!');
+        setFormData({ name: '', email: '', message: '' }); // Reset form
+      },
+      (error) => {
+        console.error('Failed to send message:', error);
+        alert('Failed to send message. Please try again.');
+      }
+    );
+};
   return (
     <motion.div
       initial={{ opacity: 0 }}

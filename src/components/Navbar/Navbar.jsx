@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
@@ -6,7 +6,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth(); // Assuming `user` is available from useAuth
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +19,13 @@ const Navbar = () => {
     navigate('/');
   };
 
+  // Close the mobile menu when a link is clicked
+  useEffect(() => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+  }, [location.pathname]);
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -26,7 +33,7 @@ const Navbar = () => {
           {isOpen ? <FaTimes /> : <FaBars />}
         </button>
         <Link to="/" className="logo-text">
-          <img src="/images/logo2.png" alt="" />
+          <img src="/images/logo2.png" alt="Logo" />
         </Link>
         <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
           <Link to="/" className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
@@ -54,4 +61,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
