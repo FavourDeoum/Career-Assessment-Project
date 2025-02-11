@@ -75,9 +75,8 @@ const CareerAssessment = () => {
                   <button
                     key={value}
                     onClick={() => handleAnswer(question.id, value)}
-                    className={`answer-button ${
-                      answers[question.id] === value ? 'selected' : ''
-                    }`}
+                    className={`answer-button ${answers[question.id] === value ? 'selected' : ''
+                      }`}
                   >
                     {value}
                   </button>
@@ -91,9 +90,8 @@ const CareerAssessment = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handlePrevious}
               disabled={currentCategory === 0}
-              className={`nav-button ${
-                currentCategory === 0 ? 'disabled' : ''
-              }`}
+              className={`nav-button ${currentCategory === 0 ? 'disabled' : ''
+                }`}
             >
               <FaArrowLeft className="button-icon" /> Previous
             </motion.button>

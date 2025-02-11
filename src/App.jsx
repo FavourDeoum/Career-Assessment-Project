@@ -47,7 +47,7 @@ function App() {
           </main>
           <Footer />
         </div>
-      {/* </CaseProvider> */}
+        {/* </CaseProvider> */}
       </AuthProvider>
     </BrowserRouter>
   );
