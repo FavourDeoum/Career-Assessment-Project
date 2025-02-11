@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaRocket, FaChartBar, FaUserGraduate } from 'react-icons/fa';
-// import LottieAnimation from "../LottieAnimation.js"; // Adjusted path
-import animationData from "../../animations/Animation.json"; // Adjusted path
 import "./LandingPage.css";
 
 const LandingPage = () => {
@@ -17,7 +15,6 @@ const LandingPage = () => {
           </Link>
         </div>
 
-        {/* <LottieAnimation animationData={animationData} className="lottie"/> */}
       </header>
 
       <section className="features-section">
