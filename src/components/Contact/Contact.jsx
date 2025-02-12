@@ -16,27 +16,27 @@ const Contact = () => {
   };
 
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  emailjs
-    .send(
-      'service_56f423c', // Replace with your EmailJS service ID
-      'template_u9p26jh', // Replace with your EmailJS template ID
-      formData,
-      '4EZiQWGgEh74yrfH3' // Replace with your EmailJS user ID
-    )
-    .then(
-      (response) => {
-        alert('Message sent successfully!');
-        setFormData({ name: '', email: '', message: '' }); // Reset form
-      },
-      (error) => {
-        console.error('Failed to send message:', error);
-        alert('Failed to send message. Please try again.');
-      }
-    );
-};
+    emailjs
+      .send(
+        'service_56f423c', // Replace with your EmailJS service ID
+        'template_u9p26jh', // Replace with your EmailJS template ID
+        formData,
+        '4EZiQWGgEh74yrfH3' // Replace with your EmailJS user ID
+      )
+      .then(
+        (response) => {
+          alert('Message sent successfully!');
+          setFormData({ name: '', email: '', message: '' }); // Reset form
+        },
+        (error) => {
+          console.error('Failed to send message:', error);
+          alert('Failed to send message. Please try again.');
+        }
+      );
+  };
   return (
     <motion.div
       initial={{ opacity: 0 }}
