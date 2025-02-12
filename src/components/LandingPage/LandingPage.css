@@ -1,3 +1,4 @@
+/* created my own branch */
 .landing-header {
   background: linear-gradient(135deg, rgba(107, 70, 193, 0.95) 0%, rgba(128, 90, 213, 0.9) 100%);
   color: white;
@@ -29,6 +30,7 @@
   transform: scale(1.1);
   /* Slight scale for parallax effect */
   filter: blur(4px);
+
 }
 
 .landing-header::after {
