@@ -6,7 +6,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, logout, user } = useAuth(); // Assuming `user` is available from useAuth
+  const { isAuthenticated, logout, loading } = useAuth(); // Include loading state
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,6 +25,11 @@ const Navbar = () => {
       setIsOpen(false);
     }
   }, [location.pathname]);
+
+  // Don't render the navbar until authentication state is determined
+  if (loading) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <nav className="navbar">
