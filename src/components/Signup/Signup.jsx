@@ -26,6 +26,35 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validatePassword = (password) => {
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const isLongEnough = password.length >= 8;
+
+    return hasLowercase && hasUppercase && hasNumber && isLongEnough;
+  };
+
+  const validateStep1 = () => {
+    return formData.username.trim() !== "" && formData.email.trim() !== "";
+  };
+
+  const validateStep2 = () => {
+    return (
+      formData.password.trim() !== "" &&
+      formData.confirmPassword.trim() !== "" &&
+      validatePassword(formData.password)
+    );
+  };
+
+  const validateStep3 = () => {
+    return formData.age.trim() !== "" && formData.location.trim() !== "";
+  };
+
+  const validateStep4 = () => {
+    return formData.bio.trim() !== "";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -36,38 +65,45 @@ const Signup = () => {
       return;
     }
 
+    // Check password requirements
+    if (!validatePassword(formData.password)) {
+      setErrorMessage(
+        "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one number."
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       // Sign up the user with Supabase
       const { user, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          data: {
+            username: formData.username,
+            age: formData.age,
+            location: formData.location,
+            bio: formData.bio,
+          },
+        },
       });
 
-      if (error || !user) {
-        throw new Error(error?.message || "User signup failed, please try again.");
+      if (error) {
+        throw new Error(error.message || "User signup failed, please try again.");
       }
 
-      // Add additional user data to a custom table
-      const { error: profileError } = await supabase.from("profiles").insert([
-        {
-          user_id: user.id,
-          username: formData.username,
-          age: formData.age,
-          location: formData.location,
-          bio: formData.bio,
-        },
-      ]);
+      if (!user) {
+        throw new Error("No user object returned from Supabase.");
+      }
 
-      if (profileError) throw profileError;
-
-      alert("Check your email for the confirmation link!"); // Inform the user
+      // Redirect to the dashboard immediately after successful signup
+      navigate("/dashboard");
     } catch (error) {
-      setErrorMessage(error.message);
+      console.error("Signup error:", error);
+      setErrorMessage(error.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
-      // Redirect to the login page immediately after submission
-      navigate("/login");
     }
   };
 
@@ -80,11 +116,29 @@ const Signup = () => {
   };
 
   const nextStep = () => {
+    if (step === 1 && !validateStep1()) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+    if (step === 2 && !validateStep2()) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+    if (step === 3 && !validateStep3()) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+    if (step === 4 && !validateStep4()) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
     setStep(step + 1);
+    setErrorMessage("");
   };
 
   const prevStep = () => {
     setStep(step - 1);
+    setErrorMessage("");
   };
 
   return (
@@ -129,7 +183,7 @@ const Signup = () => {
                   />
                 </div>
               </div>
-              <button type="button" className="next-button" onClick={nextStep}>Next</button>
+              <button type="button" className="next-button" onClick={nextStep} disabled={!validateStep1()}>Next</button>
             </>
           )}
 
@@ -155,6 +209,23 @@ const Signup = () => {
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+                <div className="password-requirements">
+                  <p>Password must:</p>
+                  <ul>
+                    <li className={formData.password.length >= 8 ? "valid" : "invalid"}>
+                      Be at least 8 characters long
+                    </li>
+                    <li className={/[a-z]/.test(formData.password) ? "valid" : "invalid"}>
+                      Include at least one lowercase letter
+                    </li>
+                    <li className={/[A-Z]/.test(formData.password) ? "valid" : "invalid"}>
+                      Include at least one uppercase letter
+                    </li>
+                    <li className={/[0-9]/.test(formData.password) ? "valid" : "invalid"}>
+                      Include at least one number
+                    </li>
+                  </ul>
+                </div>
               </div>
               <div className="form-group">
                 <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
@@ -177,7 +248,7 @@ const Signup = () => {
                 </div>
               </div>
               <button type="button" className="prev-button" onClick={prevStep}>Previous</button>
-              <button type="button" className="next-button" onClick={nextStep}>Next</button>
+              <button type="button" className="next-button" onClick={nextStep} disabled={!validateStep2()}>Next</button>
             </>
           )}
 
@@ -193,6 +264,8 @@ const Signup = () => {
                   required
                   className="form-input"
                   placeholder="Age"
+                  min="18"
+                  max="25"
                   value={formData.age}
                   onChange={handleChange}
                 />
@@ -214,7 +287,7 @@ const Signup = () => {
                 </div>
               </div>
               <button type="button" className="prev-button" onClick={prevStep}>Previous</button>
-              <button type="button" className="next-button" onClick={nextStep}>Next</button>
+              <button type="button" className="next-button" onClick={nextStep} disabled={!validateStep3()}>Next</button>
             </>
           )}
 
@@ -238,7 +311,7 @@ const Signup = () => {
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 className="submit-button"
-                disabled={loading}
+                disabled={loading || !validateStep4()}
               >
                 {loading ? "Signing up..." : "Sign up"}
               </motion.button>

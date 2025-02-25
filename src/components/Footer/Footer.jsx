@@ -23,14 +23,14 @@ const Footer = () => {
           <div className="footer-section">
             <h3 className="footer-subtitle">Follow Us</h3>
             <div className="social-icons">
-              <a href="#" className="social-icon"><FaFacebook size={24} /></a>
-              <a href="#" className="social-icon"><FaTwitter size={24} /></a>
+              <a href="https://www.facebook.com/profile.php?id=100075832277920" className="social-icon"><FaFacebook size={24} /></a>
+              <a href="https://x.com/FavourDeoum?s=09" className="social-icon"><FaTwitter size={24} /></a>
               <a href="#" className="social-icon"><FaInstagram size={24} /></a>
             </div>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2023 Career Assessment Tool. All rights reserved.</p>
+          <p>&copy; 2025 Career Assessment Tool. All rights reserved.</p>
         </div>
       </div>
     </footer>
