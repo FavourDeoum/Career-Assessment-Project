@@ -42,7 +42,7 @@ const protectedRoutes = [
   { path: '/assessment', element: <CareerAssessment /> },
   { path: '/recommendations', element: <CareerRecommendations /> },
   { path: '/resources', element: <Resources /> },
-  { path: '/profile', element: <Profile /> }
+  { path: '/profile', element: <Profile /> },
   { path: "/cdashboard", element: <CareerDashboard /> }
 ];
 
