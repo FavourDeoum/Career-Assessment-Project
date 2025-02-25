@@ -26,4 +26,6 @@ dist-ssr
 
 # my key
 .env
+.vercel
+
 .env.local

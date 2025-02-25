@@ -1,7 +1,7 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 
 }
 
@@ -9,46 +9,45 @@ html,
 body,
 #root,
 .App {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 body {
-    font-family: "Arial", sans-serif;
-    line-height: 1.6;
-    color: #333;
-    /* background-color: red; */
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  color: #333;
+  /* background-color: red; */
 }
 
 .App {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-    flex: 1;
-    padding-top: 64px;
-    /* Adjust this value based on your navbar height */
+  flex: 1;
+  padding-top: 64px; /* Adjust this value based on your navbar height */
 }
 
 .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding: 0 10px;
-    }
+  .container {
+    padding: 0 10px;
+  }
 }
 
 .full-width-component {
-    width: 100%;
-    max-width: 100%;
-    padding: 20px;
-    box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 

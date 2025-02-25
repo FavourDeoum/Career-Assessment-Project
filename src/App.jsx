@@ -13,7 +13,9 @@ import Dashboard from './components/Dashboard/Dashboard';
 import CareerAssessment from './components/CareerAssessment/CareerAssessment';
 import Resources from './components/Resources/Resources';
 import Profile from './components/Profile/Profile';
+import './App.css';
 import CareerRecommendations from './components/CareerRecomendations/CareerRecommendations';
+import CareerDashboard from './components/AssesmentDashboard/ADashboard';
 import './App.css';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -41,6 +43,7 @@ const protectedRoutes = [
   { path: '/recommendations', element: <CareerRecommendations /> },
   { path: '/resources', element: <Resources /> },
   { path: '/profile', element: <Profile /> }
+  { path: "/cdashboard", element: <CareerDashboard /> }
 ];
 
 function App() {
