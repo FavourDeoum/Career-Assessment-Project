@@ -1,3 +1,4 @@
+// LandingPage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaRocket, FaChartBar, FaUserGraduate } from 'react-icons/fa';
@@ -8,13 +9,16 @@ const LandingPage = () => {
     <div className="landing-page">
       <header className="landing-header">
         <div className="header-content">
-          <h1 className="header-title">Discover Your Perfect Career Path</h1>
-          <p className="header-description">The Career Assessment Tool helps Advanced Level students in Cameroon find their ideal career based on skills, interests, and personality.</p>
-          <Link to="/signup" className="cta-button">
-            Get Started
-          </Link>
+          <div className="header-text-container">
+            <h1 className="header-title">Discover Your Perfect Career Path</h1>
+            <p className="header-description">
+              The Career Assessment Tool helps Advanced Level students in Cameroon find their ideal career based on skills, interests, and personality.
+            </p>
+            <Link to="/signup" className="cta-button">
+              Get Started
+            </Link>
+          </div>
         </div>
-
       </header>
 
       <section className="features-section">
@@ -42,7 +46,7 @@ const LandingPage = () => {
 
       <section className="testimonials-section">
         <div className="section-content">
-          <h2 className="section-title">Testimonials</h2>
+          <h2 className="section-title">Success Stories</h2>
           <div className="testimonials-grid">
             <TestimonialCard
               name="Acha Grace"
@@ -75,4 +79,3 @@ const TestimonialCard = ({ name, text }) => (
 );
 
 export default LandingPage;
-

@@ -16,6 +16,7 @@ import Resources from './components/Resources/Resources';
 import Profile from './components/Profile/Profile';
 import './App.css';
 import CareerRecommendations from './components/CareerRecomendations/CareerRecommendations';
+import CareerDashboard from './components/AssesmentDashboard/ADashboard';
 const routes = [
   { path: "/", element: <LandingPage /> },
   { path: "/about", element: <About /> },
@@ -27,6 +28,7 @@ const routes = [
   { path: "/recommendations", element: <CareerRecommendations /> },
   { path: "/resources", element: <Resources /> },
   { path: "/profile", element: <Profile /> },
+  { path: "/cdashboard", element: <CareerDashboard /> }
 ];
 
 function App() {

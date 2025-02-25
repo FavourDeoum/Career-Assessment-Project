@@ -302,6 +302,7 @@ const CareerAssessment = () => {
     return true;
   };
 
+  // Update the handleNext function in your CareerAssessment component
   const handleNext = async () => {
     if (!validateCategory()) return;
 
@@ -309,10 +310,41 @@ const CareerAssessment = () => {
       setCurrentCategory(prev => prev + 1);
     } else {
       setIsSubmitting(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Assessment answers:', answers);
-      setShowResults(true);
+      try {
+        // Call the serverless API
+        const response = await fetch('http://localhost:3000/api/app', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            answers,
+            categories
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to process assessment');
+        }
+
+        const results = await response.json();
+        console.log('Assessment results:', results);
+
+        // Store results in localStorage or state management solution
+        localStorage.setItem('careerAssessmentResults', JSON.stringify(results));
+
+        // Show results and redirect to dashboard
+        setShowResults(true);
+        setTimeout(() => {
+          window.location.href = '/cdashboard';
+        }, 2000);
+
+      } catch (error) {
+        console.error('Error submitting assessment:', error);
+        setValidationError('There was an error processing your assessment. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
