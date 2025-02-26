@@ -1,7 +1,7 @@
 // /api/process-assessment.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Cors from 'cors';
-const API_KEY = "GET GEMINI API KEY HERE"
+const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg"
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 

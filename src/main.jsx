@@ -4,6 +4,7 @@ import App from "./App.jsx"
 import { AuthProvider } from "./contexts/AuthContext.jsx"
 import { ClerkProvider } from '@clerk/clerk-react'
 import "./index.css"
+import { MultisessionAppSupport } from "@clerk/clerk-react/internal"
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -15,9 +16,16 @@ if (!PUBLISHABLE_KEY) {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-      <App />
-    </ClerkProvider>
+    <ClerkProvider
+  publishableKey={PUBLISHABLE_KEY}
+  afterSignInUrl="/cdashboard"
+  afterSignUpUrl="/cdashboard"
+>
+<MultisessionAppSupport>
+        <App />
+
+      </MultisessionAppSupport>
+</ClerkProvider>
     </AuthProvider>
   </React.StrictMode>,
 )
@@ -25,7 +33,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
 
 
-
+{/* <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+      
+    </ClerkProvider> */}
 
 
 // import { StrictMode } from 'react'

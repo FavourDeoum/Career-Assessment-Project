@@ -21,7 +21,7 @@ import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
-import ProtectedRoute from './components/ProtectedRoute'; 
+// import ProtectedRoute from './components/ProtectedRoute'; 
 
 // Define all routes in a single array for better maintainability
 const routes = [
@@ -33,11 +33,7 @@ const routes = [
   { path: '/terms-of-service', element: <TermsOfService /> },
   { path: '/privacy-policy', element: <PrivacyPolicy /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
-  { path: '/reset-password', element: <ResetPassword /> }
-];
-
-// Define protected routes in a separate array
-const protectedRoutes = [
+  { path: '/reset-password', element: <ResetPassword /> },
   { path: '/dashboard', element: <Dashboard /> },
   { path: '/assessment', element: <CareerAssessment /> },
   { path: '/recommendations', element: <CareerRecommendations /> },
@@ -45,6 +41,10 @@ const protectedRoutes = [
   { path: '/profile', element: <Profile /> },
   { path: "/cdashboard", element: <CareerDashboard /> }
 ];
+
+// // Define protected routes in a separate array
+// const protectedRoutes = [
+// ];
 
 function App() {
   return (
@@ -60,12 +60,12 @@ function App() {
                   <Route key={path} path={path} element={element} />
                 ))}
 
-                {/* Protected routes */}
+                {/* Protected routes
                 <Route element={<ProtectedRoute />}>
                   {protectedRoutes.map(({ path, element }) => (
                     <Route key={path} path={path} element={element} />
                   ))}
-                </Route>
+                </Route> */}
               </Routes>
             </AnimatePresence>
           </main>

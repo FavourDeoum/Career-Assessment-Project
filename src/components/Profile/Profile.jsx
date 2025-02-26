@@ -5,17 +5,17 @@ import './Profile.css';
 
 const Profile = () => {
   const [formData, setFormData] = useState({
-    username: 'JohnDoe',
-    email: 'johndoe@example.com',
+    username: '',
+    email: '',
     password: '',
     confirmPassword: '',
     age: '18',
-    dateOfBirth: '2005-01-01',
-    location: 'Yaounde, Cameroon',
+    dateOfBirth: '',
+    location: '',
     education: 'High School',
-    interests: ['Technology', 'Science'],
-    skills: ['Problem Solving', 'Communication'],
-    bio: 'I am a student interested in technology and science.',
+    interests: [''],
+    skills: [''],
+    bio: '',
   });
 
   const handleChange = (e) => {
@@ -67,6 +67,7 @@ const Profile = () => {
                   type="email"
                   id="email"
                   name="email"
+                  placeholder='favdeoum@gmail.com'
                   value={formData.email}
                   onChange={handleChange}
                   className="form-input"
@@ -122,6 +123,7 @@ const Profile = () => {
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
+                  placeholder='2005-01-01'
                   className="form-input"
                 />
               </div>
@@ -137,6 +139,7 @@ const Profile = () => {
                   value={formData.location}
                   onChange={handleChange}
                   className="form-input"
+                  placeholder='Yaounde, Cameroon'
                 />
               </div>
             </div>
@@ -166,6 +169,7 @@ const Profile = () => {
                 name="interests"
                 value={formData.interests.join(', ')}
                 onChange={(e) => handleArrayChange(e, 'interests')}
+                placeholder='Technology, Science'
                 className="form-input"
               />
             </div>
@@ -177,6 +181,7 @@ const Profile = () => {
                 name="skills"
                 value={formData.skills.join(', ')}
                 onChange={(e) => handleArrayChange(e, 'skills')}
+                placeholder='Problem Solving, Communication'
                 className="form-input"
               />
             </div>
@@ -188,6 +193,7 @@ const Profile = () => {
                 value={formData.bio}
                 onChange={handleChange}
                 rows={4}
+                placeholder='I am a student interested in technology and science.'
                 className="form-input"
               ></textarea>
             </div>
