@@ -18,6 +18,21 @@
     color: white;
     margin-bottom: 2rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.header-text {
+    flex: 1;
 }
 
 .dashboard-header h1 {
@@ -30,6 +45,21 @@
     font-size: 1.1rem;
 }
 
+.profile-image-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid white;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 /* Navigation Styles */
 .dashboard-nav {
     display: flex;
@@ -37,6 +67,8 @@
     margin-bottom: 2rem;
     overflow-x: auto;
     padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: #c5c5c5 #f1f1f1;
 }
 
 .nav-button {
@@ -231,10 +263,24 @@
 
     .dashboard-header {
         padding: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
     .dashboard-header h1 {
         font-size: 1.5rem;
+    }
+
+    .profile-image-container {
+        width: 50px;
+        height: 50px;
     }
 
     .dashboard-card.expanded {
@@ -244,6 +290,15 @@
 
     .card-content {
         max-height: none;
+    }
+
+    .dashboard-nav {
+        gap: 0.75rem;
+    }
+
+    .nav-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -283,4 +338,49 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+
+
+
+
+
+
+/* Profile Image Container */
+.profile-image-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid white;
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* File Input Label */
+.profile-image-container label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Hover Effect for Profile Image */
+.profile-image-container:hover .profile-image {
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-image-container {
+        width: 50px;
+        height: 50px;
+    }
 }

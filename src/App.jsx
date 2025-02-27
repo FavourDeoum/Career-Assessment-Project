@@ -19,8 +19,6 @@ import CareerDashboard from './components/AssesmentDashboard/ADashboard';
 import './App.css';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
-import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword';
 // import ProtectedRoute from './components/ProtectedRoute'; 
 
 // Define all routes in a single array for better maintainability
@@ -32,8 +30,6 @@ const routes = [
   { path: '/signup', element: <Signup /> },
   { path: '/terms-of-service', element: <TermsOfService /> },
   { path: '/privacy-policy', element: <PrivacyPolicy /> },
-  { path: '/forgot-password', element: <ForgotPassword /> },
-  { path: '/reset-password', element: <ResetPassword /> },
   { path: '/dashboard', element: <Dashboard /> },
   { path: '/assessment', element: <CareerAssessment /> },
   { path: '/recommendations', element: <CareerRecommendations /> },

@@ -1,17 +1,16 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
-const ProtectedRoute = () => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children }) => {
+  const { isSignedIn } = useAuth();
 
-  // Show a loading spinner or message while checking authentication
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!isSignedIn) {
+    // Redirect to the sign-in page if the user is not signed in
+    return <RedirectToSignIn fallbackRedirectUrl="/dashboard" />;
   }
 
-  // Redirect to login if not authenticated
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  // Render the children if the user is signed in
+  return children;
 };
 
 export default ProtectedRoute;

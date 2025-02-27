@@ -46,7 +46,7 @@ const Navbar = () => {
             <Link to="/assessment" className={`navbar-link ${location.pathname === '/assessment' ? 'active' : ''}`}>Assessment</Link>
             {/* <Link to="/recommendations" className={`navbar-link ${location.pathname === '/recommendations' ? 'active' : ''}`}>Recommendations</Link> */}
             <Link to="/resources" className={`navbar-link ${location.pathname === '/resources' ? 'active' : ''}`}>Resources</Link>
-            <Link to="/profile" className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}>Profile</Link>
+            {/* <Link to="/profile" className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}>Profile</Link> */}
             {/* <SignOutButton signOutOptions={{ redirectUrl: '/' }}>
               <button className="navbar-link logout-button">Logout</button>
             </SignOutButton> */}
