@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import "./ADashboard.css"
+import { useUser } from '@clerk/clerk-react'; // Import Clerk's useUser hook
+import "./ADashboard.css";
 
 const CareerDashboard = () => {
     const [results, setResults] = useState(null);
     const [activeSection, setActiveSection] = useState('overview');
     const [expandedCard, setExpandedCard] = useState(null);
+    const [profileImage, setProfileImage] = useState(null); // State to store the uploaded profile image
+    const { user } = useUser(); // Fetch the signed-in user's data
 
     useEffect(() => {
         const storedResults = localStorage.getItem('careerAssessmentResults');
@@ -13,6 +16,18 @@ const CareerDashboard = () => {
             setResults(JSON.parse(storedResults));
         }
     }, []);
+
+    // Handle file upload for profile image
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImage(reader.result); // Set the uploaded image as the profile image
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL
+        }
+    };
 
     if (!results) {
         return (
@@ -54,8 +69,31 @@ const CareerDashboard = () => {
             <div className="dashboard-content">
                 {/* Header */}
                 <header className="dashboard-header">
-                    <h1>Your Career Journey Dashboard</h1>
-                    <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
+                    <div className="header-content">
+                        <div className="header-text">
+                            <h1>Your Career Journey Dashboard</h1>
+                            <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
+                        </div>
+                        {/* Display the user's profile image */}
+                        {user && (
+                            <div className="profile-image-container">
+                                <input
+                                    type="file"
+                                    id="profile-upload"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileUpload}
+                                />
+                                <label htmlFor="profile-upload">
+                                    <img
+                                        src={profileImage || user.profileImageUrl} // Use uploaded image or Clerk's default
+                                        alt="Profile"
+                                        className="profile-image"
+                                    />
+                                </label>
+                            </div>
+                        )}
+                    </div>
                 </header>
 
                 {/* Navigation */}

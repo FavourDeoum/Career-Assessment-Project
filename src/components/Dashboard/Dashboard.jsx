@@ -21,24 +21,24 @@ const Dashboard = () => {
             description="Take our comprehensive career assessment"
             link="/assessment"
           />
-          <DashboardCard
+          {/* <DashboardCard
             icon={<FaChartBar className="card-icon" />}
             title="Career Recommendations"
             description="Explore your personalized career recommendations"
             link="/recommendations"
-          />
+          /> */}
           <DashboardCard
             icon={<FaBook className="card-icon" />}
             title="Resources"
             description="Access career guides and educational materials"
             link="/resources"
           />
-          <DashboardCard
+          {/* <DashboardCard
             icon={<FaUser className="card-icon" />}
             title="My Profile"
             description="Update your personal information and preferences"
             link="/profile"
-          />
+          /> */}
         </div>
       </div>
     </motion.div>
