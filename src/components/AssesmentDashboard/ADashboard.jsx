@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { useUser } from '@clerk/clerk-react'; // Import Clerk's useUser hook
+import { useUser, useClerk } from '@clerk/clerk-react'; // Import useClerk hook
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import "./ADashboard.css";
 
 const CareerDashboard = () => {
     const [results, setResults] = useState(null);
     const [activeSection, setActiveSection] = useState('overview');
     const [expandedCard, setExpandedCard] = useState(null);
-    const [profileImage, setProfileImage] = useState(null); // State to store the uploaded profile image
-    const { user } = useUser(); // Fetch the signed-in user's data
+    const { user, isLoaded } = useUser(); // Fetch the signed-in user's data and loading state
+    const { openUserProfile } = useClerk(); // Get the openUserProfile function from Clerk
 
     useEffect(() => {
         const storedResults = localStorage.getItem('careerAssessmentResults');
@@ -17,23 +18,29 @@ const CareerDashboard = () => {
         }
     }, []);
 
-    // Handle file upload for profile image
-    const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileImage(reader.result); // Set the uploaded image as the profile image
-            };
-            reader.readAsDataURL(file); // Read the file as a data URL
-        }
+    // Function to handle profile image click
+    const handleProfileClick = () => {
+        // Open Clerk's user profile management
+        openUserProfile();
     };
 
-    if (!results) {
+    // Loading state while authentication data is being fetched
+    if (!isLoaded) {
         return (
             <div className="loading-container">
                 <div className="loader"></div>
-                <p>Loading your career insights...</p>
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    // If user is not authenticated, redirect to login page
+    if (!user) {
+        return (
+            <div className="auth-required-container">
+                <h2>Authentication Required</h2>
+                <p>Please sign in to access your career dashboard.</p>
+                <Link to="/sign-in" className="auth-button">Sign In</Link>
             </div>
         );
     }
@@ -64,6 +71,49 @@ const CareerDashboard = () => {
         </div>
     );
 
+    // Welcome screen for users who haven't taken the assessment yet
+    if (!results) {
+        return (
+            <div className="dashboard-container welcome-container">
+                <div className="welcome-content">
+                    <div className="welcome-header">
+                        <div className="welcome-text">
+                            <h1>Welcome, {user.firstName || user.username}!</h1>
+                            <p>Discover your ideal career path with our personalized assessment.</p>
+                        </div>
+                        <div 
+                            className="profile-image-container" 
+                            onClick={handleProfileClick}
+                            title="Manage your account settings"
+                        >
+                            <img
+                                src={user.imageUrl}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="welcome-card">
+                        <h2>Start Your Career Journey</h2>
+                        <p>
+                            Our comprehensive assessment will analyze your skills, interests, and preferences
+                            to provide tailored career recommendations and growth opportunities.
+                        </p>
+                        <p>
+                            After completing the assessment, you'll receive a personalized dashboard with
+                            actionable insights to guide your professional development.
+                        </p>
+                        <Link to="/assessment" className="assessment-button">
+                            Take Career Assessment
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Dashboard for users who have completed the assessment
     return (
         <div className="dashboard-container">
             <div className="dashboard-content">
@@ -74,25 +124,18 @@ const CareerDashboard = () => {
                             <h1>Your Career Journey Dashboard</h1>
                             <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
                         </div>
-                        {/* Display the user's profile image */}
-                        {user && (
-                            <div className="profile-image-container">
-                                <input
-                                    type="file"
-                                    id="profile-upload"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    onChange={handleFileUpload}
-                                />
-                                <label htmlFor="profile-upload">
-                                    <img
-                                        src={profileImage || user.profileImageUrl} // Use uploaded image or Clerk's default
-                                        alt="Profile"
-                                        className="profile-image"
-                                    />
-                                </label>
-                            </div>
-                        )}
+                        {/* Display the user's profile image with click handler */}
+                        <div 
+                            className="profile-image-container" 
+                            onClick={handleProfileClick}
+                            title="Manage your account settings"
+                        >
+                            <img
+                                src={user.imageUrl}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        </div>
                     </div>
                 </header>
 

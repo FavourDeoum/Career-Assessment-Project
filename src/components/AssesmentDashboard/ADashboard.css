@@ -1,4 +1,3 @@
-/* CareerDashboard.css */
 .dashboard-container {
     min-height: 100vh;
     background-color: #f5f7fa;
@@ -238,7 +237,6 @@
     0% {
         transform: rotate(0deg);
     }
-
     100% {
         transform: rotate(360deg);
     }
@@ -255,50 +253,177 @@
     justify-content: center;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 1rem;
-    }
+/* Profile Image Container */
+.profile-image-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid white;
+    cursor: pointer;
+    position: relative;
+}
 
-    .dashboard-header {
-        padding: 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
 
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
+/* File Input Label */
+.profile-image-container label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
 
-    .dashboard-header h1 {
-        font-size: 1.5rem;
-    }
+/* Hover Effect for Profile Image */
+.profile-image-container:hover .profile-image {
+    opacity: 0.8;
+}
 
-    .profile-image-container {
-        width: 50px;
-        height: 50px;
-    }
+/* Welcome Screen Styles - NEW */
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    padding: 2rem;
+}
 
-    .dashboard-card.expanded {
-        grid-column: span 1;
-        grid-row: span 1;
-    }
+.welcome-content {
+    max-width: 900px;
+    width: 100%;
+    animation: fadeIn 0.5s ease-out;
+}
 
-    .card-content {
-        max-height: none;
-    }
+.welcome-header {
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 16px rgba(76, 111, 255, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    .dashboard-nav {
-        gap: 0.75rem;
-    }
+.welcome-text h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
 
-    .nav-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+.welcome-text p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    animation: slideUp 0.5s ease-out 0.2s both;
+}
+
+.welcome-card h2 {
+    font-size: 1.8rem;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.welcome-card p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.assessment-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
+    text-align: center;
+}
+
+.assessment-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(76, 111, 255, 0.25);
+}
+
+/* Authentication Required Screen - NEW */
+.auth-required-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    padding: 2rem;
+    text-align: center;
+}
+
+.auth-required-container h2 {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.auth-required-container p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.auth-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
+}
+
+/* New Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -308,7 +433,6 @@
         opacity: 0;
         transform: translateY(20px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -318,6 +442,13 @@
 /* Apply animations */
 .dashboard-card {
     animation: slideIn 0.3s ease-out;
+}
+
+/* Header Adjustments for Welcome Screen - NEW */
+.welcome-header .profile-image-container {
+    width: 90px;
+    height: 90px;
+    border: 3px solid rgba(255, 255, 255, 0.7);
 }
 
 /* Custom Scrollbar */
@@ -340,47 +471,79 @@
     background: #a8a8a8;
 }
 
-
-
-
-
-
-
-/* Profile Image Container */
-.profile-image-container {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 2px solid white;
-    cursor: pointer;
-    position: relative;
-}
-
-.profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* File Input Label */
-.profile-image-container label {
-    display: block;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-/* Hover Effect for Profile Image */
-.profile-image-container:hover .profile-image {
-    opacity: 0.8;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+    
     .profile-image-container {
         width: 50px;
         height: 50px;
+    }
+    
+    .dashboard-card.expanded {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .card-content {
+        max-height: none;
+    }
+    
+    .dashboard-nav {
+        gap: 0.75rem;
+    }
+    
+    .nav-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Welcome Screen Responsive - NEW */
+    .welcome-header {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+    
+    .welcome-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .welcome-card {
+        padding: 1.5rem;
+    }
+    
+    .welcome-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .assessment-button {
+        width: 100%;
+        padding: 0.75rem 1rem;
+    }
+    
+    .welcome-header .profile-image-container {
+        width: 70px;
+        height: 70px;
     }
 }

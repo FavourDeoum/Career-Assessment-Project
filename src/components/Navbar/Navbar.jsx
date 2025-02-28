@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import './Navbar.css';
-import { SignedIn, SignedOut, SignInButton, UserButton, SignOutButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton, SignOutButton, UserProfile } from '@clerk/clerk-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,16 +41,17 @@ const Navbar = () => {
           </SignedOut>
 
           <SignedIn>
-            <Link to="/dashboard" className={`navbar-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Dashboard</Link>
-            {/* <Link to="/cdashboard" className={`navbar-link ${location.pathname === '/cdashboard' ? 'active' : ''}`}>Dashboard</Link> */}
+            {/* <Link to="/dashboard" className={`navbar-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Dashboard</Link> */}
+            <Link to="/cdashboard" className={`navbar-link ${location.pathname === '/cdashboard' ? 'active' : ''}`}>Dashboard</Link>
             <Link to="/assessment" className={`navbar-link ${location.pathname === '/assessment' ? 'active' : ''}`}>Assessment</Link>
             {/* <Link to="/recommendations" className={`navbar-link ${location.pathname === '/recommendations' ? 'active' : ''}`}>Recommendations</Link> */}
-            <Link to="/resources" className={`navbar-link ${location.pathname === '/resources' ? 'active' : ''}`}>Resources</Link>
+            {/* <Link to="/resources" className={`navbar-link ${location.pathname === '/resources' ? 'active' : ''}`}>Resources</Link> */}
             {/* <Link to="/profile" className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}>Profile</Link> */}
             {/* <SignOutButton signOutOptions={{ redirectUrl: '/' }}>
               <button className="navbar-link logout-button">Logout</button>
             </SignOutButton> */}
             <UserButton afterSignOutUrl="/" />
+            {/* <UserProfile afterSignOutUrl="/" /> */}
           </SignedIn>
         </div>
       </div>
