@@ -9,11 +9,7 @@ import About from './components/About/About';
 import Contact from './components/Contact/Contact';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
-import Dashboard from './components/Dashboard/Dashboard';
 import CareerAssessment from './components/CareerAssessment/CareerAssessment';
-import Resources from './components/Resources/Resources';
-import Profile from './components/Profile/Profile';
-import CareerRecommendations from './components/CareerRecomendations/CareerRecommendations';
 import CareerDashboard from './components/AssesmentDashboard/ADashboard';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -29,11 +25,7 @@ const publicRoutes = [
 ];
 
 const protectedRoutes = [
-  { path: '/dashboard', element: <Dashboard /> },
   { path: '/assessment', element: <CareerAssessment /> },
-  { path: '/recommendations', element: <CareerRecommendations /> },
-  { path: '/resources', element: <Resources /> },
-  { path: '/profile', element: <Profile /> },
   { path: '/cdashboard', element: <CareerDashboard /> },
 ];
 

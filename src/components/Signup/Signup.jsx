@@ -4,8 +4,8 @@ export default function SignUpPage() {
   return (
     <SignUp
       routing="hash"
-      afterSignUpUrl="/dashboard" // Redirect to the dashboard after signing up
-      afterSignInUrl="/dashboard" // Redirect to the dashboard after signing in (optional)
+      afterSignUpUrl="/cdashboard" // Redirect to the dashboard after signing up
+      afterSignInUrl="/cdashboard" // Redirect to the dashboard after signing in (optional)
     />
   );
 }
