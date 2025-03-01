@@ -1,13 +1,13 @@
 // /api/process-assessment.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Cors from 'cors';
-const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg"
+const API_KEY = process.env.GOOGLE_API_KEY || "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    origin: 'http://localhost:5173', // Your frontend URL
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Your frontend URL
     methods: ['POST', 'GET', 'OPTIONS'],
     credentials: true,
 });
@@ -24,15 +24,26 @@ function runMiddleware(req, res, fn) {
     });
 }
 
-
-// Create a structured prompt from the assessment answers
+// Create a more detailed and structured prompt from the assessment answers
 const createPrompt = (answers, categories) => {
-    let prompt = `As a career development AI specialist, analyze the following detailed career assessment results and provide comprehensive career guidance. The assessment covers multiple dimensions of career preferences and abilities:
+    // Extract user profile information if available
+    const userProfile = answers.profile || {};
+    const userAge = userProfile.age || "unspecified";
+    const userEducation = userProfile.education || "unspecified";
+    const userExperience = userProfile.experience || "unspecified";
+    
+    let prompt = `As a career development AI specialist, I need you to analyze this individual's career assessment results and provide highly specific career guidance tailored to their unique profile and preferences.
 
-`;
+USER PROFILE:
+- Age/Life Stage: ${userAge}
+- Education Level: ${userEducation}
+- Years of Experience: ${userExperience}
 
+ASSESSMENT RESULTS BY CATEGORY:`;
+
+    // Add each category and the user's answers
     categories.forEach(category => {
-        prompt += `\n${category.title}:\n`;
+        prompt += `\n\n${category.title.toUpperCase()}:\n`;
         category.questions.forEach(question => {
             const answer = answers[question.id];
             if (answer) {
@@ -41,62 +52,139 @@ const createPrompt = (answers, categories) => {
         });
     });
 
-    prompt += `\nBased on this comprehensive assessment, please provide:
-1. Top 3 recommended career paths with detailed explanations of alignment
-2. Key strengths and areas for development
-3. Suggested next steps for career development
-4. Potential challenges and how to overcome them
-5. Long-term career growth opportunities
+    // Add specific instructions for the output format
+    prompt += `\n\nBased on this assessment, please generate a personalized career analysis with the following sections:
 
-Please structure the response in a clear, organized format with sections and bullet points where appropriate. Include specific action items and resources for further development.`;
+1. CAREER RECOMMENDATIONS:
+   - Provide 5 specific job titles that match this profile
+   - For each job title, explain why it's a good match based on their assessment answers
+   - Include typical salary ranges and growth outlook for each role
+
+2. SKILLS ANALYSIS:
+   - Identify 3-5 key strengths based on their responses
+   - Suggest 3-5 skills they should develop to enhance career prospects
+
+3. ACTION PLAN:
+   - List 3 immediate next steps they should take
+   - Recommend 3 medium-term goals (6-12 months)
+   - Suggest 1-2 long-term career development strategies
+
+4. POTENTIAL CHALLENGES:
+   - Identify 2-3 obstacles they might face based on their profile
+   - Provide specific strategies to overcome each challenge
+
+5. GROWTH OPPORTUNITIES:
+   - Suggest 2-3 industry sectors with strong potential for them
+   - Identify emerging roles that might suit their profile in the next 3-5 years
+
+Format your response in clean, conversational language with no asterisks or markdown symbols. Use clear headings and paragraph breaks for readability.`;
 
     return prompt;
 };
-// Process and enhance the LLM response
-const enhanceResponse = (llmResponse) => {
-    // Parse the response and add additional structure
-    const sections = llmResponse.split('\n\n');
 
-    return {
-        timestamp: new Date().toISOString(),
-        analysis: {
-            careerPaths: sections[0],
-            strengths: sections[1],
-            nextSteps: sections[2],
-            challenges: sections[3],
-            growthOpportunities: sections[4]
-        },
-        metadata: {
-            confidenceScore: 0.85,
-            assessmentVersion: "1.0",
-            analysisId: Math.random().toString(36).substr(2, 9)
-        },
-        resources: {
-            recommendedCourses: [
-                "Professional Development 101",
-                "Leadership Essentials",
-                "Industry-Specific Training"
-            ],
-            suggestedReadings: [
-                "Career Development in the Digital Age",
-                "Professional Networking Strategies",
-                "Industry Trends and Insights"
-            ]
-        }
-    };
-};
-
-
+// Better mapping function with more variations and context
 const mapAnswerToText = (value) => {
+    if (typeof value === 'object') {
+        // Handle complex answer objects if any
+        return JSON.stringify(value);
+    }
+    
     const mappings = {
+        // Interest levels
         not_at_all: "no interest in",
         slightly: "slight interest in",
         moderately: "moderate interest in",
         very_much: "strong interest in",
         extremely: "extreme passion for",
-        // Add more mappings as needed
+        
+        // Skill levels
+        novice: "beginner level in",
+        beginner: "basic knowledge of",
+        intermediate: "competent with",
+        advanced: "advanced skills in",
+        expert: "expert mastery of",
+        
+        // Agreement levels
+        strongly_disagree: "strongly disagrees with",
+        disagree: "disagrees with",
+        neutral: "neutral about",
+        agree: "agrees with",
+        strongly_agree: "strongly agrees with",
+        
+        // Frequency
+        never: "never engages in",
+        rarely: "rarely engages in",
+        sometimes: "sometimes engages in",
+        often: "often engages in",
+        always: "always engages in",
+        
+        // Yes/No with context
+        yes: "confirms",
+        no: "does not confirm",
+        maybe: "is uncertain about"
     };
+    
     return mappings[value] || value;
+};
+
+// Process and enhance the LLM response
+const processResponse = (llmResponse) => {
+    // Remove any markdown formatting characters like asterisks
+    let cleanResponse = llmResponse.replace(/\*/g, '');
+    
+    // Split the response into sections based on numbered headings
+    const sectionMatches = cleanResponse.match(/\d+\.\s+[A-Z\s]+:[\s\S]*?(?=\d+\.\s+[A-Z\s]+:|$)/g) || [];
+    
+    // Initialize the structured response
+    const structuredResponse = {
+        timestamp: new Date().toISOString(),
+        analysis: {
+            careerRecommendations: "",
+            skillsAnalysis: "",
+            actionPlan: "",
+            challenges: "",
+            growthOpportunities: ""
+        },
+        metadata: {
+            assessmentVersion: "2.0",
+            analysisId: generateUniqueId()
+        }
+    };
+    
+    // Map sections to the appropriate fields
+    sectionMatches.forEach(section => {
+        if (section.match(/1\.\s+CAREER RECOMMENDATIONS/i)) {
+            structuredResponse.analysis.careerRecommendations = cleanSectionText(section);
+        } else if (section.match(/2\.\s+SKILLS ANALYSIS/i)) {
+            structuredResponse.analysis.skillsAnalysis = cleanSectionText(section);
+        } else if (section.match(/3\.\s+ACTION PLAN/i)) {
+            structuredResponse.analysis.actionPlan = cleanSectionText(section);
+        } else if (section.match(/4\.\s+POTENTIAL CHALLENGES/i)) {
+            structuredResponse.analysis.challenges = cleanSectionText(section);
+        } else if (section.match(/5\.\s+GROWTH OPPORTUNITIES/i)) {
+            structuredResponse.analysis.growthOpportunities = cleanSectionText(section);
+        }
+    });
+    
+    // If structured parsing fails, use the whole text
+    if (!Object.values(structuredResponse.analysis).some(value => value.length > 0)) {
+        structuredResponse.analysis = {
+            fullAnalysis: cleanResponse
+        };
+    }
+    
+    return structuredResponse;
+};
+
+// Helper to clean section text
+const cleanSectionText = (text) => {
+    // Remove the section header
+    return text.replace(/^\d+\.\s+[A-Z\s]+:\s*/i, '').trim();
+};
+
+// Generate a unique ID
+const generateUniqueId = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 };
 
 const handler = async (req, res) => {
@@ -118,32 +206,64 @@ const handler = async (req, res) => {
     try {
         const { answers, categories } = req.body;
 
-        // Log the received data
-        console.log('Received assessment answers:', answers);
+        // Log the received data at debug level
+        console.log('Received assessment data');
 
         // Create the prompt
         const prompt = createPrompt(answers, categories);
-        console.log('Generated prompt:', prompt);
-
-        // Get response from Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        
+        // Get response from Gemini with more specific parameters
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-1.5-flash",
+            generationConfig: {
+                temperature: 0.7,
+                topP: 0.9,
+                topK: 40,
+                maxOutputTokens: 2048,
+            }
+        });
+        
         const result = await model.generateContent(prompt);
         const llmResponse = result.response.text();
 
-        console.log('Raw LLM response:', llmResponse);
-
-        // Enhance and structure the response
-        const enhancedResponse = enhanceResponse(llmResponse);
-        console.log('Enhanced response:', enhancedResponse);
-
-        return res.status(200).json(enhancedResponse);
+        // Process and structure the response
+        const processedResponse = processResponse(llmResponse);
+        
+        // Add personalized resources based on assessment
+        processedResponse.resources = generateResources(answers, categories);
+        
+        return res.status(200).json(processedResponse);
     } catch (error) {
         console.error('Error processing assessment:', error);
         return res.status(500).json({
-            message: 'Error processing assessment',
+            message: 'Error processing career assessment',
             error: error.message
         });
     }
+};
+
+// Generate personalized resources based on assessment answers
+const generateResources = (answers, categories) => {
+    // Basic implementation - in a real app, you'd use the answers to customize resources
+    const resources = {
+        recommendedCourses: [
+            "Professional Development for Your Career Path",
+            "Essential Skills Bootcamp",
+            "Industry Certification Programs"
+        ],
+        suggestedReadings: [
+            "Career Development in the Digital Economy",
+            "Networking Strategies for Professionals",
+            "Future-Proofing Your Career"
+        ],
+        usefulTools: [
+            "LinkedIn Learning",
+            "Coursera",
+            "Industry-specific job boards"
+        ]
+    };
+    
+    return resources;
 };
 
 export default handler;

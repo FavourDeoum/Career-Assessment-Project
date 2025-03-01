@@ -1,20 +1,11 @@
-
-// import { SignIn } from '@clerk/clerk-react'
-
-// export default function SignInPage() {
-//   return <SignIn />
-// }
-
-
-
 import { SignIn } from '@clerk/clerk-react';
 
-export default function SignUpPage() {
+export default function Login() {
   return (
     <SignIn
-      routing="hash"
-      afterSignUpUrl="/cdashboard" // Redirect to the dashboard after signing up
-      afterSignInUrl="/cdashboard" // Redirect to the dashboard after signing in (optional)
+      routing="path" // Use "path" instead of "hash"
+      path="/login"
+      afterSignInUrl="/cdashboard"
     />
   );
 }

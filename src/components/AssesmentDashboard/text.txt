@@ -1,0 +1,850 @@
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useUser, useClerk } from '@clerk/clerk-react'; // Import useClerk hook
+import { Link } from 'react-router-dom'; // Import Link for navigation
+import "./ADashboard.css";
+
+const CareerDashboard = () => {
+    const [results, setResults] = useState(null);
+    const [activeSection, setActiveSection] = useState('overview');
+    const [expandedCard, setExpandedCard] = useState(null);
+    const { user, isLoaded } = useUser(); // Fetch the signed-in user's data and loading state
+    const { openUserProfile } = useClerk(); // Get the openUserProfile function from Clerk
+
+    useEffect(() => {
+        const storedResults = localStorage.getItem('careerAssessmentResults');
+        if (storedResults) {
+            setResults(JSON.parse(storedResults));
+        }
+    }, []);
+
+    // Function to handle profile image click
+    const handleProfileClick = () => {
+        // Open Clerk's user profile management
+        openUserProfile();
+    };
+
+    // Loading state while authentication data is being fetched
+    if (!isLoaded) {
+        return (
+            <div className="loading-container">
+                <div className="loader"></div>
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    // If user is not authenticated, redirect to login page
+    if (!user) {
+        return (
+            <div className="auth-required-container">
+                <h2>Authentication Required</h2>
+                <p>Please sign in to access your career dashboard.</p>
+                <Link to="/sign-in" className="auth-button">Sign In</Link>
+            </div>
+        );
+    }
+
+    const mockSkillsData = [
+        { name: 'Technical', value: 85 },
+        { name: 'Leadership', value: 72 },
+        { name: 'Communication', value: 90 },
+        { name: 'Problem Solving', value: 88 },
+        { name: 'Creativity', value: 78 },
+    ];
+
+    const ExpandableCard = ({ title, content, icon, id }) => (
+        <div
+            className={`dashboard-card ${expandedCard === id ? 'expanded' : ''}`}
+            onClick={() => setExpandedCard(expandedCard === id ? null : id)}
+        >
+            <div className="card-header">
+                <div className="card-title">
+                    <span className={`card-icon ${icon}`}></span>
+                    <h3>{title}</h3>
+                </div>
+                <span className="expand-icon"></span>
+            </div>
+            <div className="card-content">
+                {content}
+            </div>
+        </div>
+    );
+
+    // Welcome screen for users who haven't taken the assessment yet
+    if (!results) {
+        return (
+            <div className="dashboard-container welcome-container">
+                <div className="welcome-content">
+                    <div className="welcome-header">
+                        <div className="welcome-text">
+                            <h1>Welcome, {user.firstName || user.username}!</h1>
+                            <p>Discover your ideal career path with our personalized assessment.</p>
+                        </div>
+                        <div 
+                            className="profile-image-container" 
+                            onClick={handleProfileClick}
+                            title="Manage your account settings"
+                        >
+                            <img
+                                src={user.imageUrl}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="welcome-card">
+                        <h2>Start Your Career Journey</h2>
+                        <p>
+                            Our comprehensive assessment will analyze your skills, interests, and preferences
+                            to provide tailored career recommendations and growth opportunities.
+                        </p>
+                        <p>
+                            After completing the assessment, you'll receive a personalized dashboard with
+                            actionable insights to guide your professional development.
+                        </p>
+                        <Link to="/assessment" className="assessment-button">
+                            Take Career Assessment
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Dashboard for users who have completed the assessment
+    return (
+        <div className="dashboard-container">
+            <div className="dashboard-content">
+                {/* Header */}
+                <header className="dashboard-header">
+                    <div className="header-content">
+                        <div className="header-text">
+                            <h1>Your Career Journey Dashboard</h1>
+                            <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
+                        </div>
+                        {/* Display the user's profile image with click handler */}
+                        <div 
+                            className="profile-image-container" 
+                            onClick={handleProfileClick}
+                            title="Manage your account settings"
+                        >
+                            <img
+                                src={user.imageUrl}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        </div>
+                    </div>
+                </header>
+
+                {/* Navigation */}
+                <nav className="dashboard-nav">
+                    {['overview', 'skills', 'paths', 'development'].map((section) => (
+                        <button
+                            key={section}
+                            onClick={() => setActiveSection(section)}
+                            className={`nav-button ${activeSection === section ? 'active' : ''}`}
+                        >
+                            {section.charAt(0).toUpperCase() + section.slice(1)}
+                        </button>
+                    ))}
+                </nav>
+
+                {/* Main Grid */}
+                <div className="dashboard-grid">
+                    {/* Career Paths Card */}
+                    <ExpandableCard
+                        id="paths"
+                        title="Recommended Career Paths"
+                        icon="icon-compass"
+                        content={
+                            <div className="career-paths">
+                                {results.analysis.careerPaths.split('\n').map((path, index) => (
+                                    <div key={index} className="career-path-item">
+                                        <div className="path-number">{index + 1}</div>
+                                        <p>{path}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        }
+                    />
+
+                    {/* Skills Analysis Card */}
+                    <ExpandableCard
+                        id="skills"
+                        title="Skills Analysis"
+                        icon="icon-star"
+                        content={
+                            <div className="skills-chart">
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <LineChart data={mockSkillsData}>
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        }
+                    />
+
+                    {/* Growth Opportunities Card */}
+                    <ExpandableCard
+                        id="growth"
+                        title="Growth Opportunities"
+                        icon="icon-trending-up"
+                        content={
+                            <div className="growth-opportunities">
+                                {results.analysis.growthOpportunities.split('\n').map((opportunity, index) => (
+                                    <div key={index} className="opportunity-item">
+                                        <span className="opportunity-icon"></span>
+                                        <p>{opportunity}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        }
+                    />
+
+                    {/* Next Steps Card */}
+                    <ExpandableCard
+                        id="steps"
+                        title="Recommended Next Steps"
+                        icon="icon-target"
+                        content={
+                            <div className="next-steps">
+                                {results.analysis.nextSteps.split('\n').map((step, index) => (
+                                    <div key={index} className="step-item">
+                                        <div className="step-number">{index + 1}</div>
+                                        <p>{step}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        }
+                    />
+
+                    {/* Challenges Card */}
+                    <ExpandableCard
+                        id="challenges"
+                        title="Potential Challenges"
+                        icon="icon-alert"
+                        content={
+                            <div className="challenges">
+                                {results.analysis.challenges.split('\n').map((challenge, index) => (
+                                    <div key={index} className="challenge-item">
+                                        <p>{challenge}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        }
+                    />
+
+                    {/* Resources Card */}
+                    <ExpandableCard
+                        id="resources"
+                        title="Recommended Resources"
+                        icon="icon-book"
+                        content={
+                            <div className="resources">
+                                <div className="resource-section">
+                                    <h4>Courses</h4>
+                                    <ul>
+                                        {results.resources.recommendedCourses.map((course, index) => (
+                                            <li key={index}>{course}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="resource-section">
+                                    <h4>Reading Materials</h4>
+                                    <ul>
+                                        {results.resources.suggestedReadings.map((reading, index) => (
+                                            <li key={index}>{reading}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CareerDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.dashboard-container {
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    padding: 2rem;
+}
+
+.dashboard-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header Styles */
+.dashboard-header {
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.header-text {
+    flex: 1;
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.dashboard-header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.profile-image-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid white;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Navigation Styles */
+.dashboard-nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: #c5c5c5 #f1f1f1;
+}
+
+.nav-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: white;
+    color: #4a5568;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-button:hover {
+    background-color: #f0f4f8;
+}
+
+.nav-button.active {
+    background-color: #4c6fff;
+    color: white;
+}
+
+/* Grid Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Card Styles */
+.dashboard-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card.expanded {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-title h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* Content Styles */
+.card-content {
+    overflow: hidden;
+    transition: all 0.3s ease;
+    max-height: 150px;
+}
+
+.expanded .card-content {
+    max-height: 500px;
+}
+
+/* Career Paths Styles */
+.career-path-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+}
+
+.path-number {
+    width: 2rem;
+    height: 2rem;
+    background-color: #4c6fff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* Growth Opportunities Styles */
+.opportunity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background-color: #f0f9ff;
+    border-radius: 0.5rem;
+}
+
+/* Challenges Styles */
+.challenge-item {
+    background-color: #fff1f2;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Resources Styles */
+.resources {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.resource-section h4 {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #2d3748;
+}
+
+.resource-section ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.resource-section li {
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+}
+
+/* Loading Styles */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4c6fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Icons */
+.card-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #e6e8ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Profile Image Container */
+.profile-image-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid white;
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+/* File Input Label */
+.profile-image-container label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Hover Effect for Profile Image */
+.profile-image-container:hover .profile-image {
+    opacity: 0.8;
+}
+
+/* Welcome Screen Styles - NEW */
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    padding: 2rem;
+}
+
+.welcome-content {
+    max-width: 900px;
+    width: 100%;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.welcome-header {
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 16px rgba(76, 111, 255, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome-text h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.welcome-text p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    animation: slideUp 0.5s ease-out 0.2s both;
+}
+
+.welcome-card h2 {
+    font-size: 1.8rem;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.welcome-card p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.assessment-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
+    text-align: center;
+}
+
+.assessment-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(76, 111, 255, 0.25);
+}
+
+/* Authentication Required Screen - NEW */
+.auth-required-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    padding: 2rem;
+    text-align: center;
+}
+
+.auth-required-container h2 {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.auth-required-container p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.auth-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
+}
+
+/* New Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation Keyframes */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animations */
+.dashboard-card {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Header Adjustments for Welcome Screen - NEW */
+.welcome-header .profile-image-container {
+    width: 90px;
+    height: 90px;
+    border: 3px solid rgba(255, 255, 255, 0.7);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c5c5c5;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .profile-image-container {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .dashboard-card.expanded {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .card-content {
+        max-height: none;
+    }
+    
+    .dashboard-nav {
+        gap: 0.75rem;
+    }
+    
+    .nav-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Welcome Screen Responsive - NEW */
+    .welcome-header {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+    
+    .welcome-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .welcome-card {
+        padding: 1.5rem;
+    }
+    
+    .welcome-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .assessment-button {
+        width: 100%;
+        padding: 0.75rem 1rem;
+    }
+    
+    .welcome-header .profile-image-container {
+        width: 70px;
+        height: 70px;
+    }
+}

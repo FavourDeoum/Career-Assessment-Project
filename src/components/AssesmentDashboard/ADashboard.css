@@ -91,11 +91,44 @@
     color: white;
 }
 
-/* Grid Layout */
+/* Grid Layout - Default */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
+}
+
+/* Section-specific grid layouts */
+.dashboard-grid.overview {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Skills section - special layout */
+.dashboard-grid.skills {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.dashboard-grid.skills .barchart-card {
+    grid-column: 1 / -1; /* Span full width for first card */
+    background: linear-gradient(to right, #ffffff, #f9fbff);
+    border-left: 4px solid #4c6fff;
+}
+
+/* Projects section layout */
+.dashboard-grid.projects {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Growth section layout */
+.dashboard-grid.growth {
+    grid-template-columns: 2fr 1fr;
+}
+
+/* Resources section layout */
+.dashboard-grid.resources {
+    grid-template-columns: repeat(2, 1fr);
 }
 
 /* Card Styles */
@@ -108,6 +141,28 @@
     cursor: pointer;
 }
 
+/* Different card styles per section */
+.overview .dashboard-card {
+    border-top: 4px solid #4c6fff;
+}
+
+.skills .dashboard-card {
+    border-radius: 0.75rem;
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+}
+
+.projects .dashboard-card {
+    border-left: 4px solid #6c8fff;
+}
+
+.growth .dashboard-card {
+    border-bottom: 4px solid #8ca6ff;
+}
+
+.resources .dashboard-card {
+    border-right: 4px solid #a8bcff;
+}
+
 .dashboard-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -116,6 +171,28 @@
 .dashboard-card.expanded {
     grid-column: span 2;
     grid-row: span 2;
+}
+
+/* Skills section specific card styles */
+.skills .skill-detail-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.skill-progress-bar {
+    height: 8px;
+    background-color: #e6e8ff;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.skill-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4c6fff, #6c8fff);
+    border-radius: 4px;
+    transition: width 0.5s ease-out;
 }
 
 .card-header {
@@ -285,7 +362,7 @@
     opacity: 0.8;
 }
 
-/* Welcome Screen Styles - NEW */
+/* Welcome Screen Styles */
 .welcome-container {
     display: flex;
     justify-content: center;
@@ -366,7 +443,7 @@
     box-shadow: 0 6px 12px rgba(76, 111, 255, 0.25);
 }
 
-/* Authentication Required Screen - NEW */
+/* Authentication Required Screen */
 .auth-required-container {
     display: flex;
     flex-direction: column;
@@ -406,7 +483,7 @@
     box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
 }
 
-/* New Animations */
+/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -427,7 +504,6 @@
     }
 }
 
-/* Animation Keyframes */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -444,7 +520,18 @@
     animation: slideIn 0.3s ease-out;
 }
 
-/* Header Adjustments for Welcome Screen - NEW */
+/* Animation delays for cascading effect */
+.skills .dashboard-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.skills .dashboard-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.skills .dashboard-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* Header Adjustments for Welcome Screen */
 .welcome-header .profile-image-container {
     width: 90px;
     height: 90px;
@@ -499,6 +586,14 @@
         height: 50px;
     }
     
+    /* Adjust grid layouts for mobile */
+    .dashboard-grid.skills,
+    .dashboard-grid.projects,
+    .dashboard-grid.growth,
+    .dashboard-grid.resources {
+        grid-template-columns: 1fr;
+    }
+    
     .dashboard-card.expanded {
         grid-column: span 1;
         grid-row: span 1;
@@ -517,7 +612,7 @@
         font-size: 0.9rem;
     }
     
-    /* Welcome Screen Responsive - NEW */
+    /* Welcome Screen Responsive */
     .welcome-header {
         flex-direction: column;
         padding: 1.5rem;
