@@ -1,9 +1,10 @@
 import { SignUp } from '@clerk/clerk-react';
+// import "./Signup.css";
 
 export default function SignUpPage() {
   return (
     <SignUp
-      routing="path" // Change from "hash" to "path"
+      routing="path" 
       path="/signup"
       afterSignUpUrl="/cdashboard" 
       afterSignInUrl="/cdashboard"

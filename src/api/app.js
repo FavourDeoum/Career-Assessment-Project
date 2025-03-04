@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Your frontend URL
+    origin: 'http://localhost:5173', // Your frontend URL
     methods: ['POST', 'GET', 'OPTIONS'],
     credentials: true,
 });
@@ -26,18 +26,7 @@ function runMiddleware(req, res, fn) {
 
 // Create a more detailed and structured prompt from the assessment answers
 const createPrompt = (answers, categories) => {
-    // Extract user profile information if available
-    const userProfile = answers.profile || {};
-    const userAge = userProfile.age || "unspecified";
-    const userEducation = userProfile.education || "unspecified";
-    const userExperience = userProfile.experience || "unspecified";
-    
     let prompt = `As a career development AI specialist, I need you to analyze this individual's career assessment results and provide highly specific career guidance tailored to their unique profile and preferences.
-
-USER PROFILE:
-- Age/Life Stage: ${userAge}
-- Education Level: ${userEducation}
-- Years of Experience: ${userExperience}
 
 ASSESSMENT RESULTS BY CATEGORY:`;
 
@@ -208,6 +197,7 @@ const handler = async (req, res) => {
 
         // Log the received data at debug level
         console.log('Received assessment data');
+        console.log(createPrompt);
 
         // Create the prompt
         const prompt = createPrompt(answers, categories);
@@ -228,6 +218,7 @@ const handler = async (req, res) => {
 
         // Process and structure the response
         const processedResponse = processResponse(llmResponse);
+        console.log(processedResponse)
         
         // Add personalized resources based on assessment
         processedResponse.resources = generateResources(answers, categories);

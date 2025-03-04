@@ -10,6 +10,7 @@ const CareerDashboard = () => {
     const [expandedCard, setExpandedCard] = useState(null);
     const { user, isLoaded } = useUser();
     const { openUserProfile } = useClerk();
+    console.log(user)
 
     useEffect(() => {
         const storedResults = localStorage.getItem('careerAssessmentResults');
@@ -29,9 +30,11 @@ const CareerDashboard = () => {
                 parsedResults.analysis.growthOpportunities = parsedResults.analysis.growthOpportunities || "No growth opportunities available";
                 parsedResults.analysis.nextSteps = parsedResults.analysis.nextSteps || "No next steps available";
                 parsedResults.analysis.challenges = parsedResults.analysis.challenges || "No challenges identified";
+                parsedResults.analysis.skillsAnalysis = parsedResults.analysis.skillsAnalysis || "No skills analysis available";
                 
                 parsedResults.resources.recommendedCourses = parsedResults.resources.recommendedCourses || [];
                 parsedResults.resources.suggestedReadings = parsedResults.resources.suggestedReadings || [];
+                parsedResults.resources.usefulTools = parsedResults.resources.usefulTools || [];
                 
                 setResults(parsedResults);
             } catch (error) {
@@ -42,16 +45,37 @@ const CareerDashboard = () => {
                         careerPaths: "No career paths available",
                         growthOpportunities: "No growth opportunities available",
                         nextSteps: "No next steps available",
-                        challenges: "No challenges identified"
+                        challenges: "No challenges identified",
+                        skillsAnalysis: "No skills analysis available"
                     },
                     resources: {
                         recommendedCourses: [],
-                        suggestedReadings: []
+                        suggestedReadings: [],
+                        usefulTools: []
                     }
                 });
             }
         }
     }, []);
+
+    // Helper function to safely split career recommendations into items
+    const parseCareerRecommendations = (text) => {
+        if (!text || typeof text !== 'string') return [];
+        
+        // Try to identify job titles with explanations in the text
+        const jobMatches = text.match(/\b([A-Z][A-Za-z\s\-]+)(?:\s*-\s*|\:\s*)(.*?)(?=\b[A-Z][A-Za-z\s\-]+\s*-\s*|\b[A-Z][A-Za-z\s\-]+\s*:\s*|$)/g) || [];
+        
+        if (jobMatches.length > 0) {
+            return jobMatches.map(match => {
+                const [title, description] = match.split(/\s*-\s*|\:\s*/);
+                return { title: title.trim(), description: description.trim() };
+            });
+        }
+        
+        // Fallback to simple line splitting if specific format not found
+        return text.split(/\n+/).filter(line => line.trim().length > 0)
+            .map(line => ({ title: line.trim(), description: '' }));
+    };
 
     const handleProfileClick = () => {
         openUserProfile();

@@ -340,7 +340,7 @@ const CareerAssessment = () => {
         }, 2000);
 
       } catch (error) {
-        console.error('Error submitting assessment:', error);
+        console.error('Error submitting assessment:', error.message, error.stack);
         setValidationError('There was an error processing your assessment. Please try again.');
       } finally {
         setIsSubmitting(false);

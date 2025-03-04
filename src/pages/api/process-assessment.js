@@ -35,18 +35,8 @@ export default async function handler(req) {
             }
         });
 
-        // Extract student profile if available
-        const studentProfile = answers.profile || {};
-        const studentAge = studentProfile.age || "unspecified";
-        const studentGrade = studentProfile.grade || "unspecified";
-        const studentInterests = studentProfile.interests || "unspecified";
-
         // Create a more detailed structured prompt
         let prompt = `As a college and career advisor, analyze this student's assessment results to provide highly personalized recommendations. 
-
-STUDENT PROFILE:
-- Age/Grade Level: ${studentAge} / ${studentGrade}
-- Current Academic Interests: ${studentInterests}
 
 ASSESSMENT RESULTS:
 `;
@@ -112,6 +102,7 @@ Format this as a conversational, encouraging report directly addressing the stud
 
         // Extract key sections for structured data
         const sections = extractSections(cleanRecommendation);
+        console.log(sections)
 
         return new Response(
             JSON.stringify({
