@@ -10,71 +10,64 @@ const CareerDashboard = () => {
     const [expandedCard, setExpandedCard] = useState(null);
     const { user, isLoaded } = useUser();
     const { openUserProfile } = useClerk();
-    console.log(user)
+
+    // Fetch results from the backend
+    const fetchResults = async () => {
+        try {
+            const storedResults = localStorage.getItem('careerAssessmentResults');
+            if (storedResults) {
+                const parsedResults = JSON.parse(storedResults);
+                setResults(parsedResults);
+            } else {
+                // Fetch results from the backend if not in localStorage
+                const response = await fetch('/api/app.js', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        answers: {}, // Add assessment answers here
+                        categories: [], // Add assessment categories here
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch results');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('careerAssessmentResults', JSON.stringify(data));
+                setResults(data);
+            }
+        } catch (error) {
+            console.error('Error fetching results:', error);
+            setResults({
+                analysis: {
+                    careerRecommendations: "No career recommendations available",
+                    skillsAnalysis: "No skills analysis available",
+                    actionPlan: "No action plan available",
+                    challenges: "No challenges identified",
+                    growthOpportunities: "No growth opportunities available",
+                },
+                resources: {
+                    recommendedCourses: [],
+                    suggestedReadings: [],
+                    usefulTools: [],
+                },
+            });
+        }
+    };
 
     useEffect(() => {
-        const storedResults = localStorage.getItem('careerAssessmentResults');
-        if (storedResults) {
-            try {
-                const parsedResults = JSON.parse(storedResults);
-                // Initialize missing properties if they don't exist
-                if (!parsedResults.analysis) {
-                    parsedResults.analysis = {};
-                }
-                if (!parsedResults.resources) {
-                    parsedResults.resources = {};
-                }
-                
-                // Initialize all expected properties with default values if they don't exist
-                parsedResults.analysis.careerPaths = parsedResults.analysis.careerPaths || "No career paths available";
-                parsedResults.analysis.growthOpportunities = parsedResults.analysis.growthOpportunities || "No growth opportunities available";
-                parsedResults.analysis.nextSteps = parsedResults.analysis.nextSteps || "No next steps available";
-                parsedResults.analysis.challenges = parsedResults.analysis.challenges || "No challenges identified";
-                parsedResults.analysis.skillsAnalysis = parsedResults.analysis.skillsAnalysis || "No skills analysis available";
-                
-                parsedResults.resources.recommendedCourses = parsedResults.resources.recommendedCourses || [];
-                parsedResults.resources.suggestedReadings = parsedResults.resources.suggestedReadings || [];
-                parsedResults.resources.usefulTools = parsedResults.resources.usefulTools || [];
-                
-                setResults(parsedResults);
-            } catch (error) {
-                console.error("Error parsing stored results:", error);
-                // Create a default structure if parsing fails
-                setResults({
-                    analysis: {
-                        careerPaths: "No career paths available",
-                        growthOpportunities: "No growth opportunities available",
-                        nextSteps: "No next steps available",
-                        challenges: "No challenges identified",
-                        skillsAnalysis: "No skills analysis available"
-                    },
-                    resources: {
-                        recommendedCourses: [],
-                        suggestedReadings: [],
-                        usefulTools: []
-                    }
-                });
-            }
+        if (isLoaded && user) {
+            fetchResults();
         }
-    }, []);
+    }, [isLoaded, user]);
 
     // Helper function to safely split career recommendations into items
     const parseCareerRecommendations = (text) => {
         if (!text || typeof text !== 'string') return [];
-        
-        // Try to identify job titles with explanations in the text
-        const jobMatches = text.match(/\b([A-Z][A-Za-z\s\-]+)(?:\s*-\s*|\:\s*)(.*?)(?=\b[A-Z][A-Za-z\s\-]+\s*-\s*|\b[A-Z][A-Za-z\s\-]+\s*:\s*|$)/g) || [];
-        
-        if (jobMatches.length > 0) {
-            return jobMatches.map(match => {
-                const [title, description] = match.split(/\s*-\s*|\:\s*/);
-                return { title: title.trim(), description: description.trim() };
-            });
-        }
-        
-        // Fallback to simple line splitting if specific format not found
-        return text.split(/\n+/).filter(line => line.trim().length > 0)
-            .map(line => ({ title: line.trim(), description: '' }));
+        return text.split('\n').filter(line => line.trim().length > 0);
     };
 
     const handleProfileClick = () => {
@@ -109,79 +102,69 @@ const CareerDashboard = () => {
     ];
 
     const radarData = [
-        {
-            subject: 'Technical', A: 85, fullMark: 100,
-        },
-        {
-            subject: 'Leadership', A: 72, fullMark: 100,
-        },
-        {
-            subject: 'Communication', A: 90, fullMark: 100,
-        },
-        {
-            subject: 'Problem Solving', A: 88, fullMark: 100,
-        },
-        {
-            subject: 'Creativity', A: 78, fullMark: 100,
-        },
+        { subject: 'Technical', A: 85, fullMark: 100 },
+        { subject: 'Leadership', A: 72, fullMark: 100 },
+        { subject: 'Communication', A: 90, fullMark: 100 },
+        { subject: 'Problem Solving', A: 88, fullMark: 100 },
+        { subject: 'Creativity', A: 78, fullMark: 100 },
     ];
 
     const topStrengths = [
         { skill: 'Communication', description: 'Excellent verbal and written communication skills with the ability to articulate complex ideas clearly.' },
         { skill: 'Problem Solving', description: 'Strong analytical approach to breaking down complex issues into manageable parts and finding solutions.' },
-        { skill: 'Technical', description: 'Proficient in relevant technical skills required for your field with solid foundational knowledge.' }
+        { skill: 'Technical', description: 'Proficient in relevant technical skills required for your field with solid foundational knowledge.' },
     ];
 
     const areasForImprovement = [
         { skill: 'Leadership', description: 'Developing stronger delegation skills and building team management capabilities.' },
-        { skill: 'Creativity', description: 'Enhancing innovative thinking and applying creative approaches to problem-solving.' }
+        { skill: 'Creativity', description: 'Enhancing innovative thinking and applying creative approaches to problem-solving.' },
     ];
 
     const skillGrowthOpportunities = [
         'Take an online course on "Leadership in the Modern Workplace" to build management skills',
         'Join a creative thinking workshop or hackathon to boost innovative problem-solving',
         'Practice public speaking through local Toastmasters clubs to enhance communication confidence',
-        'Participate in cross-functional projects to develop versatility and adaptability'
+        'Participate in cross-functional projects to develop versatility and adaptability',
     ];
 
     const industryInsights = [
         { industry: 'Technology', trend: 'Growing demand for AI and machine learning specialists', growth: 'Expected 22% growth over the next 5 years' },
         { industry: 'Healthcare', trend: 'Increasing need for digital health solutions', growth: 'Projected 18% growth in health tech roles' },
-        { industry: 'Sustainability', trend: 'Rising focus on environmental solutions', growth: 'Estimated 15% annual growth in green technology positions' }
+        { industry: 'Sustainability', trend: 'Rising focus on environmental solutions', growth: 'Estimated 15% annual growth in green technology positions' },
     ];
 
     const companyMatches = [
         { name: 'Innovative Tech Solutions', match: '90% match', reason: 'Values align with your collaborative work style and technical expertise' },
         { name: 'Health Connect', match: '85% match', reason: 'Offers growth opportunities in areas matching your skill development goals' },
-        { name: 'Future Sustainability', match: '82% match', reason: 'Company culture emphasizes continuous learning and problem-solving' }
+        { name: 'Future Sustainability', match: '82% match', reason: 'Company culture emphasizes continuous learning and problem-solving' },
     ];
 
     const actionableSteps = [
         'Update your LinkedIn profile to highlight your strongest skills',
         'Reach out to professionals in your target industries for informational interviews',
         'Apply for roles that match your skill profile and career aspirations',
-        'Attend industry conferences or webinars to expand your knowledge and network'
+        'Attend industry conferences or webinars to expand your knowledge and network',
     ];
 
     const learningResources = [
         { type: 'Course', name: 'Advanced Technical Skills Masterclass', platform: 'Coursera' },
         { type: 'Book', name: 'Leadership in the Digital Age', author: 'Jane Smith' },
         { type: 'Podcast', name: 'Career Growth Strategies', host: 'Michael Johnson' },
-        { type: 'Workshop', name: 'Creative Problem Solving', organization: 'Innovation Labs' }
+        { type: 'Workshop', name: 'Creative Problem Solving', organization: 'Innovation Labs' },
     ];
 
     const mentorshipOpportunities = [
         'Join industry-specific mentorship programs through professional associations',
         'Use platforms like MentorCruise or ADPList to find relevant mentors',
         'Attend networking events with a focus on finding potential mentors',
-        'Develop a clear mentorship goal and approach potential mentors with specific requests'
+        'Develop a clear mentorship goal and approach potential mentors with specific requests',
     ];
 
     const networkingTips = [
         'Set a goal to attend at least one industry event per month',
         'Be prepared with a concise elevator pitch about yourself',
         'Follow up with new connections within 48 hours of meeting',
-        'Share relevant industry content on LinkedIn to establish your professional voice'
+        'Share relevant industry content on LinkedIn to establish your professional voice',
     ];
 
     const ExpandableCard = ({ title, content, icon, id }) => (
@@ -216,7 +199,7 @@ const CareerDashboard = () => {
                 <div className="welcome-content">
                     <div className="welcome-header">
                         <div className="welcome-text">
-                            <h1>Welcome, {user.firstName || user.username}!</h1>
+                            <h1>Welcome, {user.fullName || user.username}!</h1>
                             <p>Discover your ideal career path with our personalized assessment.</p>
                         </div>
                         <div 
@@ -376,7 +359,7 @@ const CareerDashboard = () => {
                                 icon="icon-compass"
                                 content={
                                     <div className="career-paths">
-                                        {safeSplit(results.analysis.careerPaths).map((path, index) => (
+                                        {safeSplit(results.analysis.careerRecommendations).map((path, index) => (
                                             <div key={index} className="career-path-item">
                                                 <div className="path-number">{index + 1}</div>
                                                 <p>{path}</p>
@@ -537,7 +520,7 @@ const CareerDashboard = () => {
                             icon="icon-compass"
                             content={
                                 <div className="career-paths">
-                                    {safeSplit(results.analysis.careerPaths).map((path, index) => (
+                                    {safeSplit(results.analysis.careerRecommendations).map((path, index) => (
                                         <div key={index} className="career-path-item">
                                             <div className="path-number">{index + 1}</div>
                                             <p>{path}</p>
@@ -587,7 +570,7 @@ const CareerDashboard = () => {
                             icon="icon-target"
                             content={
                                 <div className="next-steps">
-                                    {safeSplit(results.analysis.nextSteps).map((step, index) => (
+                                    {safeSplit(results.analysis.actionPlan).map((step, index) => (
                                         <div key={index} className="step-item">
                                             <div className="step-number">{index + 1}</div>
                                             <p>{step}</p>

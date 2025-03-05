@@ -1,13 +1,12 @@
-// /api/process-assessment.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Cors from 'cors';
-const API_KEY = process.env.GOOGLE_API_KEY || "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg";
+const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    origin: 'http://localhost:5173', // Your frontend URL
+    origin: 'https://career-assessment-project.vercel.app/', //frontend URL
     methods: ['POST', 'GET', 'OPTIONS'],
     credentials: true,
 });
@@ -26,9 +25,7 @@ function runMiddleware(req, res, fn) {
 
 // Create a more detailed and structured prompt from the assessment answers
 const createPrompt = (answers, categories) => {
-    let prompt = `As a career development AI specialist, I need you to analyze this individual's career assessment results and provide highly specific career guidance tailored to their unique profile and preferences.
-
-ASSESSMENT RESULTS BY CATEGORY:`;
+    let prompt = `As a career development AI specialist, I need you to analyze this individual's career assessment results and provide highly specific career guidance.  The assessment covers multiple dimensions of career preferences and abilities:`;
 
     // Add each category and the user's answers
     categories.forEach(category => {
@@ -65,6 +62,13 @@ ASSESSMENT RESULTS BY CATEGORY:`;
 5. GROWTH OPPORTUNITIES:
    - Suggest 2-3 industry sectors with strong potential for them
    - Identify emerging roles that might suit their profile in the next 3-5 years
+
+6. RESOURCE RECOMMENDATIONS:
+   - Recommend 3 online courses or certifications
+    - Suggest 3 books or articles for further reading
+    - Provide 3 tools or platforms for professional development
+    from each of the above, give appropriate online links or sources for the individual to access.
+
 
 Format your response in clean, conversational language with no asterisks or markdown symbols. Use clear headings and paragraph breaks for readability.`;
 
@@ -196,11 +200,11 @@ const handler = async (req, res) => {
         const { answers, categories } = req.body;
 
         // Log the received data at debug level
-        console.log('Received assessment data');
-        console.log(createPrompt);
+        console.log('Received assessment data', answers);
 
         // Create the prompt
         const prompt = createPrompt(answers, categories);
+        console.log('Generated Prompt', prompt);
         
         // Get response from Gemini with more specific parameters
         const model = genAI.getGenerativeModel({ 
@@ -216,9 +220,11 @@ const handler = async (req, res) => {
         const result = await model.generateContent(prompt);
         const llmResponse = result.response.text();
 
+        console.log('Raw LLM response:', llmResponse);
+
         // Process and structure the response
         const processedResponse = processResponse(llmResponse);
-        console.log(processedResponse)
+        console.log('Enhanced Response', processedResponse)
         
         // Add personalized resources based on assessment
         processedResponse.resources = generateResources(answers, categories);
