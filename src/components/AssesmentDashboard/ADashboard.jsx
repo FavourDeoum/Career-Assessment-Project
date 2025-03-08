@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useUser, useClerk } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import "./ADashboard.css";
@@ -11,7 +11,6 @@ const CareerDashboard = () => {
     const { user, isLoaded } = useUser();
     const { openUserProfile } = useClerk();
 
-    // Fetch results from the backend
     const fetchResults = async () => {
         try {
             const storedResults = localStorage.getItem('careerAssessmentResults');
@@ -39,10 +38,20 @@ const CareerDashboard = () => {
             }
         } catch (error) {
             console.error('Error fetching results:', error);
-            setResults({ analysis: {}, resources: {} });
+            // Set default results to avoid undefined errors in rendering
+            setResults({
+                analysis: {
+                    careerRecommendations: [],
+                    growthOpportunities: { emergingRoles: [], sectors: [] },
+                    actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+                    potentialChallenges: { challenges: [], mitigationStrategies: [] },
+                    insights: { keyTakeaways: [], motivationalQuote: '' },
+                },
+                resources: {},
+            });
         }
     };
-console.log(results)
+
     useEffect(() => {
         if (isLoaded && user) {
             fetchResults();
@@ -52,6 +61,7 @@ console.log(results)
     const handleProfileClick = () => {
         openUserProfile();
     };
+
     const mockSkillsData = [
         { name: 'Technical', value: 85 },
         { name: 'Leadership', value: 72 },
@@ -97,15 +107,14 @@ console.log(results)
         </div>
     );
 
-
     // Welcome screen for users who haven't taken the assessment yet
-    if (!results) {
+    if (!results || results.analysis.careerRecommendations.length === 0) {
         return (
             <div className="dashboard-container welcome-container">
                 <div className="welcome-content">
                     <div className="welcome-header">
                         <div className="welcome-text">
-                            <h1>Welcome, {user.firstName || user.username}!</h1>
+                            <h1>Welcome, {user.fullName || user.username}!</h1>
                             <p>Discover your ideal career path with our personalized assessment.</p>
                         </div>
                         <div 
@@ -153,133 +162,126 @@ console.log(results)
                             icon="icon-compass"
                             content={
                                 <div className="career-paths">
-                                {results.analysis.careerRecommendations.length > 0 && (
-                                    <div className="career-path-item">
-                                        <h4>{results.analysis.careerRecommendations[0].jobTitle}</h4>
-                                        <p>{results.analysis.careerRecommendations[0].explanation}</p>
-                                    </div>
-                                )}
-                            </div>
-                        }
-                    />
-                        {/* Add more ExpandableCards for other overview sections */}
-                        {/* Skills Analysis Card */}
-                    <ExpandableCard
-                        id="skills"
-                        title="Skills Analysis"
-                        icon="icon-star"
-                        content={
-                            <div className="skills-chart">
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart data={mockSkillsData}>
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                        }
-                    />
+                                    {results.analysis.careerRecommendations.map((recommendation, index) => (
+                                        <div key={index} className="career-path-item">
+                                            <div className="path-number">{index + 1}</div>
+                                            <p className="job-title">{recommendation.jobTitle}</p>
+                                            <p className="explanation">{recommendation.explanation}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="skills"
+                            title="Skills Analysis"
+                            icon="icon-star"
+                            content={
+                                <div className="skills-chart">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <LineChart data={mockSkillsData}>
+                                            <XAxis dataKey="name" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="growth"
+                            title="Growth Opportunities"
+                            icon="icon-trending-up"
+                            content={
+                                <div className="growth-opportunities">
+                                    <h4>Emerging Roles</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.emergingRoles.map((role, index) => (
+                                            <li key={index} className="role-item">
+                                                {role}
+                                            </li>
+                                        ))}
+                                    </ul>
 
-                    {/* Growth Opportunities Card */}
-                    <ExpandableCard
-    id="growth"
-    title="Growth Opportunities"
-    icon="icon-trending-up"
-    content={
-        <div className="growth-opportunities">
-            <h4>Emerging Roles</h4>
-            <ul>
-                {results.analysis.growthOpportunities.emergingRoles.map((role, index) => (
-                    <li key={index} className="role-item">
-                        {role}
-                    </li>
-                ))}
-            </ul>
+                                    <h4>Sectors</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.sectors.map((sector, index) => (
+                                            <li key={index} className="sector-item">
+                                                {sector}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="steps"
+                            title="Recommended Next Steps"
+                            icon="icon-target"
+                            content={
+                                <div className="next-steps">
+                                    <h4>Immediate Next Steps</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
+                                            <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{step}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
 
-            <h4>Sectors</h4>
-            <ul>
-                {results.analysis.growthOpportunities.sectors.map((sector, index) => (
-                    <li key={index} className="sector-item">
-                        {sector}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    }
-/>
+                                    <h4>Short Term Goals</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
+                                            <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{goal}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
 
-                {/* Next Steps Card */}
-                <ExpandableCard
-                        id="steps"
-                        title="Recommended Next Steps"
-                        icon="icon-target"
-                    content={
-                       <div className="next-steps">
-                       <h4>Immediate Next Steps</h4>
-                      <ul>
-                         {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
-                        <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
-                            <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
-                            <p>{step}</p>
-                       </li>
-                    ))}
-                </ul>
+                                    <h4>Long Term Roadmap</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
+                                            <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{roadmap}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="challenges"
+                            title="Potential Challenges"
+                            icon="icon-alert"
+                            content={
+                                <div className="challenges">
+                                    <h4>Challenges</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.challenges.map((challenge, index) => (
+                                            <li key={index} className="challenge-item">
+                                                {challenge}
+                                            </li>
+                                        ))}
+                                    </ul>
 
-            <h4>Short Term Goals</h4>
-            <ul>
-                {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
-                    <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
-                        <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
-                        <p>{goal}</p>
-                    </li>
-                ))}
-            </ul>
-
-            {/* <h4>Long Term Roadmap</h4>
-            <ul>
-                {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
-                    <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
-                        <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
-                        <p>{roadmap}</p>
-                    </li>
-                ))}
-            </ul> */}
-        </div>
-    }
-/>
-                    
-                     {/* Challenges Card */}
-                     <ExpandableCard
-    id="challenges"
-    title="Potential Challenges"
-    icon="icon-alert"
-    content={
-        <div className="challenges">
-            <h4>Challenges</h4>
-            <ul>
-                {results.analysis.potentialChallenges.challenges.map((challenge, index) => (
-                    <li key={index} className="challenge-item">
-                        {challenge}
-                    </li>
-                ))}
-            </ul>
-
-            <h4>Mitigation Strategies</h4>
-            <ul>
-                {results.analysis.potentialChallenges.mitigationStrategies.map((strategy, index) => (
-                    <li key={index} className="strategy-item">
-                        {strategy}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    }
-/>
+                                    <h4>Mitigation Strategies</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.mitigationStrategies.map((strategy, index) => (
+                                            <li key={index} className="strategy-item">
+                                                {strategy}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
 
 
-                    {/* Resources Card */}
+                          {/* Resources Card */}
                     {/* <ExpandableCard
                         id="resources"
                         title="Recommended Resources"
@@ -308,34 +310,14 @@ console.log(results)
                     </div>
                 );
 
+            // Add more cases for 'skills', 'paths', and 'development' as needed
+
             case 'skills':
                 return (
                     <div className="section-content">
                         <h2>Skills Analysis</h2>
                         <div className="dashboard-grid">
-                            <ExpandableCard
-                                id="skill-breakdown"
-                                title="Skill Breakdown"
-                                icon="icon-chart"
-                                content={
-                                    <div className="charts-container">
-                                        <ResponsiveContainer width="100%" height={300}>
-                                            <BarChart data={results.analysis.skillsData}>
-                                                <XAxis dataKey="name" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Bar dataKey="value" fill="#3B82F6" />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                }
-                            />
-                            {/* Add other skill-related ExpandableCards */}
-
-                            <div className="section-content">
-    <h2>Skills Analysis</h2>
-    <div className="dashboard-grid">
-        <ExpandableCard
+                        <ExpandableCard
             id="skill-breakdown"
             title="Skill Breakdown"
             icon="icon-chart"
@@ -363,8 +345,8 @@ console.log(results)
                 </div>
             }
         />
-    </div>
-</div>
+                            {/* Add other skill-related ExpandableCards */}
+
                         </div>
                     </div>
                 );
@@ -375,28 +357,24 @@ console.log(results)
                         <h2>Career Paths</h2>
                         <div className="dashboard-grid">
                         <ExpandableCard
-    id="paths"
-    title="Recommended Career Paths"
-    icon="icon-compass"
+    id="insights"
+    title="Key Insights"
+    icon="icon-insight"
     content={
-        <div className="career-paths">
-            {results.analysis.careerRecommendations.map((recommendation, index) => (
-                <div key={index} className="career-path-item">
-                    <div className="path-number">{index + 1}</div>
-                    {index === 1 ? (
-                        <div className="job-info">
-                            <p className="job-title">{recommendation.jobTitle}</p>
-                            <p className="explanation">{recommendation.explanation}</p>
-                        </div>
-                    ) : (
-                        <>
-                            <p className="job-title">{recommendation.jobTitle}</p>
-                            <p className="explanation">{recommendation.explanation}</p>
-                        </>
-                    )}
-                    {/* <p className="salary-range">{recommendation.salaryRange}</p> */}
-                </div>
-            ))}
+        <div className="insights">
+            <h4>Key Takeaways</h4>
+            <ul>
+                {results.analysis.insights.keyTakeaways.map((takeaway, index) => (
+                    <li key={index} className="takeaway-item">
+                        {takeaway}
+                    </li>
+                ))}
+            </ul>
+
+            <h4>Motivational Quote</h4>
+            <p className="motivational-quote">
+                "{results.analysis.insights.motivationalQuote}"
+            </p>
         </div>
     }
 />
@@ -424,7 +402,6 @@ console.log(results)
                         </div>
                     </div>
                 );
-
             default:
                 return null;
         }
@@ -434,23 +411,22 @@ console.log(results)
         <div className="dashboard-container">
             <header className="dashboard-header">
                 <div className="header-content">
-                        <div className="header-text">
-                            <h1>Your Career Journey Dashboard</h1>
-                            <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
-                        </div>
-                        {/* Display the user's profile image with click handler */}
-                        <div 
-                            className="profile-image-container" 
-                            onClick={handleProfileClick}
-                            title="Manage your account settings"
-                        >
-                            <img
-                                src={user.imageUrl}
-                                alt="Profile"
-                                className="profile-image"
-                            />
-                        </div>
+                    <div className="header-text">
+                        <h1>Your Career Journey Dashboard</h1>
+                        <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
                     </div>
+                    <div 
+                        className="profile-image-container" 
+                        onClick={handleProfileClick}
+                        title="Manage your account settings"
+                    >
+                        <img
+                            src={user.imageUrl}
+                            alt="Profile"
+                            className="profile-image"
+                        />
+                    </div>
+                </div>
             </header>
 
             <nav className="dashboard-nav">

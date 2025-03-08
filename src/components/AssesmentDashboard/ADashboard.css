@@ -169,8 +169,8 @@
 }
 
 .dashboard-card.expanded {
-    grid-column: span 2;
-    grid-row: span 2;
+    grid-column: span 3;
+    grid-row: span 3;
 }
 
 /* Skills section specific card styles */
@@ -640,5 +640,84 @@
     .welcome-header .profile-image-container {
         width: 70px;
         height: 70px;
+    }
+}
+
+
+
+
+
+
+
+
+/* career recomendation overview card */
+.expandable-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.expandable-card .career-paths {
+    display: flex;
+    flex-direction: column;
+}
+
+.career-path-item {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 12px 0;
+}
+
+.career-path-item:last-child {
+    border-bottom: none;
+}
+
+.path-number {
+    font-weight: bold;
+    color: white;
+}
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .expandable-card {
+        padding: 12px;
+        margin: 12px 0;
+    }
+
+    .career-path-item {
+        padding: 10px 0;
+    }
+
+    .job-title {
+        font-size: 2em;
+    }
+
+    .explanation {
+        font-size: 1.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    .expandable-card {
+        padding: 8px;
+        margin: 8px 0;
+    }
+
+    .career-path-item {
+        padding: 8px 0;
+    }
+
+    .job-title {
+        font-size: 1.0em;
+    }
+
+    .explanation {
+        font-size: 0.95em;
     }
 }

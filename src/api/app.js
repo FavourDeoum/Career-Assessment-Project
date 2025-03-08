@@ -395,26 +395,38 @@ Make sure the response is always a valid JSON format.`;
 // Map answers to text
 const mapAnswerToText = (value) => {
     const mappings = {
+        // Interest levels
         not_at_all: "no interest in",
         slightly: "slight interest in",
         moderately: "moderate interest in",
         very_much: "strong interest in",
         extremely: "extreme passion for",
-        novice: "beginner level skill",
-        beginner: "basic competency",
-        intermediate: "solid working knowledge",
-        advanced: "advanced professional skill",
-        expert: "expert-level mastery",
-        strongly_disagree: "strongly challenges",
-        disagree: "has reservations about",
-        neutral: "open-minded towards",
-        agree: "strongly supports",
-        strongly_agree: "deeply aligns with",
-        never: "does not engage",
-        rarely: "occasionally explores",
-        sometimes: "moderately interested in",
-        often: "consistently pursues",
-        always: "passionately committed to"
+        
+        // Skill levels
+        novice: "beginner level in",
+        beginner: "basic knowledge of",
+        intermediate: "competent with",
+        advanced: "advanced skills in",
+        expert: "expert mastery of",
+        
+        // Agreement levels
+        strongly_disagree: "strongly disagrees with",
+        disagree: "disagrees with",
+        neutral: "neutral about",
+        agree: "agrees with",
+        strongly_agree: "strongly agrees with",
+        
+        // Frequency
+        never: "never engages in",
+        rarely: "rarely engages in",
+        sometimes: "sometimes engages in",
+        often: "often engages in",
+        always: "always engages in",
+        
+        // Yes/No with context
+        yes: "confirms",
+        no: "does not confirm",
+        maybe: "is uncertain about"
     };
     return mappings[value] || value;
 };

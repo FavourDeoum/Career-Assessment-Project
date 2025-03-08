@@ -1,3 +1,4 @@
+// /api/process-assessment.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Cors from 'cors';
 const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg"
@@ -146,3 +147,47 @@ const handler = async (req, res) => {
 };
 
 export default handler;
+
+
+
+
+
+
+
+
+
+
+
+
+  // Interest levels
+        not_at_all: "no interest in",
+        slightly: "slight interest in",
+        moderately: "moderate interest in",
+        very_much: "strong interest in",
+        extremely: "extreme passion for",
+        
+        // Skill levels
+        novice: "beginner level in",
+        beginner: "basic knowledge of",
+        intermediate: "competent with",
+        advanced: "advanced skills in",
+        expert: "expert mastery of",
+        
+        // Agreement levels
+        strongly_disagree: "strongly disagrees with",
+        disagree: "disagrees with",
+        neutral: "neutral about",
+        agree: "agrees with",
+        strongly_agree: "strongly agrees with",
+        
+        // Frequency
+        never: "never engages in",
+        rarely: "rarely engages in",
+        sometimes: "sometimes engages in",
+        often: "often engages in",
+        always: "always engages in",
+        
+        // Yes/No with context
+        yes: "confirms",
+        no: "does not confirm",
+        maybe: "is uncertain about"
