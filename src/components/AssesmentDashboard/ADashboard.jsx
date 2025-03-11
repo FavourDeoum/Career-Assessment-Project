@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { supabase } from '../../supabaseClient';
+import { storeRecommendations } from '../utils/storeRecommendation';
 import { useUser, useClerk } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import "./ADashboard.css";
@@ -13,45 +15,65 @@ const CareerDashboard = () => {
 
     const fetchResults = async () => {
         try {
-            const storedResults = localStorage.getItem('careerAssessmentResults');
-            if (storedResults) {
-                setResults(JSON.parse(storedResults));
-            } else {
-                const response = await fetch('/api/app.js', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        answers: {}, // Add assessment answers here
-                        categories: [], // Add assessment categories here
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch results');
-                }
-
-                const data = await response.json();
-                localStorage.setItem('careerAssessmentResults', JSON.stringify(data));
-                setResults(data);
-            }
+          // First, check if results are already in Supabase
+          const { data: storedData, error: storedError } = await supabase
+            .from("recommendations")
+            .select("recommendations")
+            .eq("user_id", user.id)
+            .single()
+    
+          if (storedData && storedData.recommendations) {
+            setResults(JSON.parse(storedData.recommendations))
+            return
+          }
+    
+          const response = await fetch("/api/app.js", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              answers: {}, // Add assessment answers here
+              categories: [], // Add assessment categories here
+            }),
+          })
+    
+          if (!response.ok) {
+            throw new Error("Failed to fetch results")
+          }
+    
+          const data = await response.json()
+    
+          // Store the results in Supabase
+          await storeRecommendations(user.id, data)
+    
+        //   localStorage.setItem("careerAssessmentResults", JSON.stringify(data))
+          setResults(data)
+          console.log("Fetched Results:", data)
         } catch (error) {
-            console.error('Error fetching results:', error);
-            // Set default results to avoid undefined errors in rendering
-            setResults({
-                analysis: {
-                    careerRecommendations: [],
-                    growthOpportunities: { emergingRoles: [], sectors: [] },
-                    actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
-                    potentialChallenges: { challenges: [], mitigationStrategies: [] },
-                    insights: { keyTakeaways: [], motivationalQuote: '' },
-                },
-                resources: {},
-            });
+          console.error("Error fetching results:", error)
+          // Set default results to avoid undefined errors in rendering
+          setResults({
+            analysis: {
+              careerRecommendations: [],
+              growthOpportunities: { emergingRoles: [], sectors: [] },
+              actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+              potentialChallenges: { challenges: [], mitigationStrategies: [] },
+              insights: { keyTakeaways: [], motivationalQuote: "" },
+              resources: {
+                recommendedCourses: [],
+                suggestedReadings: [],
+                professionalTools: [],
+              },
+            },
+            resources: {
+              recommendedCourses: [],
+              suggestedReadings: [],
+              professionalTools: [],
+            },
+          })
         }
-    };
-
+      }
     useEffect(() => {
         if (isLoaded && user) {
             fetchResults();
@@ -160,6 +182,7 @@ const CareerDashboard = () => {
                             id="paths"
                             title="Recommended Career Paths"
                             icon="icon-compass"
+                            className='recommend'
                             content={
                                 <div className="career-paths">
                                     {results.analysis.careerRecommendations.map((recommendation, index) => (
@@ -388,17 +411,101 @@ const CareerDashboard = () => {
                     <div className="section-content">
                         <h2>Professional Development</h2>
                         <div className="dashboard-grid">
-                            <ExpandableCard
+                        <ExpandableCard
+    id="resources"
+    title="Recommended Resources"
+    icon="icon-book"
+    content={
+        <div className="resources">
+            <div className="resource-section">
+                <h4>Recommended Courses</h4>
+                <ul>
+                    {results.analysis.resources.recommendedCourses > 0 ? (
+                        results.analysis.resources.recommendedCourses.map((course, index) => (
+                            <li key={index}>{course}</li>
+                        ))
+                    ) : (
+                        <li>No courses available.</li>
+                    )}
+                </ul>
+            </div>
+            <div className="resource-section">
+                <h4>Suggested Readings</h4>
+                <ul>
+                    {results.analysis.resources.suggestedReadings > 0 ? (
+                        results.analysis.resources.suggestedReadings.map((reading, index) => (
+                            <li key={index}>{reading}</li>
+                        ))
+                    ) : (
+                        <li>No readings available.</li>
+                    )}
+                </ul>
+            </div>
+            <div className="resource-section">
+                <h4>Professional Tools</h4>
+                <ul>
+                    {results.analysis.resources.professionalTools > 0 ? (
+                        results.analysis.resources.professionalTools.map((tool, index) => (
+                            <li key={index}>{tool}</li>
+                        ))
+                    ) : (
+                        <li>No tools available.</li>
+                    )}
+                </ul>
+            </div>
+        </div>
+    }
+/>
+                            {/* Add other development-related ExpandableCards */}
+
+                            {/* <ExpandableCard
                                 id="learning-resources"
                                 title="Learning Resources"
                                 icon="icon-book"
                                 content={
                                     <div className="learning-resources">
-                                        {/* Render learning resources */}
+                                        <h4>Recommended Courses</h4>
+                                        <ul className="courses-list">
+                                            {mockSkillsData.map((skill, index) => (
+                                                <li key={index} className="course-item">
+                                                    <h5>Advanced {skill.name} Skills</h5>
+                                                    <p className="course-provider">Provider: Professional Learning Academy</p>
+                                                    <p className="course-description">
+                                                        This course focuses on developing advanced {skill.name.toLowerCase()} skills
+                                                        required for career progression in your field.
+                                                    </p>
+                                                    <button className="resource-button">View Course</button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                }
+                            /> */}
+
+
+
+                            <ExpandableCard
+                                id="mentorship"
+                                title="Mentorship Opportunities"
+                                icon="icon-users"
+                                content={
+                                    <div className="mentorship-opportunities">
+                                        <h4>Find a Mentor</h4>
+                                        <p>
+                                            Based on your career goals, connecting with a mentor in your desired field
+                                            can significantly accelerate your professional development.
+                                        </p>
+                                        <button className="resource-button">Explore Mentorship Program</button>
+                                        
+                                        <h4>Peer Learning Groups</h4>
+                                        <p>
+                                            Join a community of professionals with similar career goals to share experiences,
+                                            challenges, and resources.
+                                        </p>
+                                        <button className="resource-button">Join Learning Group</button>
                                     </div>
                                 }
                             />
-                            {/* Add other development-related ExpandableCards */}
                         </div>
                     </div>
                 );

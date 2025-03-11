@@ -387,7 +387,7 @@ Please provide a structured JSON response based on the following details:
 User Data:
 ${JSON.stringify(answers, null, 2)}
 
-Make sure the response is always a valid JSON format.`;
+Make sure the response is always a valid JSON format. And then where we have the job title, it should always come along with the explanation only.`;
 
     return prompt;
 };
