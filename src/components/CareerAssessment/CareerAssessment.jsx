@@ -16,258 +16,243 @@ import './CareerAssessment.css';
 
 const categories = [
   {
+    id: 'education',
+    title: 'Educational Background',
+    icon: FaBookOpen,
+    questions: [
+      {
+        id: 'q1',
+        text: 'What domain did you study in the Advanced Level?',
+        subtext: 'Select the domain that best matches your studies',
+        options: [
+          { value: 'grammar', label: 'Grammar (Arts & Sciences)' },
+          { value: 'technical', label: 'Technical' },
+          { value: 'commercial', label: 'Commercial' },
+          { value: 'industrial', label: 'Industrial' },
+          { value: 'agricultural', label: 'Agricultural' }
+          // { value: 'other', label: 'Other (Specify)' }
+        ]
+      },
+      {
+        id: 'q2',
+        text: 'What subjects did you excel in the most? (Select up to 3)',
+        subtext: 'Choose up to 3 subjects you were strongest in',
+        options: [
+          { value: 'mathematics', label: 'Mathematics' },
+          { value: 'physics', label: 'Physics' },
+          { value: 'chemistry', label: 'Chemistry' },
+          { value: 'biology', label: 'Biology' },
+          { value: 'economics', label: 'Economics' },
+          { value: 'accounting', label: 'Accounting' },
+          { value: 'geography', label: 'Geography' },
+          { value: 'literature', label: 'Literature' },
+          { value: 'history', label: 'History' },
+          { value: 'computer_science', label: 'Computer Science' }
+          // { value: 'other', label: 'Others (Specify)' }
+        ],
+        multiple: true // Allow multiple selections
+      },
+      {
+        id: 'q3',
+        text: 'Did you take any professional training or certification courses outside of your school syllabus?',
+        subtext: 'Select the most relevant option',
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' }
+        ]
+      }
+    ]
+  },
+  {
     id: 'interests',
     title: 'Interests & Passions',
     icon: FaHeart,
     questions: [
       {
-        id: 'i1',
-        text: 'How much do you enjoy solving puzzles and brain teasers?',
-        subtext: 'This helps identify analytical thinking preferences',
+        id: 'q4',
+        text: 'Which of these areas interests you the most? (Choose up to 3)',
+        subtext: 'Select up to 3 areas that interest you',
         options: [
-          { value: 'not_at_all', label: 'Not at all' },
-          { value: 'slightly', label: 'Slightly' },
-          { value: 'moderately', label: 'Moderately' },
-          { value: 'very_much', label: 'Very much' },
-          { value: 'extremely', label: 'Extremely' }
-        ]
+          { value: 'technology', label: 'Technology & Coding' },
+          { value: 'medicine', label: 'Medicine & Healthcare' },
+          { value: 'business', label: 'Business & Entrepreneurship' },
+          { value: 'teaching', label: 'Teaching & Education' },
+          { value: 'arts', label: 'Arts & Creativity' },
+          { value: 'politics', label: 'Politics & Law' },
+          { value: 'agriculture', label: 'Agriculture & Environment' },
+          { value: 'engineering', label: 'Engineering & Construction' },
+          { value: 'communication', label: 'Communication & Media' },
+          { value: 'finance', label: 'Finance & Banking' }
+          // { value: 'other', label: 'Other (Specify)' }
+        ],
+        multiple: true // Allow multiple selections
       },
       {
-        id: 'i2',
-        text: 'How interested are you in helping others learn and grow?',
-        subtext: 'This indicates teaching and mentoring inclinations',
+        id: 'q5',
+        text: 'What type of work environment do you prefer?',
+        subtext: 'Select the work environment that suits you best',
         options: [
-          { value: 'not_interested', label: 'Not interested' },
-          { value: 'somewhat_interested', label: 'Somewhat interested' },
-          { value: 'interested', label: 'Interested' },
-          { value: 'very_interested', label: 'Very interested' },
-          { value: 'passionate', label: 'Passionate' }
+          { value: 'office', label: 'Working indoors in an office' },
+          { value: 'outdoors', label: 'Working outdoors (e.g., farms, fieldwork)' },
+          { value: 'mixed', label: 'A mix of indoor and outdoor work' },
+          { value: 'remote', label: 'Remote/Freelance work' },
+          { value: 'unsure', label: 'I’m not sure yet' }
         ]
       }
-      // Add more questions with similar structure
     ]
   },
   {
     id: 'skills',
-    title: 'Skills & Abilities',
+    title: 'Skills & Strengths',
     icon: FaBrain,
     questions: [
       {
-        id: 's1',
-        text: 'How would you rate your communication skills?',
-        subtext: 'Both written and verbal communication abilities',
+        id: 'q6',
+        text: 'Which of these skills best describes you? (Choose up to 3)',
+        subtext: 'Select up to 3 skills that best describe you',
         options: [
-          { value: 'basic', label: 'Basic communication skills' },
-          { value: 'developing', label: 'Developing communicator' },
-          { value: 'competent', label: 'Competent communicator' },
-          { value: 'advanced', label: 'Advanced communicator' },
-          { value: 'expert', label: 'Expert communicator' }
+          { value: 'critical_thinking', label: 'Critical Thinking & Problem-Solving' },
+          { value: 'communication', label: 'Communication & Public Speaking' },
+          { value: 'leadership', label: 'Leadership & Teamwork' },
+          { value: 'creativity', label: 'Creativity & Innovation' },
+          { value: 'analytical', label: 'Analytical & Research Skills' },
+          { value: 'technical', label: 'Technical & Hands-on Skills' },
+          { value: 'business', label: 'Business & Negotiation Skills' },
+          { value: 'empathy', label: 'Empathy & Helping Others' },
+          { value: 'writing', label: 'Writing & Storytelling' },
+          { value: 'programming', label: 'Programming & Software Development' }
+        ],
+        multiple: true // Allow multiple selections
+      },
+      {
+        id: 'q7',
+        text: 'Do you prefer working with people, data, or things?',
+        subtext: 'Select the option that best describes your preference',
+        options: [
+          { value: 'people', label: 'People (e.g., Teaching, Healthcare, Customer Service)' },
+          { value: 'data', label: 'Data (e.g., Analytics, Research, Finance)' },
+          { value: 'things', label: 'Things (e.g., Engineering, Construction, Art & Craft)' },
+          { value: 'mix', label: 'A mix of all' }
         ]
       },
       {
-        id: 's2',
-        text: 'How comfortable are you with data and numbers?',
-        subtext: 'Mathematical and analytical capabilities',
+        id: 'q8',
+        text: 'How comfortable are you with technology and digital tools?',
+        subtext: 'Select the option that best describes your comfort level',
         options: [
-          { value: 'uncomfortable', label: 'Uncomfortable with numbers' },
-          { value: 'somewhat_comfortable', label: 'Somewhat comfortable' },
-          { value: 'comfortable', label: 'Comfortable' },
-          { value: 'very_comfortable', label: 'Very comfortable' },
-          { value: 'expert', label: 'Expert with data/numbers' }
-        ]
-      },
-      {
-        id: 's3',
-        text: 'How would you rate your problem-solving abilities?',
-        subtext: 'Ability to find solutions to complex challenges',
-        options: [
-          { value: 'basic', label: 'Basic problem-solving' },
-          { value: 'developing', label: 'Developing problem-solver' },
-          { value: 'competent', label: 'Competent problem-solver' },
-          { value: 'advanced', label: 'Advanced problem-solver' },
-          { value: 'expert', label: 'Expert problem-solver' }
-        ]
-      },
-      {
-        id: 's4',
-        text: 'How proficient are you with digital technologies?',
-        subtext: 'Technical and digital tool proficiency',
-        options: [
-          { value: 'basic', label: 'Basic digital skills' },
-          { value: 'intermediate', label: 'Intermediate' },
-          { value: 'proficient', label: 'Proficient' },
-          { value: 'advanced', label: 'Advanced' },
-          { value: 'expert', label: 'Expert' }
+          { value: 'very_comfortable', label: 'Very comfortable (I use tech often and can learn new tools easily)' },
+          { value: 'somewhat_comfortable', label: 'Somewhat comfortable (I can use basic tools but need help with advanced ones)' },
+          { value: 'not_comfortable', label: 'Not comfortable (I prefer manual or traditional ways of working)' }
         ]
       }
     ]
   },
   {
-    id: 'environment',
-    title: 'Work Environment',
+    id: 'personality',
+    title: 'Personality & Work Style',
     icon: FaBriefcase,
     questions: [
       {
-        id: 'e1',
-        text: 'What type of work environment do you prefer?',
-        subtext: 'Physical work setting preferences',
+        id: 'q9',
+        text: 'What describes your work style the best?',
+        subtext: 'Select the option that best describes your work style',
         options: [
-          { value: 'remote', label: 'Fully remote' },
-          { value: 'hybrid', label: 'Hybrid' },
-          { value: 'office', label: 'Traditional office' },
-          { value: 'field', label: 'Field work' },
-          { value: 'flexible', label: 'Flexible environment' }
+          { value: 'structured', label: 'I like structured and well-organized tasks' },
+          { value: 'flexible', label: 'I prefer flexibility and creativity in my work' },
+          { value: 'critical_thinking', label: 'I enjoy solving complex challenges and thinking critically' },
+          { value: 'leadership', label: 'I work best when leading or managing a team' },
+          { value: 'independent', label: 'I like working alone with minimal supervision' }
         ]
       },
       {
-        id: 'e2',
-        text: 'How do you prefer to work with others?',
-        subtext: 'Team dynamics and collaboration style',
+        id: 'q10',
+        text: 'How do you approach problem-solving?',
+        subtext: 'Select the option that best describes your approach',
         options: [
-          { value: 'independent', label: 'Mostly independent' },
-          { value: 'small_team', label: 'Small team' },
-          { value: 'large_team', label: 'Large team' },
-          { value: 'mixed', label: 'Mix of solo and team' },
-          { value: 'leadership', label: 'Leading teams' }
-        ]
-      },
-      {
-        id: 'e3',
-        text: 'What pace of work do you prefer?',
-        subtext: 'Work rhythm and deadline preferences',
-        options: [
-          { value: 'steady', label: 'Steady and predictable' },
-          { value: 'structured', label: 'Structured with deadlines' },
-          { value: 'dynamic', label: 'Dynamic and varied' },
-          { value: 'fast', label: 'Fast-paced' },
-          { value: 'project', label: 'Project-based sprints' }
-        ]
-      },
-      {
-        id: 'e4',
-        text: 'What type of organizational culture do you prefer?',
-        subtext: 'Company culture and values alignment',
-        options: [
-          { value: 'traditional', label: 'Traditional/Corporate' },
-          { value: 'startup', label: 'Startup/Innovative' },
-          { value: 'creative', label: 'Creative/Artistic' },
-          { value: 'impact', label: 'Social Impact/Mission-driven' },
-          { value: 'academic', label: 'Academic/Research' }
+          { value: 'analyze', label: 'I analyze the situation carefully before acting' },
+          { value: 'try_solutions', label: 'I try different solutions quickly to see what works' },
+          { value: 'collaborate', label: 'I ask for guidance or collaborate with others' },
+          { value: 'step_by_step', label: 'I follow step-by-step instructions' }
         ]
       }
     ]
   },
   {
-    id: 'goals',
-    title: 'Career Goals',
+    id: 'career_goals',
+    title: 'Career Preferences & Goals',
     icon: FaChartBar,
     questions: [
       {
-        id: 'g1',
-        text: 'What are your primary career motivators?',
-        subtext: 'What drives your career choices',
+        id: 'q11',
+        text: 'What is your main goal in choosing a career?',
+        subtext: 'Select the option that best describes your goal',
         options: [
-          { value: 'financial', label: 'Financial success' },
-          { value: 'impact', label: 'Making an impact' },
-          { value: 'growth', label: 'Personal growth' },
-          { value: 'balance', label: 'Work-life balance' },
-          { value: 'innovation', label: 'Innovation/Creation' }
+          { value: 'salary', label: 'High salary & financial stability' },
+          { value: 'security', label: 'Job security & long-term stability' },
+          { value: 'flexibility', label: 'Flexibility & work-life balance' },
+          { value: 'passion', label: 'Passion & job satisfaction' },
+          { value: 'impact', label: 'Helping others & making an impact' }
         ]
       },
       {
-        id: 'g2',
-        text: 'What type of career growth do you seek?',
-        subtext: 'Professional development preferences',
+        id: 'q12',
+        text: 'Are you open to entrepreneurship or starting your own business?',
+        subtext: 'Select the option that best describes your interest',
         options: [
-          { value: 'specialist', label: 'Technical specialist' },
-          { value: 'management', label: 'Management track' },
-          { value: 'entrepreneur', label: 'Entrepreneurial' },
-          { value: 'consultant', label: 'Consulting/Advisory' },
-          { value: 'research', label: 'Research/Academic' }
+          { value: 'yes', label: 'Yes, I want to start my own business' },
+          { value: 'maybe', label: 'Maybe, but I need guidance' },
+          { value: 'no', label: 'No, I prefer a stable job' }
         ]
       },
       {
-        id: 'g3',
-        text: 'What is your preferred work-life balance?',
-        subtext: 'Time and energy investment preferences',
+        id: 'q13',
+        text: 'Would you consider studying further (university, technical training, or online courses) to enhance your career opportunities?',
+        subtext: 'Select the option that best describes your intention',
         options: [
-          { value: 'strict', label: 'Strict 9-5' },
-          { value: 'flexible', label: 'Flexible hours' },
-          { value: 'results', label: 'Results-focused' },
-          { value: 'intensive', label: 'Intensive periods' },
-          { value: 'balanced', label: 'Equal work-life split' }
+          { value: 'yes', label: 'Yes, I want to continue studying' },
+          { value: 'maybe', label: 'Maybe, if it helps my career' },
+          { value: 'no', label: 'No, I prefer to start working now' }
         ]
       },
       {
-        id: 'g4',
-        text: 'What are your long-term career aspirations?',
-        subtext: 'Where you see yourself in the future',
+        id: 'q14',
+        text: 'Are you open to working outside of Cameroon if opportunities arise?',
+        subtext: 'Select the option that best describes your willingness',
         options: [
-          { value: 'leader', label: 'Industry leader' },
-          { value: 'expert', label: 'Subject matter expert' },
-          { value: 'founder', label: 'Business owner' },
-          { value: 'mentor', label: 'Teacher/Mentor' },
-          { value: 'innovator', label: 'Innovator/Pioneer' }
+          { value: 'yes', label: 'Yes, I am open to international opportunities' },
+          { value: 'no', label: 'No, I want to work within Cameroon' },
+          { value: 'not_sure', label: 'Not sure yet' }
         ]
       }
     ]
   },
-  // {
-  //   id: 'industry',
-  //   title: 'Industry Preferences',
-  //   icon: FaGlobe,
-  //   questions: [
-  //     {
-  //       id: 'ind1',
-  //       text: 'Which industry sectors interest you most?',
-  //       subtext: 'Primary field of work preference',
-  //       options: [
-  //         { value: 'tech', label: 'Technology' },
-  //         { value: 'healthcare', label: 'Healthcare' },
-  //         { value: 'finance', label: 'Finance' },
-  //         { value: 'education', label: 'Education' },
-  //         { value: 'creative', label: 'Creative Industries' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'ind2',
-  //       text: 'What type of organization size do you prefer?',
-  //       subtext: 'Company size preference',
-  //       options: [
-  //         { value: 'startup', label: 'Startup (1-50)' },
-  //         { value: 'small', label: 'Small (51-200)' },
-  //         { value: 'medium', label: 'Medium (201-1000)' },
-  //         { value: 'large', label: 'Large (1000+)' },
-  //         { value: 'enterprise', label: 'Enterprise (10000+)' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'ind3',
-  //       text: 'What type of impact do you want to make?',
-  //       subtext: 'Desired contribution to society',
-  //       options: [
-  //         { value: 'social', label: 'Social impact' },
-  //         { value: 'environmental', label: 'Environmental' },
-  //         { value: 'economic', label: 'Economic growth' },
-  //         { value: 'innovation', label: 'Technological innovation' },
-  //         { value: 'education', label: 'Educational advancement' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'ind4',
-  //       text: 'What geographical scope interests you?',
-  //       subtext: 'Preferred business reach',
-  //       options: [
-  //         { value: 'local', label: 'Local community' },
-  //         { value: 'regional', label: 'Regional' },
-  //         { value: 'national', label: 'National' },
-  //         { value: 'international', label: 'International' },
-  //         { value: 'global', label: 'Global' }
-  //       ]
-  //     }
-  //   ]
-  // }
-  // Add more categories with similar structure
+  {
+    id: 'practical_constraints',
+    title: 'Practical Constraints & Accessibility',
+    icon: FaUsers,
+    questions: [
+      {
+        id: 'q15',
+        text: 'Do you have access to resources such as a computer, internet, or library for research and self-learning?',
+        subtext: 'Select the option that best describes your access',
+        options: [
+          { value: 'yes', label: 'Yes, I have access to all' },
+          { value: 'limited', label: 'Limited access (some but not all)' },
+          { value: 'no', label: 'No access to these resources' }
+        ]
+      },
+      {
+        id: 'q16',
+        text: 'Do you have financial constraints that may affect your career choices?',
+        subtext: 'Select the option that best describes your situation',
+        options: [
+          { value: 'yes', label: 'Yes, I may need financial support or scholarships' },
+          { value: 'no', label: 'No, I can support myself financially' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      }
+    ]
+  }
 ];
 
 const LoadingSpinner = () => (
@@ -285,8 +270,18 @@ const CareerAssessment = () => {
   const [showResults, setShowResults] = useState(false);
   const [validationError, setValidationError] = useState('');
 
-  const handleAnswer = (questionId, value) => {
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  const handleAnswer = (questionId, value, multiple = false) => {
+    setAnswers(prev => {
+      if (multiple) {
+        const currentAnswers = prev[questionId] || [];
+        const updatedAnswers = currentAnswers.includes(value)
+          ? currentAnswers.filter(v => v !== value) // Deselect if already selected
+          : [...currentAnswers, value]; // Add to selection
+        return { ...prev, [questionId]: updatedAnswers };
+      } else {
+        return { ...prev, [questionId]: value };
+      }
+    });
     setShowFeedback(true);
     setValidationError('');
     setTimeout(() => setShowFeedback(false), 1000);
@@ -294,7 +289,13 @@ const CareerAssessment = () => {
 
   const validateCategory = () => {
     const currentQuestions = categories[currentCategory].questions;
-    const answeredAll = currentQuestions.every(q => answers[q.id]);
+    const answeredAll = currentQuestions.every(q => {
+      if (q.multiple) {
+        return answers[q.id] && answers[q.id].length > 0; // Ensure at least one selection for multiple-choice questions
+      } else {
+        return answers[q.id]; // Ensure a single selection for single-choice questions
+      }
+    });
     if (!answeredAll) {
       setValidationError('Please answer all questions before proceeding');
       return false;
@@ -302,7 +303,6 @@ const CareerAssessment = () => {
     return true;
   };
 
-  // Update the handleNext function in your CareerAssessment component
   const handleNext = async () => {
     if (!validateCategory()) return;
 
@@ -311,7 +311,6 @@ const CareerAssessment = () => {
     } else {
       setIsSubmitting(true);
       try {
-        // Call the serverless API
         const response = await fetch('http://localhost:3000/api/app', {
           method: 'POST',
           headers: {
@@ -330,10 +329,8 @@ const CareerAssessment = () => {
         const results = await response.json();
         console.log('Assessment results:', results);
 
-        // Store results in localStorage or state management solution
         localStorage.setItem('careerAssessmentResults', JSON.stringify(results));
 
-        // Show results and redirect to dashboard
         setShowResults(true);
         setTimeout(() => {
           window.location.href = '/cdashboard';
@@ -424,8 +421,8 @@ const CareerAssessment = () => {
                     {question.options.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => handleAnswer(question.id, option.value)}
-                        className={`answer-button ${answers[question.id] === option.value ? 'selected' : ''}`}
+                        onClick={() => handleAnswer(question.id, option.value, question.multiple)}
+                        className={`answer-button ${question.multiple && answers[question.id]?.includes(option.value) ? 'selected' : answers[question.id] === option.value ? 'selected' : ''}`}
                       >
                         {option.label}
                       </button>

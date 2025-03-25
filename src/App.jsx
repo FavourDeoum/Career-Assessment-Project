@@ -13,6 +13,7 @@ import CareerAssessment from './components/CareerAssessment/CareerAssessment';
 import CareerDashboard from './components/AssesmentDashboard/ADashboard';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import SSOCallback from './components/SSOCallback/SSOCallback'; // Import the SSO callback component
 import './App.css';
 
 // Define all routes in a single array for better maintainability
@@ -41,41 +42,41 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
-  
   return (
-      <Router>
-        <div className="App">
-          <Navbar />
-          <main className="main-content">
-            <AnimatePresence mode="wait">
-              <Routes>
-                {/* Public routes */}
-                {publicRoutes.map(({ path, element }) => (
-                  <Route key={path} path={path} element={element} />
-                ))}
+    <Router>
+      <div className="App">
+        <Navbar />
+        <main className="main-content">
+          <AnimatePresence mode="wait">
+            <Routes>
+              {/* Public routes */}
+              {publicRoutes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
 
-                {/* Authentication routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
+              {/* Authentication routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/signup/sso-callback" element={<SSOCallback />} /> {/* Define the SSO callback route */}
 
-                {/* Protected routes */}
-                {protectedRoutes.map(({ path, element }) => (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      <ProtectedRoute>
-                        {element}
-                      </ProtectedRoute>
-                    }
-                  />
-                ))}
-              </Routes>
-            </AnimatePresence>
-          </main>
-          <Footer />
-        </div>
-      </Router>
+              {/* Protected routes */}
+              {protectedRoutes.map(({ path, element }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <ProtectedRoute>
+                      {element}
+                    </ProtectedRoute>
+                  }
+                />
+              ))}
+            </Routes>
+          </AnimatePresence>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

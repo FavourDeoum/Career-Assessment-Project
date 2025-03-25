@@ -12,7 +12,7 @@ const LandingPage = () => {
           <div className="header-text-container">
             <h1 className="header-title">Discover Your Perfect Career Path</h1>
             <p className="header-description">
-              EduVate which is a blend of "education" and "elevate," is a Career Assessment Tool which helps Advanced Level students in Cameroon find their ideal career based on skills, interests, and personality.
+              EduVate which is a blend of <b>Education</b> and <b>Elevate</b>, is a Career Assessment Tool which helps Advanced Level students in Cameroon find their ideal career based on skills, interests, and personality.
             </p>
             <Link to="/signup" className="cta-button">
               Get Started

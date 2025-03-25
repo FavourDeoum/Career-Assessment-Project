@@ -1,30 +1,175 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { useUser, useClerk } from '@clerk/clerk-react'; // Import useClerk hook
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { useUser, useClerk } from '@clerk/clerk-react';
+import {supabase} from '../../supabaseClient';
+import { Link } from 'react-router-dom';
 import "./ADashboard.css";
 
 const CareerDashboard = () => {
     const [results, setResults] = useState(null);
     const [activeSection, setActiveSection] = useState('overview');
     const [expandedCard, setExpandedCard] = useState(null);
-    const { user, isLoaded } = useUser(); // Fetch the signed-in user's data and loading state
-    const { openUserProfile } = useClerk(); // Get the openUserProfile function from Clerk
+    const [isLoading, setIsLoading] = useState(true);
+    const { user, isLoaded } = useUser();
+    const { openUserProfile } = useClerk();
+
+    // Fetch results from Supabase or API if not found
+    const fetchResults = async () => {
+        try {
+            setIsLoading(true);
+            
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
+            
+            // Try to get results from Supabase first
+            const { data, error } = await supabase
+                .from('user_assessment_results')
+                .select('results')
+                .eq('user_id', user.id)
+                .single();
+            
+            if (error && error.code !== 'PGRST116') {
+                console.error('Error fetching from Supabase:', error);
+            }
+            
+            // If results exist in Supabase, use them
+            if (data && data.results) {
+                console.log("Retrieved results from Supabase:", data.results);
+                setResults(data.results);
+                setIsLoading(false);
+                return;
+            }
+            
+            // If no results in Supabase, fetch from API
+            const response = await fetch('http://localhost:3000/api/app.js', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answers: {}, // Add assessment answers here
+                    categories: [], // Add assessment categories here
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch results from API');
+            }
+
+            const apiData = await response.json();
+            
+            // Store results in Supabase
+            await storeResultsInSupabase(apiData);
+            
+            setResults(apiData);
+            console.log("Fetched new results from API:", apiData);
+            
+        } catch (error) {
+            console.error('Error in fetchResults:', error);
+            // Set default results to avoid undefined errors in rendering
+            setResults({
+                analysis: {
+                    careerRecommendations: [],
+                    growthOpportunities: { emergingRoles: [], sectors: [] },
+                    actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+                    potentialChallenges: { challenges: [], mitigationStrategies: [] },
+                    insights: { keyTakeaways: [], motivationalQuote: '' },
+                    skillsAnalysis: { skillsToDevelop: [], strengths: [] },
+                    resources: {
+                        recommendedCourses: [], 
+                        suggestedReadings: [], 
+                        professionalTools: []
+                    },
+                },
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Store results in Supabase
+    const storeResultsInSupabase = async (data) => {
+        if (!user) return;
+
+        try {
+            // Check if user already has results
+            const { data: existingData, error: checkError } = await supabase
+                .from('user_assessment_results')
+                .select('id')
+                .eq('user_id', user.id)
+                .single();
+                
+            if (checkError && checkError.code !== 'PGRST116') {
+                console.error('Error checking for existing results:', checkError);
+                return;
+            }
+            
+            // If results exist, update them
+            if (existingData) {
+                const { error: updateError } = await supabase
+                    .from('user_assessment_results')
+                    .update({ 
+                        results: data,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id);
+                
+                if (updateError) {
+                    console.error('Error updating results in Supabase:', updateError);
+                } else {
+                    console.log('Successfully updated results in Supabase');
+                }
+            } 
+            // If results don't exist, insert them
+            else {
+                const { error: insertError } = await supabase
+                    .from('user_assessment_results')
+                    .insert({ 
+                        user_id: user.id,
+                        results: data
+                    });
+                
+                if (insertError) {
+                    console.error('Error inserting results in Supabase:', insertError);
+                } else {
+                    console.log('Successfully stored results in Supabase');
+                }
+            }
+        } catch (error) {
+            console.error('Error in storeResultsInSupabase:', error);
+        }
+    };
+
+    // Function to handle taking a new assessment
+    const handleTakeNewAssessment = () => {
+        // Clear existing results in state
+        setResults(null);
+        // Navigate to assessment page
+        window.location.href = '/assessment';
+    };
 
     useEffect(() => {
-        const storedResults = localStorage.getItem('careerAssessmentResults');
-        if (storedResults) {
-            setResults(JSON.parse(storedResults));
+        if (isLoaded && user) {
+            fetchResults();
+        } else if (isLoaded && !user) {
+            setIsLoading(false);
         }
-    }, []);
+    }, [isLoaded, user]);
 
-    // Function to handle profile image click
     const handleProfileClick = () => {
-        // Open Clerk's user profile management
         openUserProfile();
     };
 
-    // Loading state while authentication data is being fetched
+    const mockSkillsData = [
+        { name: 'Technical', value: 85 },
+        { name: 'Leadership', value: 72 },
+        { name: 'Communication', value: 90 },
+        { name: 'Problem Solving', value: 88 },
+        { name: 'Creativity', value: 78 },
+    ];
+
     if (!isLoaded) {
         return (
             <div className="loading-container">
@@ -34,7 +179,6 @@ const CareerDashboard = () => {
         );
     }
 
-    // If user is not authenticated, redirect to login page
     if (!user) {
         return (
             <div className="auth-required-container">
@@ -44,14 +188,6 @@ const CareerDashboard = () => {
             </div>
         );
     }
-
-    const mockSkillsData = [
-        { name: 'Technical', value: 85 },
-        { name: 'Leadership', value: 72 },
-        { name: 'Communication', value: 90 },
-        { name: 'Problem Solving', value: 88 },
-        { name: 'Creativity', value: 78 },
-    ];
 
     const ExpandableCard = ({ title, content, icon, id }) => (
         <div
@@ -72,1640 +208,7 @@ const CareerDashboard = () => {
     );
 
     // Welcome screen for users who haven't taken the assessment yet
-    if (!results) {
-        return (
-            <div className="dashboard-container welcome-container">
-                <div className="welcome-content">
-                    <div className="welcome-header">
-                        <div className="welcome-text">
-                            <h1>Welcome, {user.firstName || user.username}!</h1>
-                            <p>Discover your ideal career path with our personalized assessment.</p>
-                        </div>
-                        <div 
-                            className="profile-image-container" 
-                            onClick={handleProfileClick}
-                            title="Manage your account settings"
-                        >
-                            <img
-                                src={user.imageUrl}
-                                alt="Profile"
-                                className="profile-image"
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className="welcome-card">
-                        <h2>Start Your Career Journey</h2>
-                        <p>
-                            Our comprehensive assessment will analyze your skills, interests, and preferences
-                            to provide tailored career recommendations and growth opportunities.
-                        </p>
-                        <p>
-                            After completing the assessment, you'll receive a personalized dashboard with
-                            actionable insights to guide your professional development.
-                        </p>
-                        <Link to="/assessment" className="assessment-button">
-                            Take Career Assessment
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Dashboard for users who have completed the assessment
-    return (
-        <div className="dashboard-container">
-            <div className="dashboard-content">
-                {/* Header */}
-                <header className="dashboard-header">
-                    <div className="header-content">
-                        <div className="header-text">
-                            <h1>Your Career Journey Dashboard</h1>
-                            <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
-                        </div>
-                        {/* Display the user's profile image with click handler */}
-                        <div 
-                            className="profile-image-container" 
-                            onClick={handleProfileClick}
-                            title="Manage your account settings"
-                        >
-                            <img
-                                src={user.imageUrl}
-                                alt="Profile"
-                                className="profile-image"
-                            />
-                        </div>
-                    </div>
-                </header>
-
-                {/* Navigation */}
-                <nav className="dashboard-nav">
-                    {['overview', 'skills', 'paths', 'development'].map((section) => (
-                        <button
-                            key={section}
-                            onClick={() => setActiveSection(section)}
-                            className={`nav-button ${activeSection === section ? 'active' : ''}`}
-                        >
-                            {section.charAt(0).toUpperCase() + section.slice(1)}
-                        </button>
-                    ))}
-                </nav>
-
-                {/* Main Grid */}
-                <div className="dashboard-grid">
-                    {/* Career Paths Card */}
-                    <ExpandableCard
-                        id="paths"
-                        title="Recommended Career Paths"
-                        icon="icon-compass"
-                        content={
-                            <div className="career-paths">
-                                {results.analysis.careerPaths.split('\n').map((path, index) => (
-                                    <div key={index} className="career-path-item">
-                                        <div className="path-number">{index + 1}</div>
-                                        <p>{path}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        }
-                    />
-
-                    {/* Skills Analysis Card */}
-                    <ExpandableCard
-                        id="skills"
-                        title="Skills Analysis"
-                        icon="icon-star"
-                        content={
-                            <div className="skills-chart">
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart data={mockSkillsData}>
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                        }
-                    />
-
-                    {/* Growth Opportunities Card */}
-                    <ExpandableCard
-                        id="growth"
-                        title="Growth Opportunities"
-                        icon="icon-trending-up"
-                        content={
-                            <div className="growth-opportunities">
-                                {results.analysis.growthOpportunities.split('\n').map((opportunity, index) => (
-                                    <div key={index} className="opportunity-item">
-                                        <span className="opportunity-icon"></span>
-                                        <p>{opportunity}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        }
-                    />
-
-                    {/* Next Steps Card */}
-                    <ExpandableCard
-                        id="steps"
-                        title="Recommended Next Steps"
-                        icon="icon-target"
-                        content={
-                            <div className="next-steps">
-                                {results.analysis.nextSteps.split('\n').map((step, index) => (
-                                    <div key={index} className="step-item">
-                                        <div className="step-number">{index + 1}</div>
-                                        <p>{step}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        }
-                    />
-
-                    {/* Challenges Card */}
-                    <ExpandableCard
-                        id="challenges"
-                        title="Potential Challenges"
-                        icon="icon-alert"
-                        content={
-                            <div className="challenges">
-                                {results.analysis.challenges.split('\n').map((challenge, index) => (
-                                    <div key={index} className="challenge-item">
-                                        <p>{challenge}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        }
-                    />
-
-                    {/* Resources Card */}
-                    <ExpandableCard
-                        id="resources"
-                        title="Recommended Resources"
-                        icon="icon-book"
-                        content={
-                            <div className="resources">
-                                <div className="resource-section">
-                                    <h4>Courses</h4>
-                                    <ul>
-                                        {results.resources.recommendedCourses.map((course, index) => (
-                                            <li key={index}>{course}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="resource-section">
-                                    <h4>Reading Materials</h4>
-                                    <ul>
-                                        {results.resources.suggestedReadings.map((reading, index) => (
-                                            <li key={index}>{reading}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                    />
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default CareerDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.dashboard-container {
-    min-height: 100vh;
-    background-color: #f5f7fa;
-    padding: 2rem;
-}
-
-.dashboard-content {
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-/* Header Styles */
-.dashboard-header {
-    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
-    border-radius: 1rem;
-    padding: 2rem;
-    color: white;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex: 1;
-}
-
-.header-text {
-    flex: 1;
-}
-
-.dashboard-header h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-.dashboard-header p {
-    opacity: 0.9;
-    font-size: 1.1rem;
-}
-
-.profile-image-container {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 2px solid white;
-}
-
-.profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Navigation Styles */
-.dashboard-nav {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: #c5c5c5 #f1f1f1;
-}
-
-.nav-button {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 0.5rem;
-    background-color: white;
-    color: #4a5568;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.nav-button:hover {
-    background-color: #f0f4f8;
-}
-
-.nav-button.active {
-    background-color: #4c6fff;
-    color: white;
-}
-
-/* Grid Layout */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Card Styles */
-.dashboard-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.dashboard-card.expanded {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.card-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.card-title h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2d3748;
-}
-
-/* Content Styles */
-.card-content {
-    overflow: hidden;
-    transition: all 0.3s ease;
-    max-height: 150px;
-}
-
-.expanded .card-content {
-    max-height: 500px;
-}
-
-/* Career Paths Styles */
-.career-path-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: #f8fafc;
-    border-radius: 0.5rem;
-}
-
-.path-number {
-    width: 2rem;
-    height: 2rem;
-    background-color: #4c6fff;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-/* Growth Opportunities Styles */
-.opportunity-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-    padding: 0.75rem;
-    background-color: #f0f9ff;
-    border-radius: 0.5rem;
-}
-
-/* Challenges Styles */
-.challenge-item {
-    background-color: #fff1f2;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-/* Resources Styles */
-.resources {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.resource-section h4 {
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: #2d3748;
-}
-
-.resource-section ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-}
-
-.resource-section li {
-    margin-bottom: 0.5rem;
-    color: #4a5568;
-}
-
-/* Loading Styles */
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-}
-
-.loader {
-    width: 48px;
-    height: 48px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #4c6fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Icons */
-.card-icon {
-    width: 24px;
-    height: 24px;
-    background-color: #e6e8ff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Profile Image Container */
-.profile-image-container {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 2px solid white;
-    cursor: pointer;
-    position: relative;
-}
-
-.profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.3s ease;
-}
-
-/* File Input Label */
-.profile-image-container label {
-    display: block;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-/* Hover Effect for Profile Image */
-.profile-image-container:hover .profile-image {
-    opacity: 0.8;
-}
-
-/* Welcome Screen Styles - NEW */
-.welcome-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f5f7fa;
-    padding: 2rem;
-}
-
-.welcome-content {
-    max-width: 900px;
-    width: 100%;
-    animation: fadeIn 0.5s ease-out;
-}
-
-.welcome-header {
-    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
-    border-radius: 1rem;
-    padding: 2.5rem;
-    color: white;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 16px rgba(76, 111, 255, 0.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.welcome-text h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.welcome-text p {
-    font-size: 1.2rem;
-    opacity: 0.9;
-}
-
-.welcome-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 2.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-    animation: slideUp 0.5s ease-out 0.2s both;
-}
-
-.welcome-card h2 {
-    font-size: 1.8rem;
-    color: #2d3748;
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-}
-
-.welcome-card p {
-    color: #4a5568;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-}
-
-.assessment-button {
-    display: inline-block;
-    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 1.1rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
-    text-align: center;
-}
-
-.assessment-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(76, 111, 255, 0.25);
-}
-
-/* Authentication Required Screen - NEW */
-.auth-required-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f5f7fa;
-    padding: 2rem;
-    text-align: center;
-}
-
-.auth-required-container h2 {
-    font-size: 2rem;
-    color: #2d3748;
-    margin-bottom: 1rem;
-}
-
-.auth-required-container p {
-    color: #4a5568;
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-}
-
-.auth-button {
-    display: inline-block;
-    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.auth-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
-}
-
-/* New Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Animation Keyframes */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Apply animations */
-.dashboard-card {
-    animation: slideIn 0.3s ease-out;
-}
-
-/* Header Adjustments for Welcome Screen - NEW */
-.welcome-header .profile-image-container {
-    width: 90px;
-    height: 90px;
-    border: 3px solid rgba(255, 255, 255, 0.7);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c5c5c5;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 1rem;
-    }
-    
-    .dashboard-header {
-        padding: 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .dashboard-header h1 {
-        font-size: 1.5rem;
-    }
-    
-    .profile-image-container {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .dashboard-card.expanded {
-        grid-column: span 1;
-        grid-row: span 1;
-    }
-    
-    .card-content {
-        max-height: none;
-    }
-    
-    .dashboard-nav {
-        gap: 0.75rem;
-    }
-    
-    .nav-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    /* Welcome Screen Responsive - NEW */
-    .welcome-header {
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.5rem;
-        align-items: flex-start;
-    }
-    
-    .welcome-text h1 {
-        font-size: 1.8rem;
-    }
-    
-    .welcome-card {
-        padding: 1.5rem;
-    }
-    
-    .welcome-card h2 {
-        font-size: 1.5rem;
-    }
-    
-    .assessment-button {
-        width: 100%;
-        padding: 0.75rem 1rem;
-    }
-    
-    .welcome-header .profile-image-container {
-        width: 70px;
-        height: 70px;
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-// import { useUser, useClerk } from '@clerk/clerk-react';
-// import { Link } from 'react-router-dom';
-// import "./ADashboard.css";
-
-// const CareerDashboard = () => {
-//     const [results, setResults] = useState(null);
-//     const [activeSection, setActiveSection] = useState('overview');
-//     const [expandedCard, setExpandedCard] = useState(null);
-//     const { user, isLoaded } = useUser();
-//     const { openUserProfile } = useClerk();
-//     const [hasCompletedAssessment, setHasCompletedAssessment] = useState(false);
-//     const [loading, setLoading] = useState(false);
-//     const [error, setError] = useState(null);
-
-//     // Fetch results from the backend
-//     const fetchResults = async () => {
-//         setLoading(true); // Set loading state to true
-//         setError(null); // Clear any previous errors
-    
-//         try {
-//             // Check if results are already stored in localStorage
-//             const storedResults = localStorage.getItem('careerAssessmentResults');
-//             if (storedResults) {
-//                 // If results exist in localStorage, parse and use them
-//                 const parsedResults = JSON.parse(storedResults);
-//                 setResults(parsedResults);
-//                 setHasCompletedAssessment(true); // User has completed the assessment
-//             } else {
-//                 // If no results in localStorage, fetch from the backend
-//                 const apiUrl = 'http://localhost:3000/api/app'; // Replace with your actual API endpoint
-    
-//                 // Make a POST request to the backend
-//                 const response = await fetch(apiUrl, {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                     },
-//                     body: JSON.stringify({
-//                         answers: {}, // Add assessment answers here
-//                         categories: [], // Add assessment categories here
-//                     }),
-//                 });
-   
-//     console.log("hello",response)
-//                 // Check if the response is successful
-//                 if (!response.ok) {
-//                     throw new Error(`HTTP error! Status: ${response.status}`);
-//                 }
-    
-//                 // Parse the JSON response
-//                 const data = await response.json();
-//                 console.log('Fetched results:', data);
-    
-//                 // Store the results in localStorage for future use
-//                 localStorage.setItem('careerAssessmentResults', JSON.stringify(data));
-    
-//                 // Update the results state
-//                 setResults(data);
-//                 setHasCompletedAssessment(true); // User has completed the assessment
-//             }
-//         } catch (error) {
-//             console.error('Error fetching results:', error);
-    
-//             // Set error state
-//             setError('Failed to fetch results. Please try again.');
-    
-//             // Provide fallback results in case of an error
-//             setResults({
-//                 analysis: {
-//                     careerRecommendations: "No career recommendations available",
-//                     skillsAnalysis: "No skills analysis available",
-//                     actionPlan: "No action plan available",
-//                     challenges: "No challenges identified",
-//                     growthOpportunities: "No growth opportunities available",
-//                 },
-//                 resources: {
-//                     recommendedCourses: [],
-//                     suggestedReadings: [],
-//                     usefulTools: [],
-//                 },
-//             });
-//         } finally {
-//             setLoading(false); // Set loading state to false
-//         }
-//     };
-
-//     useEffect(() => {
-//         if (isLoaded && user) {
-//             fetchResults();
-//         }
-//     }, [isLoaded, user]);
-
-//     // Set the default active section to 'paths' if the assessment is completed
-//     useEffect(() => {
-//         if (hasCompletedAssessment) {
-//             setActiveSection('paths');
-//         }
-//     }, [hasCompletedAssessment]);
-
-//     // Helper function to safely split career recommendations into items
-//     const parseCareerRecommendations = (text) => {
-//         if (!text || typeof text !== 'string') return [];
-//         return text.split('\n').filter(line => line.trim().length > 0);
-//     };
-
-//     const handleProfileClick = () => {
-//         openUserProfile();
-//     };
-
-//     if (!isLoaded) {
-//         return (
-//             <div className="loading-container">
-//                 <div className="loader"></div>
-//                 <p>Loading...</p>
-//             </div>
-//         );
-//     }
-
-//     if (!user) {
-//         return (
-//             <div className="auth-required-container">
-//                 <h2>Authentication Required</h2>
-//                 <p>Please sign in to access your career dashboard.</p>
-//                 <Link to="/sign-in" className="auth-button">Sign In</Link>
-//             </div>
-//         );
-//     }
-
-//     const skillsData = [
-//         { name: 'Technical', value: 85 },
-//         { name: 'Leadership', value: 72 },
-//         { name: 'Communication', value: 90 },
-//         { name: 'Problem Solving', value: 88 },
-//         { name: 'Creativity', value: 78 },
-//     ];
-
-//     const radarData = [
-//         { subject: 'Technical', A: 85, fullMark: 100 },
-//         { subject: 'Leadership', A: 72, fullMark: 100 },
-//         { subject: 'Communication', A: 90, fullMark: 100 },
-//         { subject: 'Problem Solving', A: 88, fullMark: 100 },
-//         { subject: 'Creativity', A: 78, fullMark: 100 },
-//     ];
-
-//     const topStrengths = [
-//         { skill: 'Communication', description: 'Excellent verbal and written communication skills with the ability to articulate complex ideas clearly.' },
-//         { skill: 'Problem Solving', description: 'Strong analytical approach to breaking down complex issues into manageable parts and finding solutions.' },
-//         { skill: 'Technical', description: 'Proficient in relevant technical skills required for your field with solid foundational knowledge.' },
-//     ];
-
-//     const areasForImprovement = [
-//         { skill: 'Leadership', description: 'Developing stronger delegation skills and building team management capabilities.' },
-//         { skill: 'Creativity', description: 'Enhancing innovative thinking and applying creative approaches to problem-solving.' },
-//     ];
-
-//     const skillGrowthOpportunities = [
-//         'Take an online course on "Leadership in the Modern Workplace" to build management skills',
-//         'Join a creative thinking workshop or hackathon to boost innovative problem-solving',
-//         'Practice public speaking through local Toastmasters clubs to enhance communication confidence',
-//         'Participate in cross-functional projects to develop versatility and adaptability',
-//     ];
-
-//     const industryInsights = [
-//         { industry: 'Technology', trend: 'Growing demand for AI and machine learning specialists', growth: 'Expected 22% growth over the next 5 years' },
-//         { industry: 'Healthcare', trend: 'Increasing need for digital health solutions', growth: 'Projected 18% growth in health tech roles' },
-//         { industry: 'Sustainability', trend: 'Rising focus on environmental solutions', growth: 'Estimated 15% annual growth in green technology positions' },
-//     ];
-
-//     const companyMatches = [
-//         { name: 'Innovative Tech Solutions', match: '90% match', reason: 'Values align with your collaborative work style and technical expertise' },
-//         { name: 'Health Connect', match: '85% match', reason: 'Offers growth opportunities in areas matching your skill development goals' },
-//         { name: 'Future Sustainability', match: '82% match', reason: 'Company culture emphasizes continuous learning and problem-solving' },
-//     ];
-
-//     const actionableSteps = [
-//         'Update your LinkedIn profile to highlight your strongest skills',
-//         'Reach out to professionals in your target industries for informational interviews',
-//         'Apply for roles that match your skill profile and career aspirations',
-//         'Attend industry conferences or webinars to expand your knowledge and network',
-//     ];
-
-//     const learningResources = [
-//         { type: 'Course', name: 'Advanced Technical Skills Masterclass', platform: 'Coursera' },
-//         { type: 'Book', name: 'Leadership in the Digital Age', author: 'Jane Smith' },
-//         { type: 'Podcast', name: 'Career Growth Strategies', host: 'Michael Johnson' },
-//         { type: 'Workshop', name: 'Creative Problem Solving', organization: 'Innovation Labs' },
-//     ];
-
-//     const mentorshipOpportunities = [
-//         'Join industry-specific mentorship programs through professional associations',
-//         'Use platforms like MentorCruise or ADPList to find relevant mentors',
-//         'Attend networking events with a focus on finding potential mentors',
-//         'Develop a clear mentorship goal and approach potential mentors with specific requests',
-//     ];
-
-//     const networkingTips = [
-//         'Set a goal to attend at least one industry event per month',
-//         'Be prepared with a concise elevator pitch about yourself',
-//         'Follow up with new connections within 48 hours of meeting',
-//         'Share relevant industry content on LinkedIn to establish your professional voice',
-//     ];
-//     console.log("hello")
-
-
-//     const ExpandableCard = ({ title, content, icon, id }) => (
-//         <div
-//             className={`dashboard-card ${expandedCard === id ? 'expanded' : ''}`}
-//             onClick={() => setExpandedCard(expandedCard === id ? null : id)}
-//         >
-//             <div className="card-header">
-//                 <div className="card-title">
-//                     <span className={`card-icon ${icon}`}></span>
-//                     <h3>{title}</h3>
-//                 </div>
-//                 <span className="expand-icon"></span>
-//             </div>
-//             <div className="card-content">
-//                 {content}
-//             </div>
-//         </div>
-//     );
-
-//     // Helper function to safely split strings
-//     const safeSplit = (text) => {
-//         if (typeof text === 'string') {
-//             return text.split('\n');
-//         }
-//         return [String(text)];
-//     };
-
-//     if (!results) {
-//         return (
-//             <div className="dashboard-container welcome-container">
-//                 <div className="welcome-content">
-//                     <div className="welcome-header">
-//                         <div className="welcome-text">
-//                             <h1>Welcome, {user.fullName || user.username}!</h1>
-//                             <p>Discover your ideal career path with our personalized assessment.</p>
-//                         </div>
-//                         <div 
-//                             className="profile-image-container" 
-//                             onClick={handleProfileClick}
-//                             title="Manage your account settings"
-//                         >
-//                             <img
-//                                 src={user.imageUrl}
-//                                 alt="Profile"
-//                                 className="profile-image"
-//                             />
-//                         </div>
-//                     </div>
-                    
-//                     <div className="welcome-card">
-//                         <h2>Start Your Career Journey</h2>
-//                         <p>
-//                             Our comprehensive assessment will analyze your skills, interests, and preferences
-//                             to provide tailored career recommendations and growth opportunities.
-//                         </p>
-//                         <p>
-//                             After completing the assessment, you'll receive a personalized dashboard with
-//                             actionable insights to guide your professional development.
-//                         </p>
-//                         <Link to="/assessment" className="assessment-button">
-//                             Take Career Assessment
-//                         </Link>
-//                     </div>
-//                 </div>
-//             </div>
-//         );
-//     }
-
-//     // Render content based on activeSection
-//     const renderSectionContent = () => {
-//         switch (activeSection) {
-//             case 'skills':
-//                 return (
-//                     <div className="section-content">
-//                         <div className="section-header">
-//                             <h2>Skills Analysis</h2>
-//                             <p className="section-subtitle">Understanding your skill set and identifying areas for growth</p>
-//                         </div>
-                        
-//                         <div className="dashboard-grid">
-//                             <ExpandableCard
-//                                 id="skill-breakdown"
-//                                 title="Skill Breakdown"
-//                                 icon="icon-chart"
-//                                 content={
-//                                     <div className="charts-container">
-//                                         <div className="chart-wrapper">
-//                                             <h4>Bar Chart View</h4>
-//                                             <ResponsiveContainer width="100%" height={300}>
-//                                                 <BarChart data={skillsData}>
-//                                                     <XAxis dataKey="name" />
-//                                                     <YAxis />
-//                                                     <Tooltip />
-//                                                     <Bar dataKey="value" fill="#3B82F6" />
-//                                                 </BarChart>
-//                                             </ResponsiveContainer>
-//                                         </div>
-//                                         <div className="chart-wrapper">
-//                                             <h4>Radar Chart View</h4>
-//                                             <ResponsiveContainer width="100%" height={300}>
-//                                                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-//                                                     <PolarGrid />
-//                                                     <PolarAngleAxis dataKey="subject" />
-//                                                     <PolarRadiusAxis angle={30} domain={[0, 100]} />
-//                                                     <Radar name="Skills" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-//                                                 </RadarChart>
-//                                             </ResponsiveContainer>
-//                                         </div>
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="top-strengths"
-//                                 title="Top Strengths"
-//                                 icon="icon-star"
-//                                 content={
-//                                     <div className="strengths-list">
-//                                         {topStrengths.map((strength, index) => (
-//                                             <div key={index} className="strength-item">
-//                                                 <h4>{strength.skill}</h4>
-//                                                 <p>{strength.description}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="areas-improvement"
-//                                 title="Areas for Improvement"
-//                                 icon="icon-trending-up"
-//                                 content={
-//                                     <div className="improvement-list">
-//                                         {areasForImprovement.map((area, index) => (
-//                                             <div key={index} className="improvement-item">
-//                                                 <h4>{area.skill}</h4>
-//                                                 <p>{area.description}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="skill-growth"
-//                                 title="Skill Growth Opportunities"
-//                                 icon="icon-target"
-//                                 content={
-//                                     <div className="growth-list">
-//                                         {skillGrowthOpportunities.map((opportunity, index) => (
-//                                             <div key={index} className="growth-item">
-//                                                 <div className="growth-number">{index + 1}</div>
-//                                                 <p>{opportunity}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="skill-planner"
-//                                 title="Interactive Skill Planner"
-//                                 icon="icon-calendar"
-//                                 content={
-//                                     <div className="skill-planner">
-//                                         <p>Set goals for improving specific skills and track your progress over time.</p>
-//                                         <div className="planner-prompt">
-//                                             <h4>Start Planning Your Skill Development</h4>
-//                                             <button className="planner-button">Create Skill Plan</button>
-//                                         </div>
-//                                     </div>
-//                                 }
-//                             />
-//                         </div>
-//                     </div>
-//                 );
-
-//             case 'paths':
-//                 return (
-//                     <div className="section-content">
-//                         <div className="section-header">
-//                             <h2>Career Paths</h2>
-//                             <p className="section-subtitle">Explore roles, industries, and companies that match your profile</p>
-//                         </div>
-                        
-//                         <div className="dashboard-grid">
-//                             <ExpandableCard
-//                                 id="recommended-paths"
-//                                 title="Recommended Career Paths"
-//                                 icon="icon-compass"
-//                                 content={
-//                                     <div className="career-paths">
-//                                         {safeSplit(results.analysis.careerRecommendations).map((path, index) => (
-//                                             <div key={index} className="career-path-item">
-//                                                 <div className="path-number">{index + 1}</div>
-//                                                 <p>{path}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="industry-insights"
-//                                 title="Industry Insights"
-//                                 icon="icon-briefcase"
-//                                 content={
-//                                     <div className="industry-insights">
-//                                         {industryInsights.map((industry, index) => (
-//                                             <div key={index} className="industry-item">
-//                                                 <h4>{industry.industry}</h4>
-//                                                 <p><strong>Trend:</strong> {industry.trend}</p>
-//                                                 <p><strong>Growth:</strong> {industry.growth}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="company-matches"
-//                                 title="Company Matches"
-//                                 icon="icon-building"
-//                                 content={
-//                                     <div className="company-matches">
-//                                         {companyMatches.map((company, index) => (
-//                                             <div key={index} className="company-item">
-//                                                 <h4>{company.name}</h4>
-//                                                 <p className="match-percentage">{company.match}</p>
-//                                                 <p>{company.reason}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="action-steps"
-//                                 title="Actionable Steps"
-//                                 icon="icon-target"
-//                                 content={
-//                                     <div className="actionable-steps">
-//                                         {actionableSteps.map((step, index) => (
-//                                             <div key={index} className="step-item">
-//                                                 <div className="step-number">{index + 1}</div>
-//                                                 <p>{step}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-//                         </div>
-//                     </div>
-//                 );
-
-//             case 'development':
-//                 return (
-//                     <div className="section-content">
-//                         <div className="section-header">
-//                             <h2>Professional Development</h2>
-//                             <p className="section-subtitle">Enhance your skills and knowledge with curated resources</p>
-//                         </div>
-                        
-//                         <div className="dashboard-grid">
-//                             <ExpandableCard
-//                                 id="learning-resources"
-//                                 title="Learning Resources"
-//                                 icon="icon-book"
-//                                 content={
-//                                     <div className="learning-resources">
-//                                         <div className="resource-filters">
-//                                             <button className="filter-button active">All</button>
-//                                             <button className="filter-button">Courses</button>
-//                                             <button className="filter-button">Books</button>
-//                                             <button className="filter-button">Podcasts</button>
-//                                             <button className="filter-button">Workshops</button>
-//                                         </div>
-//                                         <div className="resources-list">
-//                                             {learningResources.map((resource, index) => (
-//                                                 <div key={index} className="resource-item">
-//                                                     <div className="resource-type">{resource.type}</div>
-//                                                     <h4>{resource.name}</h4>
-//                                                     <p>{resource.type === 'Book' ? `Author: ${resource.author}` : 
-//                                                         resource.type === 'Podcast' ? `Host: ${resource.host}` : 
-//                                                         resource.type === 'Workshop' ? `By: ${resource.organization}` : 
-//                                                         `Platform: ${resource.platform}`}
-//                                                     </p>
-//                                                 </div>
-//                                             ))}
-//                                         </div>
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="mentorship-opportunities"
-//                                 title="Mentorship Opportunities"
-//                                 icon="icon-users"
-//                                 content={
-//                                     <div className="mentorship-opportunities">
-//                                         {mentorshipOpportunities.map((opportunity, index) => (
-//                                             <div key={index} className="mentorship-item">
-//                                                 <div className="mentorship-number">{index + 1}</div>
-//                                                 <p>{opportunity}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="networking-tips"
-//                                 title="Networking Tips"
-//                                 icon="icon-network"
-//                                 content={
-//                                     <div className="networking-tips">
-//                                         {networkingTips.map((tip, index) => (
-//                                             <div key={index} className="tip-item">
-//                                                 <div className="tip-number">{index + 1}</div>
-//                                                 <p>{tip}</p>
-//                                             </div>
-//                                         ))}
-//                                     </div>
-//                                 }
-//                             />
-
-//                             <ExpandableCard
-//                                 id="development-goals"
-//                                 title="Personal Development Goals"
-//                                 icon="icon-target"
-//                                 content={
-//                                     <div className="development-goals">
-//                                         <p>Create and track your personal development goals</p>
-//                                         <div className="goals-prompt">
-//                                             <h4>Start Setting Your Professional Development Goals</h4>
-//                                             <button className="goals-button">Create Development Plan</button>
-//                                         </div>
-//                                     </div>
-//                                 }
-//                             />
-//                         </div>
-//                     </div>
-//                 );
-
-//             default: // overview
-//                 return (
-//                     <div className="dashboard-grid">
-//                         <ExpandableCard
-//                             id="paths"
-//                             title="Recommended Career Paths"
-//                             icon="icon-compass"
-//                             content={
-//                                 <div className="career-paths">
-//                                     {safeSplit(results.analysis.careerRecommendations).map((path, index) => (
-//                                         <div key={index} className="career-path-item">
-//                                             <div className="path-number">{index + 1}</div>
-//                                             <p>{path}</p>
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             }
-//                         />
-
-//                         <ExpandableCard
-//                             id="skills"
-//                             title="Skills Analysis"
-//                             icon="icon-star"
-//                             content={
-//                                 <div className="skills-chart">
-//                                     <ResponsiveContainer width="100%" height={300}>
-//                                         <LineChart data={skillsData}>
-//                                             <XAxis dataKey="name" />
-//                                             <YAxis />
-//                                             <Tooltip />
-//                                             <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
-//                                         </LineChart>
-//                                     </ResponsiveContainer>
-//                                 </div>
-//                             }
-//                         />
-
-//                         <ExpandableCard
-//                             id="growth"
-//                             title="Growth Opportunities"
-//                             icon="icon-trending-up"
-//                             content={
-//                                 <div className="growth-opportunities">
-//                                     {safeSplit(results.analysis.growthOpportunities).map((opportunity, index) => (
-//                                         <div key={index} className="opportunity-item">
-//                                             <span className="opportunity-icon"></span>
-//                                             <p>{opportunity}</p>
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             }
-//                         />
-
-//                         <ExpandableCard
-//                             id="steps"
-//                             title="Recommended Next Steps"
-//                             icon="icon-target"
-//                             content={
-//                                 <div className="next-steps">
-//                                     {safeSplit(results.analysis.actionPlan).map((step, index) => (
-//                                         <div key={index} className="step-item">
-//                                             <div className="step-number">{index + 1}</div>
-//                                             <p>{step}</p>
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             }
-//                         />
-
-//                         <ExpandableCard
-//                             id="challenges"
-//                             title="Potential Challenges"
-//                             icon="icon-alert"
-//                             content={
-//                                 <div className="challenges">
-//                                     {safeSplit(results.analysis.challenges).map((challenge, index) => (
-//                                         <div key={index} className="challenge-item">
-//                                             <p>{challenge}</p>
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             }
-//                         />
-
-//                         <ExpandableCard
-//                             id="resources"
-//                             title="Recommended Resources"
-//                             icon="icon-book"
-//                             content={
-//                                 <div className="resources">
-//                                     <div className="resource-section">
-//                                         <h4>Courses</h4>
-//                                         <ul>
-//                                             {(results.resources.recommendedCourses || []).map((course, index) => (
-//                                                 <li key={index}>{course}</li>
-//                                             ))}
-//                                         </ul>
-//                                     </div>
-//                                     <div className="resource-section">
-//                                         <h4>Reading Materials</h4>
-//                                         <ul>
-//                                             {(results.resources.suggestedReadings || []).map((reading, index) => (
-//                                                 <li key={index}>{reading}</li>
-//                                             ))}
-//                                         </ul>
-//                                     </div>
-//                                 </div>
-//                             }
-//                         />
-//                     </div>
-//                 );
-//         }
-//     };
-
-//     return (
-//         <div className="dashboard-container">
-//             <div className="dashboard-content">
-//                 <header className="dashboard-header">
-//                     <div className="header-content">
-//                         <div className="header-text">
-//                             <h1>Your Career Journey Dashboard</h1>
-//                             <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
-//                         </div>
-//                         <div 
-//                             className="profile-image-container" 
-//                             onClick={handleProfileClick}
-//                             title="Manage your account settings"
-//                         >
-//                             <img
-//                                 src={user.imageUrl}
-//                                 alt="Profile"
-//                                 className="profile-image"
-//                             />
-//                         </div>
-//                     </div>
-//                 </header>
-
-//                 <nav className="dashboard-nav">
-//                     {['overview', 'skills', 'paths', 'development'].map((section) => (
-//                         <button
-//                             key={section}
-//                             onClick={() => setActiveSection(section)}
-//                             className={`nav-button ${activeSection === section ? 'active' : ''}`}
-//                         >
-//                             {section.charAt(0).toUpperCase() + section.slice(1)}
-//                         </button>
-//                     ))}
-//                 </nav>
-
-//                 {renderSectionContent()}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default CareerDashboard;
-
-
-
-
-
-<p>{results.analysis.careerRecommendations[0].matchRationale}</p>
-                                        <p>{results.analysis.careerRecommendations[0].salaryRange}</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                        import React, { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { useUser, useClerk } from '@clerk/clerk-react';
-import { Link } from 'react-router-dom';
-import "./ADashboard.css";
-
-const CareerDashboard = () => {
-    const [results, setResults] = useState(null);
-    const [activeSection, setActiveSection] = useState('overview');
-    const [expandedCard, setExpandedCard] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const { user, isLoaded } = useUser();
-    const { openUserProfile } = useClerk();
-
-    // Fetch results from the backend
-    const fetchResults = async () => {
-        setIsLoading(true);
-        try {
-            const storedResults = localStorage.getItem('careerAssessmentResults');
-            if (storedResults) {
-                setResults(JSON.parse(storedResults));
-            } else {
-                const response = await fetch('/api/app.js', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        answers: {}, // Add assessment answers here
-                        categories: [], // Add assessment categories here
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch results');
-                }
-
-                const data = await response.json();
-                localStorage.setItem('careerAssessmentResults', JSON.stringify(data));
-                setResults(data);
-            }
-        } catch (error) {
-            console.error('Error fetching results:', error);
-            setResults({ analysis: {}, resources: {} });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (isLoaded && user) {
-            fetchResults();
-        } else if (isLoaded) {
-            setIsLoading(false);
-        }
-    }, [isLoaded, user]);
-
-    const handleProfileClick = () => {
-        openUserProfile();
-    };
-
-    const handleCardExpand = (id) => {
-        setExpandedCard(expandedCard === id ? null : id);
-    };
-
-    const mockSkillsData = [
-        { name: 'Technical', value: 85 },
-        { name: 'Leadership', value: 72 },
-        { name: 'Communication', value: 90 },
-        { name: 'Problem Solving', value: 88 },
-        { name: 'Creativity', value: 78 },
-    ];
-
-    // Loading state component
-    if (isLoading) {
-        return (
-            <div className="loading-container">
-                <div className="loader"></div>
-                <p>Loading your personalized career insights...</p>
-            </div>
-        );
-    }
-
-    // Authentication check component
-    if (!isLoaded || !user) {
-        return (
-            <div className="auth-required-container">
-                <h2>Authentication Required</h2>
-                <p>Please sign in to access your personalized career dashboard.</p>
-                <Link to="/sign-in" className="auth-button">Sign In</Link>
-            </div>
-        );
-    }
-
-    // Reusable card component with better accessibility
-    const ExpandableCard = ({ title, content, icon, id }) => (
-        <div
-            className={`dashboard-card ${expandedCard === id ? 'expanded' : ''}`}
-            onClick={() => handleCardExpand(id)}
-            onKeyDown={(e) => e.key === 'Enter' && handleCardExpand(id)}
-            tabIndex={0}
-            role="button"
-            aria-expanded={expandedCard === id}
-        >
-            <div className="card-header">
-                <div className="card-title">
-                    <span className={`card-icon ${icon}`} aria-hidden="true"></span>
-                    <h3>{title}</h3>
-                </div>
-                <span className="expand-icon" aria-hidden="true"></span>
-            </div>
-            <div className="card-content">
-                {content}
-            </div>
-        </div>
-    );
-
-    // Welcome screen for users who haven't taken the assessment yet
-    if (!results) {
+    if (!results || results.analysis.careerRecommendations.length === 0) {
         return (
             <div className="dashboard-container welcome-container">
                 <div className="welcome-content">
@@ -1717,10 +220,6 @@ const CareerDashboard = () => {
                         <div 
                             className="profile-image-container" 
                             onClick={handleProfileClick}
-                            onKeyDown={(e) => e.key === 'Enter' && handleProfileClick()}
-                            tabIndex={0}
-                            role="button"
-                            aria-label="Manage your account settings"
                             title="Manage your account settings"
                         >
                             <img
@@ -1761,28 +260,19 @@ const CareerDashboard = () => {
                             id="paths"
                             title="Recommended Career Paths"
                             icon="icon-compass"
+                            className='recommend'
                             content={
                                 <div className="career-paths">
                                     {results.analysis.careerRecommendations.map((recommendation, index) => (
                                         <div key={index} className="career-path-item">
                                             <div className="path-number">{index + 1}</div>
-                                            {index === 1 ? (
-                                                <div className="job-info">
-                                                    <p className="job-title">{recommendation.jobTitle}</p>
-                                                    <p className="explanation">{recommendation.explanation}</p>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <p className="job-title">{recommendation.jobTitle}</p>
-                                                    <p className="explanation">{recommendation.explanation}</p>
-                                                </>
-                                            )}
+                                            <p className="job-title">{recommendation.jobTitle}</p>
+                                            <p className="explanation">{recommendation.explanation}</p>
                                         </div>
                                     ))}
                                 </div>
                             }
                         />
-                        
                         <ExpandableCard
                             id="skills"
                             title="Skills Analysis"
@@ -1792,25 +282,14 @@ const CareerDashboard = () => {
                                     <ResponsiveContainer width="100%" height={300}>
                                         <LineChart data={mockSkillsData}>
                                             <XAxis dataKey="name" />
-                                            <YAxis domain={[0, 100]} />
-                                            <Tooltip formatter={(value) => [`${value}%`, 'Proficiency']} />
-                                            <Line 
-                                                type="monotone" 
-                                                dataKey="value" 
-                                                stroke="#3B82F6" 
-                                                strokeWidth={2} 
-                                                dot={{ fill: '#3B82F6', r: 5 }}
-                                                activeDot={{ r: 8 }}
-                                            />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
                                         </LineChart>
                                     </ResponsiveContainer>
-                                    <div className="skills-legend">
-                                        <p><strong>Note:</strong> Scores represent proficiency level on a scale of 0-100%</p>
-                                    </div>
                                 </div>
                             }
                         />
-
                         <ExpandableCard
                             id="growth"
                             title="Growth Opportunities"
@@ -1837,7 +316,6 @@ const CareerDashboard = () => {
                                 </div>
                             }
                         />
-
                         <ExpandableCard
                             id="steps"
                             title="Recommended Next Steps"
@@ -1845,30 +323,30 @@ const CareerDashboard = () => {
                             content={
                                 <div className="next-steps">
                                     <h4>Immediate Next Steps</h4>
-                                    <ul className="steps-list">
+                                    <ul>
                                         {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
-                                            <li key={index} className="step-item">
-                                                <div className="step-number">{index + 1}.</div>
+                                            <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
                                                 <p>{step}</p>
                                             </li>
                                         ))}
                                     </ul>
 
                                     <h4>Short Term Goals</h4>
-                                    <ul className="goals-list">
+                                    <ul>
                                         {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
-                                            <li key={index} className="goal-item">
-                                                <div className="goal-number">{index + 1}.</div>
+                                            <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
                                                 <p>{goal}</p>
                                             </li>
                                         ))}
                                     </ul>
 
                                     <h4>Long Term Roadmap</h4>
-                                    <ul className="roadmap-list">
+                                    <ul>
                                         {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
-                                            <li key={index} className="roadmap-item">
-                                                <div className="roadmap-number">{index + 1}.</div>
+                                            <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
                                                 <p>{roadmap}</p>
                                             </li>
                                         ))}
@@ -1876,7 +354,665 @@ const CareerDashboard = () => {
                                 </div>
                             }
                         />
-                     
+                        <ExpandableCard
+                            id="challenges"
+                            title="Potential Challenges"
+                            icon="icon-alert"
+                            content={
+                                <div className="challenges">
+                                    <h4>Challenges</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.challenges.map((challenge, index) => (
+                                            <li key={index} className="challenge-item">
+                                                {challenge}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Mitigation Strategies</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.mitigationStrategies.map((strategy, index) => (
+                                            <li key={index} className="strategy-item">
+                                                {strategy}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+
+
+                          {/* Resources Card */}
+                    {/* <ExpandableCard
+                        id="resources"
+                        title="Recommended Resources"
+                        icon="icon-book"
+                        content={
+                            <div className="resources">
+                                <div className="resource-section">
+                                    <h4>Courses</h4>
+                                    <ul>
+                                        {results.resources.recommendedCourses.map((course, index) => (
+                                            <li key={index}>{course}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="resource-section">
+                                    <h4>Reading Materials</h4>
+                                    <ul>
+                                        {results.resources.suggestedReadings.map((reading, index) => (
+                                            <li key={index}>{reading}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    /> */}
+                    </div>
+                );
+
+            // Add more cases for 'skills', 'paths', and 'development' as needed
+
+            case 'skills':
+                return (
+                    <div className="section-content">
+                        <h2>Skills Analysis</h2>
+                        <div className="dashboard-grid">
+                        <ExpandableCard
+            id="skill-breakdown"
+            title="Skill Breakdown"
+            icon="icon-chart"
+            content={
+                <div className="charts-container">
+                    {/* Skills to Develop Section */}
+                    <h4>Skills to Develop</h4>
+                    <ul>
+                        {results.analysis.skillsAnalysis.skillsToDevelop.map((skill, index) => (
+                            <li key={index} className="skill-item">
+                                {skill}
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Strengths Section */}
+                    <h4>Strengths</h4>
+                    <ul>
+                        {results.analysis.skillsAnalysis.strengths.map((strength, index) => (
+                            <li key={index} className="strength-item">
+                                {strength}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            }
+        />
+                            {/* Add other skill-related ExpandableCards */}
+
+                        </div>
+                    </div>
+                );
+
+            case 'paths':
+                return (
+                    <div className="section-content">
+                        <h2>Career Paths</h2>
+                        <div className="dashboard-grid">
+                        <ExpandableCard
+    id="insights"
+    title="Key Insights"
+    icon="icon-insight"
+    content={
+        <div className="insights">
+            <h4>Key Takeaways</h4>
+            <ul>
+                {results.analysis.insights.keyTakeaways.map((takeaway, index) => (
+                    <li key={index} className="takeaway-item">
+                        {takeaway}
+                    </li>
+                ))}
+            </ul>
+
+            <h4>Motivational Quote</h4>
+            <p className="motivational-quote">
+                "{results.analysis.insights.motivationalQuote}"
+            </p>
+        </div>
+    }
+/>
+                            {/* Add other path-related ExpandableCards */}
+                        </div>
+                    </div>
+                );
+
+            case 'development':
+                return (
+                    <div className="section-content">
+                        <h2>Professional Development</h2>
+                        <div className="dashboard-grid">
+                        <ExpandableCard
+    id="resources"
+    title="Recommended Resources"
+    icon="icon-book"
+    content={
+        <div className="resources">
+            <div className="resource-section">
+                <h4>Recommended Courses</h4>
+                <ul>
+                    {results.analysis.resources.recommendedCourses > 0 ? (
+                        results.analysis.resources.recommendedCourses.map((course, index) => (
+                            <li key={index}>{course}</li>
+                        ))
+                    ) : (
+                        <li>No courses available.</li>
+                    )}
+                </ul>
+            </div>
+            <div className="resource-section">
+                <h4>Suggested Readings</h4>
+                <ul>
+                    {results.analysis.resources.suggestedReadings > 0 ? (
+                        results.analysis.resources.suggestedReadings.map((reading, index) => (
+                            <li key={index}>{reading}</li>
+                        ))
+                    ) : (
+                        <li>No readings available.</li>
+                    )}
+                </ul>
+            </div>
+            <div className="resource-section">
+                <h4>Professional Tools</h4>
+                <ul>
+                    {results.analysis.resources.professionalTools > 0 ? (
+                        results.analysis.resources.professionalTools.map((tool, index) => (
+                            <li key={index}>{tool}</li>
+                        ))
+                    ) : (
+                        <li>No tools available.</li>
+                    )}
+                </ul>
+            </div>
+        </div>
+    }
+/>
+                            {/* Add other development-related ExpandableCards */}
+
+                            {/* <ExpandableCard
+                                id="learning-resources"
+                                title="Learning Resources"
+                                icon="icon-book"
+                                content={
+                                    <div className="learning-resources">
+                                        <h4>Recommended Courses</h4>
+                                        <ul className="courses-list">
+                                            {mockSkillsData.map((skill, index) => (
+                                                <li key={index} className="course-item">
+                                                    <h5>Advanced {skill.name} Skills</h5>
+                                                    <p className="course-provider">Provider: Professional Learning Academy</p>
+                                                    <p className="course-description">
+                                                        This course focuses on developing advanced {skill.name.toLowerCase()} skills
+                                                        required for career progression in your field.
+                                                    </p>
+                                                    <button className="resource-button">View Course</button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                }
+                            /> */}
+
+
+
+                            <ExpandableCard
+                                id="mentorship"
+                                title="Mentorship Opportunities"
+                                icon="icon-users"
+                                content={
+                                    <div className="mentorship-opportunities">
+                                        <h4>Find a Mentor</h4>
+                                        <p>
+                                            Based on your career goals, connecting with a mentor in your desired field
+                                            can significantly accelerate your professional development.
+                                        </p>
+                                        <button className="resource-button">Explore Mentorship Program</button>
+                                        
+                                        <h4>Peer Learning Groups</h4>
+                                        <p>
+                                            Join a community of professionals with similar career goals to share experiences,
+                                            challenges, and resources.
+                                        </p>
+                                        <button className="resource-button">Join Learning Group</button>
+                                    </div>
+                                }
+                            />
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <div className="dashboard-container">
+            <header className="dashboard-header">
+                <div className="header-content">
+                    <div className="header-text">
+                        <h1>Your Career Journey Dashboard</h1>
+                        <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
+                    </div>
+                    <div 
+                        className="profile-image-container" 
+                        onClick={handleProfileClick}
+                        title="Manage your account settings"
+                    >
+                        <img
+                            src={user.imageUrl}
+                            alt="Profile"
+                            className="profile-image"
+                        />
+                    </div>
+                </div>
+            </header>
+
+            <nav className="dashboard-nav">
+                {['overview', 'skills', 'paths', 'development'].map((section) => (
+                    <button
+                        key={section}
+                        onClick={() => setActiveSection(section)}
+                        className={`nav-button ${activeSection === section ? 'active' : ''}`}
+                    >
+                        {section.charAt(0).toUpperCase() + section.slice(1)}
+                    </button>
+                ))}
+            </nav>
+
+            {renderSectionContent()}
+        </div>
+    );
+};
+
+export default CareerDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useUser, useClerk } from '@clerk/clerk-react';
+import { supabase } from '../../supabaseClient';
+import { Link } from 'react-router-dom';
+import "./ADashboard.css";
+
+const CareerDashboard = () => {
+    const [results, setResults] = useState(null);
+    const [activeSection, setActiveSection] = useState('overview');
+    const [expandedCard, setExpandedCard] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const { user, isLoaded } = useUser();
+    const { openUserProfile } = useClerk();
+
+    // Fetch results from Supabase or API if not found
+    const fetchResults = async () => {
+        try {
+            setIsLoading(true);
+
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
+
+            // Try to get results from Supabase first
+            const { data, error } = await supabase
+                .from('user_assessment_results')
+                .select('answers, categories, results')
+                .eq('user_id', user.id)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    console.log("No assessment results found in Supabase.");
+                    setIsLoading(false);
+                    return;
+                } else {
+                    console.error('Error fetching from Supabase:', error);
+                    throw error;
+                }
+            }
+
+            // If results exist in Supabase, use them
+            if (data && data.results) {
+                console.log("Retrieved results from Supabase:", data.results);
+                setResults(data.results);
+                setIsLoading(false);
+                return;
+            }
+
+            // If no results in Supabase, fetch from API using stored answers and categories
+            if (!data.answers || !data.categories) {
+                throw new Error('No assessment data found.');
+            }
+
+            const response = await fetch('http://localhost:3000/api/app', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answers: data.answers,
+                    categories: data.categories,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch results from API');
+            }
+
+            const apiData = await response.json();
+
+            // Store results in Supabase
+            await storeResultsInSupabase(apiData);
+
+            setResults(apiData);
+            console.log("Fetched new results from API:", apiData);
+
+        } catch (error) {
+            console.error('Error in fetchResults:', error);
+            setResults({
+                analysis: {
+                    careerRecommendations: [],
+                    growthOpportunities: { emergingRoles: [], sectors: [] },
+                    actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+                    potentialChallenges: { challenges: [], mitigationStrategies: [] },
+                    insights: { keyTakeaways: [], motivationalQuote: '' },
+                    skillsAnalysis: { skillsToDevelop: [], strengths: [] },
+                    resources: {
+                        recommendedCourses: [],
+                        suggestedReadings: [],
+                        professionalTools: []
+                    },
+                },
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Store results in Supabase
+    const storeResultsInSupabase = async (data) => {
+        if (!user) return;
+
+        try {
+            // Check if user already has results
+            const { data: existingData, error: checkError } = await supabase
+                .from('user_assessment_results')
+                .select('id')
+                .eq('user_id', user.id)
+                .single();
+
+            if (checkError && checkError.code !== 'PGRST116') {
+                console.error('Error checking for existing results:', checkError);
+                return;
+            }
+
+            // If results exist, update them
+            if (existingData) {
+                const { error: updateError } = await supabase
+                    .from('user_assessment_results')
+                    .update({
+                        results: data,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id);
+
+                if (updateError) {
+                    console.error('Error updating results in Supabase:', updateError);
+                } else {
+                    console.log('Successfully updated results in Supabase');
+                }
+            }
+            // If results don't exist, insert them
+            else {
+                const { error: insertError } = await supabase
+                    .from('user_assessment_results')
+                    .insert({
+                        user_id: user.id,
+                        results: data
+                    });
+
+                if (insertError) {
+                    console.error('Error inserting results in Supabase:', insertError);
+                } else {
+                    console.log('Successfully stored results in Supabase');
+                }
+            }
+        } catch (error) {
+            console.error('Error in storeResultsInSupabase:', error);
+        }
+    };
+
+    // Function to handle taking a new assessment
+    const handleTakeNewAssessment = () => {
+        // Clear existing results in state
+        setResults(null);
+        // Navigate to assessment page
+        window.location.href = '/assessment';
+    };
+
+    useEffect(() => {
+        if (isLoaded && user) {
+            fetchResults();
+        } else if (isLoaded && !user) {
+            setIsLoading(false);
+        }
+    }, [isLoaded, user]);
+
+    const handleProfileClick = () => {
+        openUserProfile();
+    };
+
+    const mockSkillsData = [
+        { name: 'Technical', value: 85 },
+        { name: 'Leadership', value: 72 },
+        { name: 'Communication', value: 90 },
+        { name: 'Problem Solving', value: 88 },
+        { name: 'Creativity', value: 78 },
+    ];
+
+    if (!isLoaded) {
+        return (
+            <div className="loading-container">
+                <div className="loader"></div>
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="auth-required-container">
+                <h2>Authentication Required</h2>
+                <p>Please sign in to access your career dashboard.</p>
+                <Link to="/sign-in" className="auth-button">Sign In</Link>
+            </div>
+        );
+    }
+
+    const ExpandableCard = ({ title, content, icon, id }) => (
+        <div
+            className={`dashboard-card ${expandedCard === id ? 'expanded' : ''}`}
+            onClick={() => setExpandedCard(expandedCard === id ? null : id)}
+        >
+            <div className="card-header">
+                <div className="card-title">
+                    <span className={`card-icon ${icon}`}></span>
+                    <h3>{title}</h3>
+                </div>
+                <span className="expand-icon"></span>
+            </div>
+            <div className="card-content">
+                {content}
+            </div>
+        </div>
+    );
+
+    // Welcome screen for users who haven't taken the assessment yet
+    if (!results || results.analysis.careerRecommendations.length === 0) {
+        return (
+            <div className="dashboard-container welcome-container">
+                <div className="welcome-content">
+                    <div className="welcome-header">
+                        <div className="welcome-text">
+                            <h1>Welcome, {user.fullName || user.username}!</h1>
+                            <p>Discover your ideal career path with our personalized assessment.</p>
+                        </div>
+                        <div
+                            className="profile-image-container"
+                            onClick={handleProfileClick}
+                            title="Manage your account settings"
+                        >
+                            <img
+                                src={user.imageUrl}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="welcome-card">
+                        <h2>Start Your Career Journey</h2>
+                        <p>
+                            Our comprehensive assessment will analyze your skills, interests, and preferences
+                            to provide tailored career recommendations and growth opportunities.
+                        </p>
+                        <p>
+                            After completing the assessment, you'll receive a personalized dashboard with
+                            actionable insights to guide your professional development.
+                        </p>
+                        <Link to="/assessment" className="assessment-button">
+                            Take Career Assessment
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const renderSectionContent = () => {
+        if (!results) return null;
+
+        switch (activeSection) {
+            case 'overview':
+                return (
+                    <div className="dashboard-grid">
+                        <ExpandableCard
+                            id="paths"
+                            title="Recommended Career Paths"
+                            icon="icon-compass"
+                            className='recommend'
+                            content={
+                                <div className="career-paths">
+                                    {results.analysis.careerRecommendations.map((recommendation, index) => (
+                                        <div key={index} className="career-path-item">
+                                            <div className="path-number">{index + 1}</div>
+                                            <p className="job-title">{recommendation.jobTitle}</p>
+                                            <p className="explanation">{recommendation.explanation}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="skills"
+                            title="Skills Analysis"
+                            icon="icon-star"
+                            content={
+                                <div className="skills-chart">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <LineChart data={mockSkillsData}>
+                                            <XAxis dataKey="name" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="growth"
+                            title="Growth Opportunities"
+                            icon="icon-trending-up"
+                            content={
+                                <div className="growth-opportunities">
+                                    <h4>Emerging Roles</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.emergingRoles.map((role, index) => (
+                                            <li key={index} className="role-item">
+                                                {role}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Sectors</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.sectors.map((sector, index) => (
+                                            <li key={index} className="sector-item">
+                                                {sector}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="steps"
+                            title="Recommended Next Steps"
+                            icon="icon-target"
+                            content={
+                                <div className="next-steps">
+                                    <h4>Immediate Next Steps</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
+                                            <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{step}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Short Term Goals</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
+                                            <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{goal}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Long Term Roadmap</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
+                                            <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{roadmap}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
                         <ExpandableCard
                             id="challenges"
                             title="Potential Challenges"
@@ -1906,194 +1042,7 @@ const CareerDashboard = () => {
                     </div>
                 );
 
-            case 'skills':
-                return (
-                    <div className="section-content">
-                        <h2>Skills Analysis</h2>
-                        <div className="dashboard-grid">
-                            <ExpandableCard
-                                id="skill-breakdown"
-                                title="Skill Breakdown"
-                                icon="icon-chart"
-                                content={
-                                    <div className="charts-container">
-                                        <div className="skills-radar-chart">
-                                            <ResponsiveContainer width="100%" height={300}>
-                                                <RadarChart outerRadius={90} data={mockSkillsData}>
-                                                    <PolarGrid />
-                                                    <PolarAngleAxis dataKey="name" />
-                                                    <PolarRadiusAxis domain={[0, 100]} />
-                                                    <Radar name="Skills" dataKey="value" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
-                                                    <Tooltip formatter={(value) => [`${value}%`, 'Proficiency']} />
-                                                </RadarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                        
-                                        <h4>Skills to Develop</h4>
-                                        <ul>
-                                            {results.analysis.skillsAnalysis.skillsToDevelop.map((skill, index) => (
-                                                <li key={index} className="skill-item">
-                                                    {skill}
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                        <h4>Strengths</h4>
-                                        <ul>
-                                            {results.analysis.skillsAnalysis.strengths.map((strength, index) => (
-                                                <li key={index} className="strength-item">
-                                                    {strength}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                }
-                            />
-                            
-                            <ExpandableCard
-                                id="skill-development"
-                                title="Skill Development Plan"
-                                icon="icon-book"
-                                content={
-                                    <div className="skill-development">
-                                        <h4>Recommended Learning Paths</h4>
-                                        <div className="learning-paths">
-                                            {mockSkillsData.map((skill, index) => (
-                                                <div key={index} className="learning-path-item">
-                                                    <h5>{skill.name}</h5>
-                                                    <div className="progress-container">
-                                                        <div className="progress-bar" style={{ width: `${skill.value}%` }}></div>
-                                                    </div>
-                                                    <p>Current: {skill.value}%</p>
-                                                    <p>Target: {Math.min(100, skill.value + 15)}%</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                }
-                            />
-                        </div>
-                    </div>
-                );
-
-            case 'paths':
-                return (
-                    <div className="section-content">
-                        <h2>Career Paths</h2>
-                        <div className="dashboard-grid">
-                            <ExpandableCard
-                                id="insights"
-                                title="Key Insights"
-                                icon="icon-insight"
-                                content={
-                                    <div className="insights">
-                                        <h4>Key Takeaways</h4>
-                                        <ul>
-                                            {results.analysis.insights.keyTakeaways.map((takeaway, index) => (
-                                                <li key={index} className="takeaway-item">
-                                                    {takeaway}
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                        <h4>Motivational Quote</h4>
-                                        <blockquote className="motivational-quote">
-                                            "{results.analysis.insights.motivationalQuote}"
-                                        </blockquote>
-                                    </div>
-                                }
-                            />
-                            
-                            <ExpandableCard
-                                id="career-comparison"
-                                title="Career Path Comparison"
-                                icon="icon-compare"
-                                content={
-                                    <div className="career-comparison">
-                                        <ResponsiveContainer width="100%" height={300}>
-                                            <BarChart 
-                                                data={results.analysis.careerRecommendations.map((rec, index) => ({
-                                                    name: rec.jobTitle.split(' ').slice(0, 2).join(' '),
-                                                    match: 100 - (index * 10),
-                                                    growth: 85 - (index * 5),
-                                                    satisfaction: 90 - (index * 7)
-                                                }))}
-                                            >
-                                                <XAxis dataKey="name" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Bar dataKey="match" name="Match Score" fill="#3B82F6" />
-                                                <Bar dataKey="growth" name="Growth Potential" fill="#10B981" />
-                                                <Bar dataKey="satisfaction" name="Satisfaction Index" fill="#8B5CF6" />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                        <div className="comparison-legend">
-                                            <span className="legend-item"><span className="color-box match"></span>Match Score</span>
-                                            <span className="legend-item"><span className="color-box growth"></span>Growth Potential</span>
-                                            <span className="legend-item"><span className="color-box satisfaction"></span>Satisfaction Index</span>
-                                        </div>
-                                    </div>
-                                }
-                            />
-                        </div>
-                    </div>
-                );
-
-            case 'development':
-                return (
-                    <div className="section-content">
-                        <h2>Professional Development</h2>
-                        <div className="dashboard-grid">
-                            <ExpandableCard
-                                id="learning-resources"
-                                title="Learning Resources"
-                                icon="icon-book"
-                                content={
-                                    <div className="learning-resources">
-                                        <h4>Recommended Courses</h4>
-                                        <ul className="courses-list">
-                                            {mockSkillsData.map((skill, index) => (
-                                                <li key={index} className="course-item">
-                                                    <h5>Advanced {skill.name} Skills</h5>
-                                                    <p className="course-provider">Provider: Professional Learning Academy</p>
-                                                    <p className="course-description">
-                                                        This course focuses on developing advanced {skill.name.toLowerCase()} skills
-                                                        required for career progression in your field.
-                                                    </p>
-                                                    <button className="resource-button">View Course</button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                }
-                            />
-                            
-                            <ExpandableCard
-                                id="mentorship"
-                                title="Mentorship Opportunities"
-                                icon="icon-users"
-                                content={
-                                    <div className="mentorship-opportunities">
-                                        <h4>Find a Mentor</h4>
-                                        <p>
-                                            Based on your career goals, connecting with a mentor in your desired field
-                                            can significantly accelerate your professional development.
-                                        </p>
-                                        <button className="resource-button">Explore Mentorship Program</button>
-                                        
-                                        <h4>Peer Learning Groups</h4>
-                                        <p>
-                                            Join a community of professionals with similar career goals to share experiences,
-                                            challenges, and resources.
-                                        </p>
-                                        <button className="resource-button">Join Learning Group</button>
-                                    </div>
-                                }
-                            />
-                        </div>
-                    </div>
-                );
-
+            // Add more cases for 'skills', 'paths', and 'development' as needed
             default:
                 return null;
         }
@@ -2107,13 +1056,9 @@ const CareerDashboard = () => {
                         <h1>Your Career Journey Dashboard</h1>
                         <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
                     </div>
-                    <div 
-                        className="profile-image-container" 
+                    <div
+                        className="profile-image-container"
                         onClick={handleProfileClick}
-                        onKeyDown={(e) => e.key === 'Enter' && handleProfileClick()}
-                        tabIndex={0}
-                        role="button"
-                        aria-label="Manage your account settings"
                         title="Manage your account settings"
                     >
                         <img
@@ -2131,7 +1076,6 @@ const CareerDashboard = () => {
                         key={section}
                         onClick={() => setActiveSection(section)}
                         className={`nav-button ${activeSection === section ? 'active' : ''}`}
-                        aria-pressed={activeSection === section}
                     >
                         {section.charAt(0).toUpperCase() + section.slice(1)}
                     </button>
@@ -2139,15 +1083,472 @@ const CareerDashboard = () => {
             </nav>
 
             {renderSectionContent()}
-            
-            <div className="dashboard-actions">
-                <button className="action-button">
-                    Download Report
-                </button>
-                <Link to="/assessment" className="action-button secondary">
-                    Retake Assessment
-                </Link>
+        </div>
+    );
+};
+
+export default CareerDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useUser, useClerk } from '@clerk/clerk-react';
+import { supabase } from '../../supabaseClient';
+import { Link } from 'react-router-dom';
+import "./ADashboard.css";
+
+const CareerDashboard = () => {
+    const [results, setResults] = useState(null);
+    const [activeSection, setActiveSection] = useState('overview');
+    const [expandedCard, setExpandedCard] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const { user, isLoaded } = useUser();
+    const { openUserProfile } = useClerk();
+
+    // Fetch results from Supabase or API if not found
+    const fetchResults = async () => {
+        try {
+            setIsLoading(true);
+
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
+
+            // Try to get results from Supabase first
+            const { data, error } = await supabase
+                .from('user_assessment_results')
+                .select('answers, categories, results')
+                .eq('user_id', user.id)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    console.log("No assessment results found in Supabase.");
+                    setIsLoading(false);
+                    return;
+                } else {
+                    console.error('Error fetching from Supabase:', error);
+                    throw error;
+                }
+            }
+
+            // If results exist in Supabase, use them
+            if (data && data.results) {
+                console.log("Retrieved results from Supabase:", data.results);
+                setResults(data.results);
+                setIsLoading(false);
+                return;
+            }
+
+            // If no results in Supabase, fetch from API using stored answers and categories
+            if (!data.answers || !data.categories) {
+                throw new Error('No assessment data found.');
+            }
+
+            const response = await fetch('http://localhost:3000/api/app', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answers: data.answers,
+                    categories: data.categories,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch results from API');
+            }
+
+            const apiData = await response.json();
+            console.log("API Response:", apiData);
+
+            // Ensure the response has the expected structure
+            if (!apiData.analysis || !apiData.analysis.careerRecommendations) {
+                throw new Error('Invalid API response format');
+            }
+
+            // Store results in Supabase
+            await storeResultsInSupabase(apiData);
+
+            setResults(apiData);
+            console.log("Fetched new results from API:", apiData);
+
+        } catch (error) {
+            console.error('Error in fetchResults:', error);
+            setResults({
+                analysis: {
+                    careerRecommendations: [],
+                    growthOpportunities: { emergingRoles: [], sectors: [] },
+                    actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+                    potentialChallenges: { challenges: [], mitigationStrategies: [] },
+                    insights: { keyTakeaways: [], motivationalQuote: '' },
+                    skillsAnalysis: { skillsToDevelop: [], strengths: [] },
+                    resources: {
+                        recommendedCourses: [],
+                        suggestedReadings: [],
+                        professionalTools: []
+                    },
+                },
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Store results in Supabase
+    const storeResultsInSupabase = async (data) => {
+        if (!user) return;
+
+        try {
+            // Check if user already has results
+            const { data: existingData, error: checkError } = await supabase
+                .from('user_assessment_results')
+                .select('id')
+                .eq('user_id', user.id)
+                .single();
+
+            if (checkError && checkError.code !== 'PGRST116') {
+                console.error('Error checking for existing results:', checkError);
+                return;
+            }
+
+            // If results exist, update them
+            if (existingData) {
+                const { error: updateError } = await supabase
+                    .from('user_assessment_results')
+                    .update({
+                        answers: data.answers,
+                        categories: data.categories,
+                        results: data,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id);
+
+                if (updateError) {
+                    console.error('Error updating results in Supabase:', updateError);
+                } else {
+                    console.log('Successfully updated results in Supabase');
+                }
+            }
+            // If results don't exist, insert them
+            else {
+                const { error: insertError } = await supabase
+                    .from('user_assessment_results')
+                    .insert({
+                        user_id: user.id,
+                        answers: data.answers,
+                        categories: data.categories,
+                        results: data
+                    });
+
+                if (insertError) {
+                    console.error('Error inserting results in Supabase:', insertError);
+                } else {
+                    console.log('Successfully stored results in Supabase');
+                }
+            }
+        } catch (error) {
+            console.error('Error in storeResultsInSupabase:', error);
+        }
+    };
+
+    // Function to handle taking a new assessment
+    const handleTakeNewAssessment = () => {
+        // Clear existing results in state
+        setResults(null);
+        // Navigate to assessment page
+        window.location.href = '/assessment';
+    };
+
+    useEffect(() => {
+        if (isLoaded && user) {
+            fetchResults();
+        } else if (isLoaded && !user) {
+            setIsLoading(false);
+        }
+    }, [isLoaded, user]);
+
+    const handleProfileClick = () => {
+        openUserProfile();
+    };
+
+    const mockSkillsData = [
+        { name: 'Technical', value: 85 },
+        { name: 'Leadership', value: 72 },
+        { name: 'Communication', value: 90 },
+        { name: 'Problem Solving', value: 88 },
+        { name: 'Creativity', value: 78 },
+    ];
+
+    if (!isLoaded) {
+        return (
+            <div className="loading-container">
+                <div className="loader"></div>
+                <p>Loading...</p>
             </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="auth-required-container">
+                <h2>Authentication Required</h2>
+                <p>Please sign in to access your career dashboard.</p>
+                <Link to="/sign-in" className="auth-button">Sign In</Link>
+            </div>
+        );
+    }
+
+    const ExpandableCard = ({ title, content, icon, id }) => (
+        <div
+            className={`dashboard-card ${expandedCard === id ? 'expanded' : ''}`}
+            onClick={() => setExpandedCard(expandedCard === id ? null : id)}
+        >
+            <div className="card-header">
+                <div className="card-title">
+                    <span className={`card-icon ${icon}`}></span>
+                    <h3>{title}</h3>
+                </div>
+                <span className="expand-icon"></span>
+            </div>
+            <div className="card-content">
+                {content}
+            </div>
+        </div>
+    );
+
+    // Welcome screen for users who haven't taken the assessment yet
+    if (!results || results.analysis.careerRecommendations.length === 0) {
+        return (
+            <div className="dashboard-container welcome-container">
+                <div className="welcome-content">
+                    <div className="welcome-header">
+                        <div className="welcome-text">
+                            <h1>Welcome, {user.fullName || user.username}!</h1>
+                            <p>Discover your ideal career path with our personalized assessment.</p>
+                        </div>
+                        <div
+                            className="profile-image-container"
+                            onClick={handleProfileClick}
+                            title="Manage your account settings"
+                        >
+                            <img
+                                src={user.imageUrl}
+                                alt="Profile"
+                                className="profile-image"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="welcome-card">
+                        <h2>Start Your Career Journey</h2>
+                        <p>
+                            Our comprehensive assessment will analyze your skills, interests, and preferences
+                            to provide tailored career recommendations and growth opportunities.
+                        </p>
+                        <p>
+                            After completing the assessment, you'll receive a personalized dashboard with
+                            actionable insights to guide your professional development.
+                        </p>
+                        <Link to="/assessment" className="assessment-button">
+                            Take Career Assessment
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const renderSectionContent = () => {
+        if (!results) return null;
+
+        switch (activeSection) {
+            case 'overview':
+                return (
+                    <div className="dashboard-grid">
+                        <ExpandableCard
+                            id="paths"
+                            title="Recommended Career Paths"
+                            icon="icon-compass"
+                            className='recommend'
+                            content={
+                                <div className="career-paths">
+                                    {results.analysis.careerRecommendations.map((recommendation, index) => (
+                                        <div key={index} className="career-path-item">
+                                            <div className="path-number">{index + 1}</div>
+                                            <p className="job-title">{recommendation.jobTitle}</p>
+                                            <p className="explanation">{recommendation.explanation}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="skills"
+                            title="Skills Analysis"
+                            icon="icon-star"
+                            content={
+                                <div className="skills-chart">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <LineChart data={mockSkillsData}>
+                                            <XAxis dataKey="name" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="growth"
+                            title="Growth Opportunities"
+                            icon="icon-trending-up"
+                            content={
+                                <div className="growth-opportunities">
+                                    <h4>Emerging Roles</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.emergingRoles.map((role, index) => (
+                                            <li key={index} className="role-item">
+                                                {role}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Sectors</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.sectors.map((sector, index) => (
+                                            <li key={index} className="sector-item">
+                                                {sector}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="steps"
+                            title="Recommended Next Steps"
+                            icon="icon-target"
+                            content={
+                                <div className="next-steps">
+                                    <h4>Immediate Next Steps</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
+                                            <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{step}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Short Term Goals</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
+                                            <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{goal}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Long Term Roadmap</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
+                                            <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{roadmap}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="challenges"
+                            title="Potential Challenges"
+                            icon="icon-alert"
+                            content={
+                                <div className="challenges">
+                                    <h4>Challenges</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.challenges.map((challenge, index) => (
+                                            <li key={index} className="challenge-item">
+                                                {challenge}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Mitigation Strategies</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.mitigationStrategies.map((strategy, index) => (
+                                            <li key={index} className="strategy-item">
+                                                {strategy}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                    </div>
+                );
+
+            // Add more cases for 'skills', 'paths', and 'development' as needed
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <div className="dashboard-container">
+            <header className="dashboard-header">
+                <div className="header-content">
+                    <div className="header-text">
+                        <h1>Your Career Journey Dashboard</h1>
+                        <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
+                    </div>
+                    <div
+                        className="profile-image-container"
+                        onClick={handleProfileClick}
+                        title="Manage your account settings"
+                    >
+                        <img
+                            src={user.imageUrl}
+                            alt="Profile"
+                            className="profile-image"
+                        />
+                    </div>
+                </div>
+            </header>
+
+            <nav className="dashboard-nav">
+                {['overview', 'skills', 'paths', 'development'].map((section) => (
+                    <button
+                        key={section}
+                        onClick={() => setActiveSection(section)}
+                        className={`nav-button ${activeSection === section ? 'active' : ''}`}
+                    >
+                        {section.charAt(0).toUpperCase() + section.slice(1)}
+                    </button>
+                ))}
+            </nav>
+
+            {renderSectionContent()}
         </div>
     );
 };
