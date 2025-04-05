@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useUser, useClerk } from '@clerk/clerk-react';
+import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
 import "./ADashboard.css";
 
@@ -8,37 +9,82 @@ const CareerDashboard = () => {
     const [results, setResults] = useState(null);
     const [activeSection, setActiveSection] = useState('overview');
     const [expandedCard, setExpandedCard] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const { user, isLoaded } = useUser();
     const { openUserProfile } = useClerk();
 
+    // Fetch results from Supabase or API if not found
     const fetchResults = async () => {
         try {
-            const storedResults = localStorage.getItem('careerAssessmentResults');
-            if (storedResults) {
-                setResults(JSON.parse(storedResults));
-            } else {
-                const response = await fetch('/api/app.js', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        answers: {}, // Add assessment answers here
-                        categories: [], // Add assessment categories here
-                    }),
-                });
+            setIsLoading(true);
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch results');
-                }
-
-                const data = await response.json();
-                localStorage.setItem('careerAssessmentResults', JSON.stringify(data));
-                setResults(data);
+            if (!user) {
+                setIsLoading(false);
+                return;
             }
+
+            // Try to get results from Supabase first
+            const { data, error } = await supabase
+                .from('user_assessment_results')
+                .select('answers, categories, results')
+                .eq('user_id', user.id)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    console.log("No assessment results found in Supabase.");
+                    setIsLoading(false);
+                    return;
+                } else {
+                    console.error('Error fetching from Supabase:', error);
+                    throw error;
+                }
+            }
+
+            // If results exist in Supabase, use them
+            if (data && data.results) {
+                console.log("Retrieved results from Supabase:", data.results);
+                setResults(data.results);
+                setIsLoading(false);
+                return;
+            }
+
+            // If no results in Supabase, fetch from API using stored answers and categories
+            if (!data.answers || !data.categories) {
+                throw new Error('No assessment data found.');
+            }
+
+            const response = await fetch('http://localhost:3000/api/app', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answers: data.answers,
+                    categories: data.categories,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch results from API');
+            }
+
+            const apiData = await response.json();
+            console.log("API Response:", apiData);
+
+            // Ensure the response has the expected structure
+            if (!apiData.analysis || !apiData.analysis.careerRecommendations) {
+                throw new Error('Invalid API response format');
+            }
+
+            // Store results in Supabase
+            await storeResultsInSupabase(apiData);
+
+            setResults(apiData);
+            console.log("Fetched new results from API:", apiData);
+
         } catch (error) {
-            console.error('Error fetching results:', error);
-            // Set default results to avoid undefined errors in rendering
+            console.error('Error in fetchResults:', error);
             setResults({
                 analysis: {
                     careerRecommendations: [],
@@ -46,15 +92,89 @@ const CareerDashboard = () => {
                     actionPlan: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
                     potentialChallenges: { challenges: [], mitigationStrategies: [] },
                     insights: { keyTakeaways: [], motivationalQuote: '' },
+                    skillsAnalysis: { skillsToDevelop: [], strengths: [] },
+                    resources: {
+                        recommendedCourses: [],
+                        suggestedReadings: [],
+                        professionalTools: []
+                    },
                 },
-                resources: {},
             });
+        } finally {
+            setIsLoading(false);
         }
+    };
+
+    // Store results in Supabase
+    const storeResultsInSupabase = async (data) => {
+        if (!user) return;
+
+        try {
+            // Check if user already has results
+            const { data: existingData, error: checkError } = await supabase
+                .from('user_assessment_results')
+                .select('id')
+                .eq('user_id', user.id)
+                .single();
+
+            if (checkError && checkError.code !== 'PGRST116') {
+                console.error('Error checking for existing results:', checkError);
+                return;
+            }
+
+            // If results exist, update them
+            if (existingData) {
+                const { error: updateError } = await supabase
+                    .from('user_assessment_results')
+                    .update({
+                        answers: data.answers,
+                        categories: data.categories,
+                        results: data,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id);
+
+                if (updateError) {
+                    console.error('Error updating results in Supabase:', updateError);
+                } else {
+                    console.log('Successfully updated results in Supabase');
+                }
+            }
+            // If results don't exist, insert them
+            else {
+                const { error: insertError } = await supabase
+                    .from('user_assessment_results')
+                    .insert({
+                        user_id: user.id,
+                        answers: data.answers,
+                        categories: data.categories,
+                        results: data
+                    });
+
+                if (insertError) {
+                    console.error('Error inserting results in Supabase:', insertError);
+                } else {
+                    console.log('Successfully stored results in Supabase');
+                }
+            }
+        } catch (error) {
+            console.error('Error in storeResultsInSupabase:', error);
+        }
+    };
+
+    // Function to handle taking a new assessment
+    const handleTakeNewAssessment = () => {
+        // Clear existing results in state
+        setResults(null);
+        // Navigate to assessment page
+        window.location.href = '/assessment';
     };
 
     useEffect(() => {
         if (isLoaded && user) {
             fetchResults();
+        } else if (isLoaded && !user) {
+            setIsLoading(false);
         }
     }, [isLoaded, user]);
 
@@ -117,8 +237,8 @@ const CareerDashboard = () => {
                             <h1>Welcome, {user.fullName || user.username}!</h1>
                             <p>Discover your ideal career path with our personalized assessment.</p>
                         </div>
-                        <div 
-                            className="profile-image-container" 
+                        <div
+                            className="profile-image-container"
                             onClick={handleProfileClick}
                             title="Manage your account settings"
                         >
@@ -129,7 +249,7 @@ const CareerDashboard = () => {
                             />
                         </div>
                     </div>
-                    
+
                     <div className="welcome-card">
                         <h2>Start Your Career Journey</h2>
                         <p>
@@ -160,6 +280,7 @@ const CareerDashboard = () => {
                             id="paths"
                             title="Recommended Career Paths"
                             icon="icon-compass"
+                            className='recommend'
                             content={
                                 <div className="career-paths">
                                     {results.analysis.careerRecommendations.map((recommendation, index) => (
@@ -279,129 +400,10 @@ const CareerDashboard = () => {
                                 </div>
                             }
                         />
-
-
-                          {/* Resources Card */}
-                    {/* <ExpandableCard
-                        id="resources"
-                        title="Recommended Resources"
-                        icon="icon-book"
-                        content={
-                            <div className="resources">
-                                <div className="resource-section">
-                                    <h4>Courses</h4>
-                                    <ul>
-                                        {results.resources.recommendedCourses.map((course, index) => (
-                                            <li key={index}>{course}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="resource-section">
-                                    <h4>Reading Materials</h4>
-                                    <ul>
-                                        {results.resources.suggestedReadings.map((reading, index) => (
-                                            <li key={index}>{reading}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                    /> */}
                     </div>
                 );
 
             // Add more cases for 'skills', 'paths', and 'development' as needed
-
-            case 'skills':
-                return (
-                    <div className="section-content">
-                        <h2>Skills Analysis</h2>
-                        <div className="dashboard-grid">
-                        <ExpandableCard
-            id="skill-breakdown"
-            title="Skill Breakdown"
-            icon="icon-chart"
-            content={
-                <div className="charts-container">
-                    {/* Skills to Develop Section */}
-                    <h4>Skills to Develop</h4>
-                    <ul>
-                        {results.analysis.skillsAnalysis.skillsToDevelop.map((skill, index) => (
-                            <li key={index} className="skill-item">
-                                {skill}
-                            </li>
-                        ))}
-                    </ul>
-
-                    {/* Strengths Section */}
-                    <h4>Strengths</h4>
-                    <ul>
-                        {results.analysis.skillsAnalysis.strengths.map((strength, index) => (
-                            <li key={index} className="strength-item">
-                                {strength}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            }
-        />
-                            {/* Add other skill-related ExpandableCards */}
-
-                        </div>
-                    </div>
-                );
-
-            case 'paths':
-                return (
-                    <div className="section-content">
-                        <h2>Career Paths</h2>
-                        <div className="dashboard-grid">
-                        <ExpandableCard
-    id="insights"
-    title="Key Insights"
-    icon="icon-insight"
-    content={
-        <div className="insights">
-            <h4>Key Takeaways</h4>
-            <ul>
-                {results.analysis.insights.keyTakeaways.map((takeaway, index) => (
-                    <li key={index} className="takeaway-item">
-                        {takeaway}
-                    </li>
-                ))}
-            </ul>
-
-            <h4>Motivational Quote</h4>
-            <p className="motivational-quote">
-                "{results.analysis.insights.motivationalQuote}"
-            </p>
-        </div>
-    }
-/>
-                            {/* Add other path-related ExpandableCards */}
-                        </div>
-                    </div>
-                );
-
-            case 'development':
-                return (
-                    <div className="section-content">
-                        <h2>Professional Development</h2>
-                        <div className="dashboard-grid">
-                            <ExpandableCard
-                                id="learning-resources"
-                                title="Learning Resources"
-                                icon="icon-book"
-                                content={
-                                    <div className="learning-resources">
-                                        {/* Render learning resources */}
-                                    </div>
-                                }
-                            />
-                            {/* Add other development-related ExpandableCards */}
-                        </div>
-                    </div>
-                );
             default:
                 return null;
         }
@@ -415,8 +417,8 @@ const CareerDashboard = () => {
                         <h1>Your Career Journey Dashboard</h1>
                         <p>Based on your assessment, we have crafted personalized insights to guide your career path.</p>
                     </div>
-                    <div 
-                        className="profile-image-container" 
+                    <div
+                        className="profile-image-container"
                         onClick={handleProfileClick}
                         title="Manage your account settings"
                     >

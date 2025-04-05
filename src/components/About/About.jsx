@@ -12,7 +12,7 @@ const About = () => {
       className="about-page"
     >
       <div className="about-container">
-        <h1 className="about-title">About The Career Assessment Tool</h1>
+        <h1 className="about-title">About EduVate</h1>
         <div className="features-grid">
           <FeatureCard
             icon={<FaGraduationCap className="feature-icon" />}
@@ -33,7 +33,7 @@ const About = () => {
         <div className="mission-section">
           <h2 className="mission-title">Our Mission</h2>
           <p className="mission-text">
-            The Career Assessment Tool is dedicated to empowering students in Cameroon with the knowledge and resources they need to make informed decisions about their future. We believe that every student has unique talents and potential, and our goal is to help them discover and nurture these abilities.
+            EduVate (Career Assessment Tool) is dedicated to empowering students in Cameroon with the knowledge and resources they need to make informed decisions about their future. We believe that every student has unique talents and potential, and our goal is to help them discover and nurture these abilities.
           </p>
         </div>
       </div>
