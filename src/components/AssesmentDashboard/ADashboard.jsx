@@ -98,6 +98,14 @@ const CareerDashboard = () => {
         openUserProfile();
     };
 
+    const mockSkillsData = [
+        { name: 'Technical', value: 85 },
+        { name: 'Leadership', value: 72 },
+        { name: 'Communication', value: 90 },
+        { name: 'Problem Solving', value: 88 },
+        { name: 'Creativity', value: 78 },
+    ];
+
     const generateSkillsData = () => {
         if (!results?.skillsAnalysis?.strengths) return [];
         
@@ -167,8 +175,8 @@ const CareerDashboard = () => {
     }
 
     const renderSectionContent = () => {
-        if (isLoading) return <p>Loading your assessment results...</p>;
-    
+        if (!results) return null;
+
         switch (activeSection) {
             case 'overview':
                 return (
@@ -177,23 +185,19 @@ const CareerDashboard = () => {
                             id="paths"
                             title="Recommended Career Paths"
                             icon="icon-compass"
+                            className='recommend'
                             content={
                                 <div className="career-paths">
-                                    {Array.isArray(results.analysis.careerRecommendations) && results.analysis.careerRecommendations.length > 0 ? (
-                                        results.analysis.careerRecommendations.map((recommendation, index) => (
-                                            <div key={index} className="career-path-item">
-                                                <div className="path-number">{index + 1}</div>
-                                                <p className="job-title">{recommendation.jobTitle || `Career Path ${index + 1}`}</p>
-                                                <p className="explanation">{recommendation.explanation || 'No explanation provided'}</p>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No career recommendations available.</p>
-                                    )}
+                                    {results.analysis.careerRecommendations.map((recommendation, index) => (
+                                        <div key={index} className="career-path-item">
+                                            <div className="path-number">{index + 1}</div>
+                                            <p className="job-title">{recommendation.jobTitle}</p>
+                                            <p className="explanation">{recommendation.explanation}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             }
                         />
-                        
                         <ExpandableCard
                             id="skills"
                             title="Skills Analysis"
@@ -201,39 +205,318 @@ const CareerDashboard = () => {
                             content={
                                 <div className="skills-chart">
                                     <ResponsiveContainer width="100%" height={300}>
-                                        <LineChart data={generateSkillsData()}>
+                                        <LineChart data={mockSkillsData}>
                                             <XAxis dataKey="name" />
-                                            <YAxis domain={[0, 100]} />
+                                            <YAxis />
                                             <Tooltip />
                                             <Line type="monotone" dataKey="value" stroke="#3B82F6" strokeWidth={2} />
                                         </LineChart>
                                     </ResponsiveContainer>
-                                    <div className="skills-list">
-                                        <h4>Skills to Develop</h4>
-                                        <ul>
-                                            {Array.isArray(results.analysis.skillsAnalysis.skillsToDevelop) && results.analysis.skillsAnalysis.skillsToDevelop.length > 0 ? (
-                                                results.analysis.skillsAnalysis.skillsToDevelop.map((skill, index) => (
-                                                    <li key={index}>{skill}</li>
-                                                ))
-                                            ) : (
-                                                <li>No skills to develop identified.</li>
-                                            )}
-                                        </ul>
-                                    </div>
                                 </div>
                             }
                         />
-                        
-                        {/* Other cards for growth opportunities, next steps, etc. */}
+                        <ExpandableCard
+                            id="growth"
+                            title="Growth Opportunities"
+                            icon="icon-trending-up"
+                            content={
+                                <div className="growth-opportunities">
+                                    <h4>Emerging Roles</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.emergingRoles.map((role, index) => (
+                                            <li key={index} className="role-item">
+                                                {role}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Sectors</h4>
+                                    <ul>
+                                        {results.analysis.growthOpportunities.sectors.map((sector, index) => (
+                                            <li key={index} className="sector-item">
+                                                {sector}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="steps"
+                            title="Recommended Next Steps"
+                            icon="icon-target"
+                            content={
+                                <div className="next-steps">
+                                    <h4>Immediate Next Steps</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
+                                            <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{step}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Short Term Goals</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
+                                            <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{goal}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Long Term Roadmap</h4>
+                                    <ul>
+                                        {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
+                                            <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                                <p>{roadmap}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+                        <ExpandableCard
+                            id="challenges"
+                            title="Potential Challenges"
+                            icon="icon-alert"
+                            content={
+                                <div className="challenges">
+                                    <h4>Challenges</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.challenges.map((challenge, index) => (
+                                            <li key={index} className="challenge-item">
+                                                {challenge}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <h4>Mitigation Strategies</h4>
+                                    <ul>
+                                        {results.analysis.potentialChallenges.mitigationStrategies.map((strategy, index) => (
+                                            <li key={index} className="strategy-item">
+                                                {strategy}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                        />
+
+
+                          {/* Resources Card */}
+                    {/* <ExpandableCard
+                        id="resources"
+                        title="Recommended Resources"
+                        icon="icon-book"
+                        content={
+                            <div className="resources">
+                                <div className="resource-section">
+                                    <h4>Courses</h4>
+                                    <ul>
+                                        {results.resources.recommendedCourses.map((course, index) => (
+                                            <li key={index}>{course}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="resource-section">
+                                    <h4>Reading Materials</h4>
+                                    <ul>
+                                        {results.resources.suggestedReadings.map((reading, index) => (
+                                            <li key={index}>{reading}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    /> */}
                     </div>
                 );
-    
-            // Handle other sections similarly...
-            
+
+            // Add more cases for 'skills', 'paths', and 'development' as needed
+
+            case 'skills':
+                return (
+                    <div className="section-content">
+                        <h2>Skills Analysis</h2>
+                        <div className="dashboard-grid">
+                        <ExpandableCard
+            id="skill-breakdown"
+            title="Skill Breakdown"
+            icon="icon-chart"
+            content={
+                <div className="charts-container">
+                    {/* Skills to Develop Section */}
+                    <h4>Skills to Develop</h4>
+                    <ul>
+                        {results.analysis.skillsAnalysis.skillsToDevelop.map((skill, index) => (
+                            <li key={index} className="skill-item">
+                                {skill}
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Strengths Section */}
+                    <h4>Strengths</h4>
+                    <ul>
+                        {results.analysis.skillsAnalysis.strengths.map((strength, index) => (
+                            <li key={index} className="strength-item">
+                                {strength}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            }
+        />
+                            {/* Add other skill-related ExpandableCards */}
+
+                        </div>
+                    </div>
+                );
+
+            case 'paths':
+                return (
+                    <div className="section-content">
+                        <h2>Career Paths</h2>
+                        <div className="dashboard-grid">
+                        <ExpandableCard
+    id="insights"
+    title="Key Insights"
+    icon="icon-insight"
+    content={
+        <div className="insights">
+            <h4>Key Takeaways</h4>
+            <ul>
+                {results.analysis.insights.keyTakeaways.map((takeaway, index) => (
+                    <li key={index} className="takeaway-item">
+                        {takeaway}
+                    </li>
+                ))}
+            </ul>
+
+            <h4>Motivational Quote</h4>
+            <p className="motivational-quote">
+                "{results.analysis.insights.motivationalQuote}"
+            </p>
+        </div>
+    }
+/>
+                            {/* Add other path-related ExpandableCards */}
+                        </div>
+                    </div>
+                );
+
+            case 'development':
+                return (
+                    <div className="section-content">
+                        <h2>Professional Development</h2>
+                        <div className="dashboard-grid">
+                        <ExpandableCard
+    id="resources"
+    title="Recommended Resources"
+    icon="icon-book"
+    content={
+        <div className="resources">
+            <div className="resource-section">
+                <h4>Recommended Courses</h4>
+                <ul>
+                    {results.analysis.resources.recommendedCourses > 0 ? (
+                        results.analysis.resources.recommendedCourses.map((course, index) => (
+                            <li key={index}>{course}</li>
+                        ))
+                    ) : (
+                        <li>No courses available.</li>
+                    )}
+                </ul>
+            </div>
+            <div className="resource-section">
+                <h4>Suggested Readings</h4>
+                <ul>
+                    {results.analysis.resources.suggestedReadings > 0 ? (
+                        results.analysis.resources.suggestedReadings.map((reading, index) => (
+                            <li key={index}>{reading}</li>
+                        ))
+                    ) : (
+                        <li>No readings available.</li>
+                    )}
+                </ul>
+            </div>
+            <div className="resource-section">
+                <h4>Professional Tools</h4>
+                <ul>
+                    {results.analysis.resources.professionalTools > 0 ? (
+                        results.analysis.resources.professionalTools.map((tool, index) => (
+                            <li key={index}>{tool}</li>
+                        ))
+                    ) : (
+                        <li>No tools available.</li>
+                    )}
+                </ul>
+            </div>
+        </div>
+    }
+/>
+                            {/* Add other development-related ExpandableCards */}
+
+                            {/* <ExpandableCard
+                                id="learning-resources"
+                                title="Learning Resources"
+                                icon="icon-book"
+                                content={
+                                    <div className="learning-resources">
+                                        <h4>Recommended Courses</h4>
+                                        <ul className="courses-list">
+                                            {mockSkillsData.map((skill, index) => (
+                                                <li key={index} className="course-item">
+                                                    <h5>Advanced {skill.name} Skills</h5>
+                                                    <p className="course-provider">Provider: Professional Learning Academy</p>
+                                                    <p className="course-description">
+                                                        This course focuses on developing advanced {skill.name.toLowerCase()} skills
+                                                        required for career progression in your field.
+                                                    </p>
+                                                    <button className="resource-button">View Course</button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                }
+                            /> */}
+
+
+
+                            <ExpandableCard
+                                id="mentorship"
+                                title="Mentorship Opportunities"
+                                icon="icon-users"
+                                content={
+                                    <div className="mentorship-opportunities">
+                                        <h4>Find a Mentor</h4>
+                                        <p>
+                                            Based on your career goals, connecting with a mentor in your desired field
+                                            can significantly accelerate your professional development.
+                                        </p>
+                                        <button className="resource-button">Explore Mentorship Program</button>
+                                        
+                                        <h4>Peer Learning Groups</h4>
+                                        <p>
+                                            Join a community of professionals with similar career goals to share experiences,
+                                            challenges, and resources.
+                                        </p>
+                                        <button className="resource-button">Join Learning Group</button>
+                                    </div>
+                                }
+                            />
+                        </div>
+                    </div>
+                );
             default:
                 return null;
         }
     };
+
 
     return (
         <div className="dashboard-container">

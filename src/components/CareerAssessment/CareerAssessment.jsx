@@ -65,196 +65,196 @@ const categories = [
       }
     ]
   },
-  // {
-  //   id: 'interests',
-  //   title: 'Interests & Passions',
-  //   icon: FaHeart,
-  //   questions: [
-  //     {
-  //       id: 'q4',
-  //       text: 'Which of these areas interests you the most? (Choose up to 3)',
-  //       subtext: 'Select up to 3 areas that interest you',
-  //       options: [
-  //         { value: 'technology', label: 'Technology & Coding' },
-  //         { value: 'medicine', label: 'Medicine & Healthcare' },
-  //         { value: 'business', label: 'Business & Entrepreneurship' },
-  //         { value: 'teaching', label: 'Teaching & Education' },
-  //         { value: 'arts', label: 'Arts & Creativity' },
-  //         { value: 'politics', label: 'Politics & Law' },
-  //         { value: 'agriculture', label: 'Agriculture & Environment' },
-  //         { value: 'engineering', label: 'Engineering & Construction' },
-  //         { value: 'communication', label: 'Communication & Media' },
-  //         { value: 'finance', label: 'Finance & Banking' }
-  //         // { value: 'other', label: 'Other (Specify)' }
-  //       ],
-  //       multiple: true // Allow multiple selections
-  //     },
-  //     {
-  //       id: 'q5',
-  //       text: 'What type of work environment do you prefer?',
-  //       subtext: 'Select the work environment that suits you best',
-  //       options: [
-  //         { value: 'office', label: 'Working indoors in an office' },
-  //         { value: 'outdoors', label: 'Working outdoors (e.g., farms, fieldwork)' },
-  //         { value: 'mixed', label: 'A mix of indoor and outdoor work' },
-  //         { value: 'remote', label: 'Remote/Freelance work' },
-  //         { value: 'unsure', label: 'I’m not sure yet' }
-  //       ]
-  //     }
-  //   ]
-  // },
-  // {
-  //   id: 'skills',
-  //   title: 'Skills & Strengths',
-  //   icon: FaBrain,
-  //   questions: [
-  //     {
-  //       id: 'q6',
-  //       text: 'Which of these skills best describes you? (Choose up to 3)',
-  //       subtext: 'Select up to 3 skills that best describe you',
-  //       options: [
-  //         { value: 'critical_thinking', label: 'Critical Thinking & Problem-Solving' },
-  //         { value: 'communication', label: 'Communication & Public Speaking' },
-  //         { value: 'leadership', label: 'Leadership & Teamwork' },
-  //         { value: 'creativity', label: 'Creativity & Innovation' },
-  //         { value: 'analytical', label: 'Analytical & Research Skills' },
-  //         { value: 'technical', label: 'Technical & Hands-on Skills' },
-  //         { value: 'business', label: 'Business & Negotiation Skills' },
-  //         { value: 'empathy', label: 'Empathy & Helping Others' },
-  //         { value: 'writing', label: 'Writing & Storytelling' },
-  //         { value: 'programming', label: 'Programming & Software Development' }
-  //       ],
-  //       multiple: true // Allow multiple selections
-  //     },
-  //     {
-  //       id: 'q7',
-  //       text: 'Do you prefer working with people, data, or things?',
-  //       subtext: 'Select the option that best describes your preference',
-  //       options: [
-  //         { value: 'people', label: 'People (e.g., Teaching, Healthcare, Customer Service)' },
-  //         { value: 'data', label: 'Data (e.g., Analytics, Research, Finance)' },
-  //         { value: 'things', label: 'Things (e.g., Engineering, Construction, Art & Craft)' },
-  //         { value: 'mix', label: 'A mix of all' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'q8',
-  //       text: 'How comfortable are you with technology and digital tools?',
-  //       subtext: 'Select the option that best describes your comfort level',
-  //       options: [
-  //         { value: 'very_comfortable', label: 'Very comfortable (I use tech often and can learn new tools easily)' },
-  //         { value: 'somewhat_comfortable', label: 'Somewhat comfortable (I can use basic tools but need help with advanced ones)' },
-  //         { value: 'not_comfortable', label: 'Not comfortable (I prefer manual or traditional ways of working)' }
-  //       ]
-  //     }
-  //   ]
-  // },
-  // {
-  //   id: 'personality',
-  //   title: 'Personality & Work Style',
-  //   icon: FaBriefcase,
-  //   questions: [
-  //     {
-  //       id: 'q9',
-  //       text: 'What describes your work style the best?',
-  //       subtext: 'Select the option that best describes your work style',
-  //       options: [
-  //         { value: 'structured', label: 'I like structured and well-organized tasks' },
-  //         { value: 'flexible', label: 'I prefer flexibility and creativity in my work' },
-  //         { value: 'critical_thinking', label: 'I enjoy solving complex challenges and thinking critically' },
-  //         { value: 'leadership', label: 'I work best when leading or managing a team' },
-  //         { value: 'independent', label: 'I like working alone with minimal supervision' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'q10',
-  //       text: 'How do you approach problem-solving?',
-  //       subtext: 'Select the option that best describes your approach',
-  //       options: [
-  //         { value: 'analyze', label: 'I analyze the situation carefully before acting' },
-  //         { value: 'try_solutions', label: 'I try different solutions quickly to see what works' },
-  //         { value: 'collaborate', label: 'I ask for guidance or collaborate with others' },
-  //         { value: 'step_by_step', label: 'I follow step-by-step instructions' }
-  //       ]
-  //     }
-  //   ]
-  // },
-  // {
-  //   id: 'career_goals',
-  //   title: 'Career Preferences & Goals',
-  //   icon: FaChartBar,
-  //   questions: [
-  //     {
-  //       id: 'q11',
-  //       text: 'What is your main goal in choosing a career?',
-  //       subtext: 'Select the option that best describes your goal',
-  //       options: [
-  //         { value: 'salary', label: 'High salary & financial stability' },
-  //         { value: 'security', label: 'Job security & long-term stability' },
-  //         { value: 'flexibility', label: 'Flexibility & work-life balance' },
-  //         { value: 'passion', label: 'Passion & job satisfaction' },
-  //         { value: 'impact', label: 'Helping others & making an impact' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'q12',
-  //       text: 'Are you open to entrepreneurship or starting your own business?',
-  //       subtext: 'Select the option that best describes your interest',
-  //       options: [
-  //         { value: 'yes', label: 'Yes, I want to start my own business' },
-  //         { value: 'maybe', label: 'Maybe, but I need guidance' },
-  //         { value: 'no', label: 'No, I prefer a stable job' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'q13',
-  //       text: 'Would you consider studying further (university, technical training, or online courses) to enhance your career opportunities?',
-  //       subtext: 'Select the option that best describes your intention',
-  //       options: [
-  //         { value: 'yes', label: 'Yes, I want to continue studying' },
-  //         { value: 'maybe', label: 'Maybe, if it helps my career' },
-  //         { value: 'no', label: 'No, I prefer to start working now' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'q14',
-  //       text: 'Are you open to working outside of Cameroon if opportunities arise?',
-  //       subtext: 'Select the option that best describes your willingness',
-  //       options: [
-  //         { value: 'yes', label: 'Yes, I am open to international opportunities' },
-  //         { value: 'no', label: 'No, I want to work within Cameroon' },
-  //         { value: 'not_sure', label: 'Not sure yet' }
-  //       ]
-  //     }
-  //   ]
-  // },
-  // {
-  //   id: 'practical_constraints',
-  //   title: 'Practical Constraints & Accessibility',
-  //   icon: FaUsers,
-  //   questions: [
-  //     {
-  //       id: 'q15',
-  //       text: 'Do you have access to resources such as a computer, internet, or library for research and self-learning?',
-  //       subtext: 'Select the option that best describes your access',
-  //       options: [
-  //         { value: 'yes', label: 'Yes, I have access to all' },
-  //         { value: 'limited', label: 'Limited access (some but not all)' },
-  //         { value: 'no', label: 'No access to these resources' }
-  //       ]
-  //     },
-  //     {
-  //       id: 'q16',
-  //       text: 'Do you have financial constraints that may affect your career choices?',
-  //       subtext: 'Select the option that best describes your situation',
-  //       options: [
-  //         { value: 'yes', label: 'Yes, I may need financial support or scholarships' },
-  //         { value: 'no', label: 'No, I can support myself financially' },
-  //         { value: 'not_sure', label: 'Not sure yet' }
-  //       ]
-  //     }
-  //   ]
-  // }
+  {
+    id: 'interests',
+    title: 'Interests & Passions',
+    icon: FaHeart,
+    questions: [
+      {
+        id: 'q4',
+        text: 'Which of these areas interests you the most? (Choose up to 3)',
+        subtext: 'Select up to 3 areas that interest you',
+        options: [
+          { value: 'technology', label: 'Technology & Coding' },
+          { value: 'medicine', label: 'Medicine & Healthcare' },
+          { value: 'business', label: 'Business & Entrepreneurship' },
+          { value: 'teaching', label: 'Teaching & Education' },
+          { value: 'arts', label: 'Arts & Creativity' },
+          { value: 'politics', label: 'Politics & Law' },
+          { value: 'agriculture', label: 'Agriculture & Environment' },
+          { value: 'engineering', label: 'Engineering & Construction' },
+          { value: 'communication', label: 'Communication & Media' },
+          { value: 'finance', label: 'Finance & Banking' }
+          // { value: 'other', label: 'Other (Specify)' }
+        ],
+        multiple: true // Allow multiple selections
+      },
+      {
+        id: 'q5',
+        text: 'What type of work environment do you prefer?',
+        subtext: 'Select the work environment that suits you best',
+        options: [
+          { value: 'office', label: 'Working indoors in an office' },
+          { value: 'outdoors', label: 'Working outdoors (e.g., farms, fieldwork)' },
+          { value: 'mixed', label: 'A mix of indoor and outdoor work' },
+          { value: 'remote', label: 'Remote/Freelance work' },
+          { value: 'unsure', label: 'I’m not sure yet' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'skills',
+    title: 'Skills & Strengths',
+    icon: FaBrain,
+    questions: [
+      {
+        id: 'q6',
+        text: 'Which of these skills best describes you? (Choose up to 3)',
+        subtext: 'Select up to 3 skills that best describe you',
+        options: [
+          { value: 'critical_thinking', label: 'Critical Thinking & Problem-Solving' },
+          { value: 'communication', label: 'Communication & Public Speaking' },
+          { value: 'leadership', label: 'Leadership & Teamwork' },
+          { value: 'creativity', label: 'Creativity & Innovation' },
+          { value: 'analytical', label: 'Analytical & Research Skills' },
+          { value: 'technical', label: 'Technical & Hands-on Skills' },
+          { value: 'business', label: 'Business & Negotiation Skills' },
+          { value: 'empathy', label: 'Empathy & Helping Others' },
+          { value: 'writing', label: 'Writing & Storytelling' },
+          { value: 'programming', label: 'Programming & Software Development' }
+        ],
+        multiple: true // Allow multiple selections
+      },
+      {
+        id: 'q7',
+        text: 'Do you prefer working with people, data, or things?',
+        subtext: 'Select the option that best describes your preference',
+        options: [
+          { value: 'people', label: 'People (e.g., Teaching, Healthcare, Customer Service)' },
+          { value: 'data', label: 'Data (e.g., Analytics, Research, Finance)' },
+          { value: 'things', label: 'Things (e.g., Engineering, Construction, Art & Craft)' },
+          { value: 'mix', label: 'A mix of all' }
+        ]
+      },
+      {
+        id: 'q8',
+        text: 'How comfortable are you with technology and digital tools?',
+        subtext: 'Select the option that best describes your comfort level',
+        options: [
+          { value: 'very_comfortable', label: 'Very comfortable (I use tech often and can learn new tools easily)' },
+          { value: 'somewhat_comfortable', label: 'Somewhat comfortable (I can use basic tools but need help with advanced ones)' },
+          { value: 'not_comfortable', label: 'Not comfortable (I prefer manual or traditional ways of working)' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'personality',
+    title: 'Personality & Work Style',
+    icon: FaBriefcase,
+    questions: [
+      {
+        id: 'q9',
+        text: 'What describes your work style the best?',
+        subtext: 'Select the option that best describes your work style',
+        options: [
+          { value: 'structured', label: 'I like structured and well-organized tasks' },
+          { value: 'flexible', label: 'I prefer flexibility and creativity in my work' },
+          { value: 'critical_thinking', label: 'I enjoy solving complex challenges and thinking critically' },
+          { value: 'leadership', label: 'I work best when leading or managing a team' },
+          { value: 'independent', label: 'I like working alone with minimal supervision' }
+        ]
+      },
+      {
+        id: 'q10',
+        text: 'How do you approach problem-solving?',
+        subtext: 'Select the option that best describes your approach',
+        options: [
+          { value: 'analyze', label: 'I analyze the situation carefully before acting' },
+          { value: 'try_solutions', label: 'I try different solutions quickly to see what works' },
+          { value: 'collaborate', label: 'I ask for guidance or collaborate with others' },
+          { value: 'step_by_step', label: 'I follow step-by-step instructions' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'career_goals',
+    title: 'Career Preferences & Goals',
+    icon: FaChartBar,
+    questions: [
+      {
+        id: 'q11',
+        text: 'What is your main goal in choosing a career?',
+        subtext: 'Select the option that best describes your goal',
+        options: [
+          { value: 'salary', label: 'High salary & financial stability' },
+          { value: 'security', label: 'Job security & long-term stability' },
+          { value: 'flexibility', label: 'Flexibility & work-life balance' },
+          { value: 'passion', label: 'Passion & job satisfaction' },
+          { value: 'impact', label: 'Helping others & making an impact' }
+        ]
+      },
+      {
+        id: 'q12',
+        text: 'Are you open to entrepreneurship or starting your own business?',
+        subtext: 'Select the option that best describes your interest',
+        options: [
+          { value: 'yes', label: 'Yes, I want to start my own business' },
+          { value: 'maybe', label: 'Maybe, but I need guidance' },
+          { value: 'no', label: 'No, I prefer a stable job' }
+        ]
+      },
+      {
+        id: 'q13',
+        text: 'Would you consider studying further (university, technical training, or online courses) to enhance your career opportunities?',
+        subtext: 'Select the option that best describes your intention',
+        options: [
+          { value: 'yes', label: 'Yes, I want to continue studying' },
+          { value: 'maybe', label: 'Maybe, if it helps my career' },
+          { value: 'no', label: 'No, I prefer to start working now' }
+        ]
+      },
+      {
+        id: 'q14',
+        text: 'Are you open to working outside of Cameroon if opportunities arise?',
+        subtext: 'Select the option that best describes your willingness',
+        options: [
+          { value: 'yes', label: 'Yes, I am open to international opportunities' },
+          { value: 'no', label: 'No, I want to work within Cameroon' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'practical_constraints',
+    title: 'Practical Constraints & Accessibility',
+    icon: FaUsers,
+    questions: [
+      {
+        id: 'q15',
+        text: 'Do you have access to resources such as a computer, internet, or library for research and self-learning?',
+        subtext: 'Select the option that best describes your access',
+        options: [
+          { value: 'yes', label: 'Yes, I have access to all' },
+          { value: 'limited', label: 'Limited access (some but not all)' },
+          { value: 'no', label: 'No access to these resources' }
+        ]
+      },
+      {
+        id: 'q16',
+        text: 'Do you have financial constraints that may affect your career choices?',
+        subtext: 'Select the option that best describes your situation',
+        options: [
+          { value: 'yes', label: 'Yes, I may need financial support or scholarships' },
+          { value: 'no', label: 'No, I can support myself financially' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      }
+    ]
+  }
 ];
 
 const LoadingSpinner = () => (
