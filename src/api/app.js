@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    origin: 'http://localhost:5173', // Allow only your frontend URL
+    origin: 'http://localhost:5173', 
     methods: ['POST', 'GET', 'OPTIONS'],
     credentials: true,
 });
