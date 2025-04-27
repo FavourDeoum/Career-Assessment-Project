@@ -159,6 +159,10 @@ const CareerDashboard = () => {
                             Our comprehensive assessment will analyze your skills, interests, and preferences
                             to provide tailored career recommendations and growth opportunities.
                         </p>
+                        <p>
+                            After completing the assessment, you'll receive a personalized dashboard with
+                            actionable insights to guide your professional development.
+                        </p>
                         {user ? (
                             <Link to="/assessment" className="assessment-button">
                                 Take Career Assessment
@@ -198,7 +202,7 @@ const CareerDashboard = () => {
                                 </div>
                             }
                         />
-                        <ExpandableCard
+                        {/* <ExpandableCard
                             id="skills"
                             title="Skills Analysis"
                             icon="icon-star"
@@ -214,7 +218,7 @@ const CareerDashboard = () => {
                                     </ResponsiveContainer>
                                 </div>
                             }
-                        />
+                        /> */}
                         <ExpandableCard
                             id="growth"
                             title="Growth Opportunities"
@@ -222,7 +226,7 @@ const CareerDashboard = () => {
                             content={
                                 <div className="growth-opportunities">
                                     <h4>Emerging Roles</h4>
-                                    <ul>
+                                    <ul  className="recommendation-list">
                                         {results.analysis.growthOpportunities.emergingRoles.map((role, index) => (
                                             <li key={index} className="role-item">
                                                 {role}
@@ -231,7 +235,7 @@ const CareerDashboard = () => {
                                     </ul>
 
                                     <h4>Sectors</h4>
-                                    <ul>
+                                    <ul className="recommendation-list">
                                         {results.analysis.growthOpportunities.sectors.map((sector, index) => (
                                             <li key={index} className="sector-item">
                                                 {sector}
@@ -248,30 +252,30 @@ const CareerDashboard = () => {
                             content={
                                 <div className="next-steps">
                                     <h4>Immediate Next Steps</h4>
-                                    <ul>
+                                    <ul className="recommendation-list">
                                         {results.analysis.actionPlan.immediateNextSteps.map((step, index) => (
-                                            <li key={index} className="step-item" style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                            <li key={index} className="step-item">
+                                                {/* <div className="step-number" style={{ marginRight: '10px' }}>{index + 1}.</div> */}
                                                 <p>{step}</p>
                                             </li>
                                         ))}
                                     </ul>
 
                                     <h4>Short Term Goals</h4>
-                                    <ul>
+                                    <ul className="recommendation-list">
                                         {results.analysis.actionPlan.shortTermGoals.map((goal, index) => (
-                                            <li key={index} className="goal-item" style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                            <li key={index} className="goal-item">
+                                                {/* <div className="goal-number" style={{ marginRight: '10px' }}>{index + 1}.</div> */}
                                                 <p>{goal}</p>
                                             </li>
                                         ))}
                                     </ul>
 
                                     <h4>Long Term Roadmap</h4>
-                                    <ul>
+                                    <ul className="recommendation-list">
                                         {results.analysis.actionPlan.longTermRoadmap.map((roadmap, index) => (
-                                            <li key={index} className="roadmap-item" style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div>
+                                            <li key={index} className="roadmap-item">
+                                                {/* <div className="roadmap-number" style={{ marginRight: '10px' }}>{index + 1}.</div> */}
                                                 <p>{roadmap}</p>
                                             </li>
                                         ))}
@@ -295,7 +299,7 @@ const CareerDashboard = () => {
                                     </ul>
 
                                     <h4>Mitigation Strategies</h4>
-                                    <ul>
+                                    <ul className="recommendation-list">
                                         {results.analysis.potentialChallenges.mitigationStrategies.map((strategy, index) => (
                                             <li key={index} className="strategy-item">
                                                 {strategy}
@@ -306,33 +310,6 @@ const CareerDashboard = () => {
                             }
                         />
 
-
-                          {/* Resources Card */}
-                    {/* <ExpandableCard
-                        id="resources"
-                        title="Recommended Resources"
-                        icon="icon-book"
-                        content={
-                            <div className="resources">
-                                <div className="resource-section">
-                                    <h4>Courses</h4>
-                                    <ul>
-                                        {results.resources.recommendedCourses.map((course, index) => (
-                                            <li key={index}>{course}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="resource-section">
-                                    <h4>Reading Materials</h4>
-                                    <ul>
-                                        {results.resources.suggestedReadings.map((reading, index) => (
-                                            <li key={index}>{reading}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                    /> */}
                     </div>
                 );
 
@@ -351,17 +328,26 @@ const CareerDashboard = () => {
                 <div className="charts-container">
                     {/* Skills to Develop Section */}
                     <h4>Skills to Develop</h4>
-                    <ul>
+                    <ul className="recommendation-list">
                         {results.analysis.skillsAnalysis.skillsToDevelop.map((skill, index) => (
                             <li key={index} className="skill-item">
                                 {skill}
                             </li>
                         ))}
                     </ul>
+                </div>
+            }
+        />
 
+<ExpandableCard
+            id="skill-breakdown"
+            title="Skill Breakdown"
+            icon="icon-chart"
+            content={
+                <div className="charts-container">
                     {/* Strengths Section */}
                     <h4>Strengths</h4>
-                    <ul>
+                    <ul className="recommendation-list">
                         {results.analysis.skillsAnalysis.strengths.map((strength, index) => (
                             <li key={index} className="strength-item">
                                 {strength}
@@ -389,13 +375,23 @@ const CareerDashboard = () => {
     content={
         <div className="insights">
             <h4>Key Takeaways</h4>
-            <ul>
+            <ul className="recommendation-list">
                 {results.analysis.insights.keyTakeaways.map((takeaway, index) => (
                     <li key={index} className="takeaway-item">
                         {takeaway}
                     </li>
                 ))}
-            </ul>
+            </ul >
+        </div>
+    }
+/>
+
+<ExpandableCard
+    id="insights"
+    title="Key Insights"
+    icon="icon-insight"
+    content={
+        <div className="insights">
 
             <h4>Motivational Quote</h4>
             <p className="motivational-quote">
@@ -414,7 +410,7 @@ const CareerDashboard = () => {
                     <div className="section-content">
                         <h2>Professional Development</h2>
                         <div className="dashboard-grid">
-                        <ExpandableCard
+                        {/* <ExpandableCard
     id="resources"
     title="Recommended Resources"
     icon="icon-book"
@@ -458,7 +454,7 @@ const CareerDashboard = () => {
             </div>
         </div>
     }
-/>
+/> */}
                             {/* Add other development-related ExpandableCards */}
 
                             {/* <ExpandableCard

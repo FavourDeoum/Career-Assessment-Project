@@ -169,8 +169,8 @@
 }
 
 .dashboard-card.expanded {
-    grid-column: span 3;
-    grid-row: span 3;
+    grid-column: span 5;
+    grid-row: span 5;
 }
 
 /* Skills section specific card styles */
@@ -567,6 +567,35 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+
+
+.recommendation-list {
+    list-style-type: disc; /* Use disc for bullet points */
+    padding-left: 1.5rem; /* Adjust padding for bullets */
+}
+
+.dashboard-footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f5f7fa;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 2rem;
+}
+
+.retake-button{
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(76, 111, 255, 0.2);
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

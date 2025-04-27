@@ -54,15 +54,15 @@ const categories = [
         ],
         multiple: true // Allow multiple selections
       },
-      {
-        id: 'q3',
-        text: 'Did you take any professional training or certification courses outside of your school syllabus?',
-        subtext: 'Select the most relevant option',
-        options: [
-          { value: 'yes', label: 'Yes' },
-          { value: 'no', label: 'No' }
-        ]
-      }
+      // {
+      //   id: 'q3',
+      //   text: 'Did you take any professional training or certification courses outside of your school syllabus?',
+      //   subtext: 'Select the most relevant option',
+      //   options: [
+      //     { value: 'yes', label: 'Yes' },
+      //     { value: 'no', label: 'No' }
+      //   ]
+      // }
     ]
   },
   {
