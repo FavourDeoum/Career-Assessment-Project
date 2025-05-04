@@ -42,7 +42,7 @@ const Navbar = () => {
 
           <SignedIn>
             <Link to="/cdashboard" className={`navbar-link ${location.pathname === '/cdashboard' ? 'active' : ''}`}>Dashboard</Link>
-            <Link to="/assessment" className={`navbar-link ${location.pathname === '/assessment' ? 'active' : ''}`}>Assessment</Link>
+            {/* <Link to="/assessment" className={`navbar-link ${location.pathname === '/assessment' ? 'active' : ''}`}>Assessment</Link> */}
             
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
