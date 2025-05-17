@@ -1,55 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import './Navbar.css';
-import { SignedIn, SignedOut, SignInButton, UserButton} from '@clerk/clerk-react';
+"use client"
+
+import { useState, useEffect } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import { FaBars, FaTimes } from "react-icons/fa"
+import "./Navbar.css"
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react"
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  // Close the mobile menu when a link is clicked
+  // Close the mobile menu when location changes
   useEffect(() => {
-    if (isOpen) {
-      setIsOpen(false);
-    }
-  }, [location.pathname]);
+    setIsOpen(false)
+  }, [location.pathname])
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
+
+  // Function to handle link clicks
+  const handleLinkClick = () => {
+    setIsOpen(false)
+  }
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <button className="menu-toggle" onClick={toggleMenu}>
+        <button className="menu-toggle" onClick={toggleMenu} aria-label="Toggle menu">
           {isOpen ? <FaTimes /> : <FaBars />}
         </button>
-        <Link to="/" className="logo-text">
+        <Link to="/" className="logo-text" onClick={handleLinkClick}>
           <img src="/images/logo2.png" alt="Logo" />
         </Link>
-        <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
-          <Link to="/" className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
-          <Link to="/about" className={`navbar-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
-          <Link to="/contact" className={`navbar-link ${location.pathname === '/contact' ? 'active' : ''}`}>Contact</Link>
-          
+        <div className={`navbar-links ${isOpen ? "active" : ""}`}>
+          <Link to="/" className={`navbar-link ${location.pathname === "/" ? "active" : ""}`} onClick={handleLinkClick}>
+            Home
+          </Link>
+          <Link
+            to="/about"
+            className={`navbar-link ${location.pathname === "/about" ? "active" : ""}`}
+            onClick={handleLinkClick}
+          >
+            About
+          </Link>
+          <Link
+            to="/contact"
+            className={`navbar-link ${location.pathname === "/contact" ? "active" : ""}`}
+            onClick={handleLinkClick}
+          >
+            Contact
+          </Link>
+
           <SignedOut>
             <SignInButton mode="modal">
-              <button className="navbar-link">Sign In</button>
+              <button className="navbar-link" onClick={handleLinkClick}>
+                Sign In
+              </button>
             </SignInButton>
           </SignedOut>
 
           <SignedIn>
-            <Link to="/cdashboard" className={`navbar-link ${location.pathname === '/cdashboard' ? 'active' : ''}`}>Dashboard</Link>
-            {/* <Link to="/assessment" className={`navbar-link ${location.pathname === '/assessment' ? 'active' : ''}`}>Assessment</Link> */}
-            
-            <UserButton afterSignOutUrl="/" />
+            <Link
+              to="/cdashboard"
+              className={`navbar-link ${location.pathname === "/cdashboard" ? "active" : ""}`}
+              onClick={handleLinkClick}
+            >
+              Dashboard
+            </Link>
+            <div className="user-button-container" onClick={handleLinkClick}>
+              <UserButton afterSignOutUrl="/" />
+            </div>
           </SignedIn>
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
