@@ -19,7 +19,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ClerkProvider
   publishableKey={PUBLISHABLE_KEY}
   afterSignInUrl="/cdashboard"
-  afterSignUpUrl="/cdashboard"
+  signInUrl="/sign-in"
+  signUpUrl="/sign-up"
+
 >
 <MultisessionAppSupport>
         <App />
