@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    origin: 'http://localhost:5173', 
+    origin: ['http://localhost:5173', 'https://career-assessment-project.vercel.app'], 
     methods: ['POST', 'GET', 'OPTIONS'],
     credentials: true,
 });
