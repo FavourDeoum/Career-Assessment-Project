@@ -365,7 +365,7 @@ const CareerDashboard = () => {
                 }
               />
 
-              <ExpandableCard
+              {/* <ExpandableCard
                 id="skill-visualization"
                 title="Skills Visualization"
                 icon={<BarChart2 className="card-icon-svg" />}
@@ -388,7 +388,7 @@ const CareerDashboard = () => {
                     </ResponsiveContainer>
                   </div>
                 }
-              />
+              /> */}
             </div>
           </div>
         )
