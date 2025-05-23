@@ -7,14 +7,14 @@ import { useUser } from '@clerk/clerk-react';
 
 const LandingPage = () => {
 
-    const { isSignedIn, isLoaded } = useUser();
-  const navigate = useNavigate();
+  //   const { isSignedIn, isLoaded } = useUser();
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      navigate('/cdashboard');
-    }
-  }, [isSignedIn, isLoaded, navigate]);
+  // useEffect(() => {
+  //   if (isLoaded && isSignedIn) {
+  //     navigate('/cdashboard');
+  //   }
+  // }, [isSignedIn, isLoaded, navigate]);
 
   return (
     <div className="landing-page">
