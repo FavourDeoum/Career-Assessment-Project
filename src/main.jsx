@@ -18,8 +18,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <AuthProvider>
     <ClerkProvider
   publishableKey={PUBLISHABLE_KEY}
-  afterSignInUrl="/"
-  afterSignUpUrl="/"
+  afterSignInUrl="/cdashboard"
+  afterSignUpUrl="/cdashboard"
   signInUrl="/sign-in"
   signUpUrl="/sign-up"
 
