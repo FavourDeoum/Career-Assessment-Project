@@ -1,10 +1,21 @@
 // LandingPage.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaRocket, FaChartBar, FaUserGraduate } from 'react-icons/fa';
 import "./LandingPage.css";
+import { useUser } from '@clerk/clerk-react';
 
 const LandingPage = () => {
+
+    const { isSignedIn, isLoaded } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      navigate('/cdashboard');
+    }
+  }, [isSignedIn, isLoaded, navigate]);
+
   return (
     <div className="landing-page">
       <header className="landing-header">
