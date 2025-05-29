@@ -64,7 +64,7 @@ const Navbar = () => {
               <div className="logo-icon">
                 <img src="/images/logo2.png" alt="Logo" />
               </div>
-              <span className="logo-text">EduVate</span>
+              {/* <span className="logo-text">EduVate</span> */}
             </div>
           </Link>
 
