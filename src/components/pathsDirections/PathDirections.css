@@ -1,0 +1,585 @@
+/* Global Styles & Variables */
+:root {
+  --primary-color: #673AB7; /* Deep Purple */
+  --primary-light: #D1C4E9;
+  --primary-lighter: #EDE7F6; /* For subtle backgrounds */
+  --primary-dark: #512DA8;
+  --accent-color: #ffc048; /* Gold for stars, etc. */
+  --text-color: #333333;
+  --text-light: #757575;
+  --bg-color: #FFFFFF;
+  --app-bg-color: #F8F7FA; /* Very light purple-ish white */
+  --card-bg: var(--bg-color);
+  --border-color: #e0e0e0;
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(103, 58, 183, 0.15); /* Purpleish shadow */
+  --error-color: #ff4757;
+  --whatsapp-color: #25D366;
+  --whatsapp-dark: #1DA851;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+
+
+button {
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-dark);
+  margin-bottom: 0.5em;
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 70px; /* Space for bottom-nav */
+}
+
+/* Header */
+.app-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 1rem 1.5rem; /* More padding at bottom for visual balance */
+  position: sticky;
+  top: 0;
+  /* z-index: 1000; */
+  box-shadow: 0 2px 8px var(--shadow-medium);
+  margin-top: 2rem;
+}
+
+.header-content h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+  color: white;
+}
+
+.header-content p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.search-box {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-color);
+  border-radius: 25px;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.search-box svg {
+  color: var(--text-light);
+  margin-right: 0.5rem;
+}
+
+.search-box input {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: transparent;
+}
+.search-box input::placeholder {
+  color: var(--text-light);
+  opacity: 0.8;
+}
+
+.filter-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+.filter-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem; /* Prevent cut-off on overflow */
+}
+
+.pill {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 0.5em 1em;
+  border-radius: 15px;
+  font-size: 0.85em;
+  transition: background-color 0.2s, color 0.2s;
+  border: 1px solid transparent;
+}
+.pill:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.pill.active {
+  background-color: var(--bg-color);
+  color: var(--primary-color);
+  font-weight: bold;
+  border-color: var(--primary-color);
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  background-color: var(--bg-color);
+  box-shadow: 0 1px 3px var(--shadow-light);
+  position: sticky;
+  top: calc(48px + 3rem + 40px + 1.5rem); /* Approximate height of search bar elements, needs JS if dynamic */
+  /* If header height is dynamic, JS is needed to set this 'top' value. For simplicity, let's assume a fixed max header height or don't make tabs sticky if header is too dynamic. */
+  /* Or a simpler approach without dynamic top: */
+   z-index: 999; /* Below app-header */
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  color: var(--text-light);
+  font-size: 0.8rem; /* Smaller font for tabs */
+  text-align: center;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-tab svg {
+  margin-bottom: 0.25rem;
+  transition: transform 0.2s;
+}
+.nav-tab:hover {
+  color: var(--primary-color);
+}
+.nav-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  font-weight: 600;
+}
+.nav-tab.active svg {
+  transform: scale(1.1);
+}
+
+/* Main Content Area */
+.main-content {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+/* Grids */
+.paths-grid, .schools-grid, .tutors-grid {
+  display: grid;
+  gap: 1rem; /* Standard gap */
+}
+
+@media (min-width: 600px) {
+  .schools-grid, .tutors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  .paths-grid { /* Paths might be wider */
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+}
+
+/* General Card Styles */
+.path-card, .school-card, .tutor-card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow-light);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.path-card:hover, .school-card:hover, .tutor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px var(--shadow-medium);
+}
+
+/* Favorite Button (general usage within cards) */
+.favorite-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2; /* Ensure it's clickable */
+}
+.favorite-btn svg {
+  transition: fill 0.2s, color 0.2s, transform 0.2s;
+}
+.favorite-btn:hover svg {
+  transform: scale(1.15);
+}
+
+/* Path Card */
+.path-card {
+  cursor: pointer; /* Whole card is clickable */
+}
+.path-header {
+  display: flex;
+  align-items: flex-start; /* Align icon top with text */
+  padding: 1rem;
+  gap: 1rem;
+}
+.path-icon {
+  font-size: 1.8rem; /* Emoji size */
+  background-color: var(--primary-lighter);
+  color: var(--primary-dark);
+  padding: 0.6rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px; /* Ensure consistent size */
+  height: 50px;
+}
+.path-info {
+  flex-grow: 1;
+}
+.path-info h3 {
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+}
+.path-info p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin: 0;
+}
+.path-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.stat {
+  text-align: center;
+  font-size: 0.85rem;
+}
+.stat-label {
+  display: block;
+  color: var(--text-light);
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+}
+.stat-value {
+  font-weight: 600;
+}
+.demand-badge {
+  color: white;
+  padding: 0.2em 0.6em;
+  border-radius: 12px;
+  font-size: 0.75em;
+  display: inline-block;
+  font-weight: bold;
+}
+.path-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-top: auto; /* Push to bottom */
+}
+
+/* Action Buttons (reusable) */
+.action-btn {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, color 0.2s, transform 0.1s;
+  text-align: center;
+}
+.action-btn:active {
+    transform: scale(0.98);
+}
+.action-btn.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+.action-btn.primary:hover {
+  background-color: var(--primary-dark);
+}
+.action-btn.secondary {
+  background-color: var(--primary-lighter);
+  color: var(--primary-dark);
+  border: 1px solid var(--primary-light);
+}
+.action-btn.secondary:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+/* School Card */
+.school-image {
+  position: relative;
+  width: 100%;
+  height: 180px; /* Fixed height for consistency */
+}
+.school-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.school-type {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.65);
+  color: white;
+  padding: 0.3em 0.7em;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.school-favorite { /* Specific styling for favorite btn on image */
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(20, 20, 20, 0.4); /* Darker for better contrast on images */
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+}
+.school-favorite svg {
+    color: white; /* Default stroke color for non-filled */
+}
+.school-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.school-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+.school-header h3 {
+  font-size: 1.15rem;
+  margin: 0;
+  flex-grow: 1; /* Allow h3 to take space */
+  padding-right: 0.5rem; /* Space before rating */
+}
+.school-rating {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--accent-color); /* Gold text */
+  background-color: var(--primary-lighter);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap; /* Prevent wrapping */
+}
+.school-rating svg {
+  margin-right: 0.25rem;
+  /* fill and color are set by props */
+}
+.school-location, .school-programs {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+.school-location svg, .school-programs svg {
+  color: var(--primary-color);
+  flex-shrink: 0; /* Prevent icon shrinking */
+}
+.school-tuition {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  color: var(--primary-dark);
+}
+.school-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto; /* Push to bottom */
+}
+
+/* Tutor Card */
+.tutor-card {
+  display: flex; /* Overrides card default flex-direction */
+  flex-direction: column; /* Default for mobile */
+  gap: 0.5rem;
+}
+
+@media (min-width: 500px) { /* Switch to row layout for wider tutor cards */
+  .tutor-card {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.tutor-image {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0; /* Prevent shrinking in row layout */
+}
+.tutor-image img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--primary-lighter);
+  box-shadow: 0 2px 6px var(--shadow-light);
+}
+.tutor-rating {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  background-color: #FFF8E1; /* Light yellow for rating */
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  color: #FFA000; /* Darker yellow text */
+}
+.tutor-rating svg {
+  margin-right: 0.25em;
+  /* fill and color set by props */
+}
+.tutor-info {
+  padding: 1rem;
+  padding-top: 0.5rem; /* Reduce top padding if image is above */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 500px) {
+  .tutor-info {
+    padding-top: 1rem; /* Reset padding for row layout */
+  }
+}
+
+.tutor-info h3 {
+  font-size: 1.15rem;
+  margin-top: 0;
+  margin-bottom: 0.1rem;
+}
+.tutor-specialty {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+.tutor-experience, .tutor-rate, .tutor-availability {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+.tutor-rate {
+    font-weight: 500;
+    color: var(--text-color);
+}
+.tutor-bio {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  flex-grow: 1; /* Allow bio to take space */
+}
+.tutor-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto; /* Push to bottom */
+}
+.action-btn.whatsapp {
+  background-color: var(--whatsapp-color);
+  color: white;
+}
+.action-btn.whatsapp:hover {
+  background-color: var(--whatsapp-dark);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--bg-color);
+  border-top: 1px solid var(--border-color);
+  padding: 0.5rem 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px var(--shadow-light);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-light);
+  font-size: 0.7rem; /* Small text for bottom nav items */
+  padding: 0.25rem 0;
+  transition: color 0.2s, transform 0.2s;
+}
+.nav-item svg {
+  margin-bottom: 0.15rem;
+  transition: transform 0.2s;
+}
+.nav-item:hover {
+  color: var(--primary-color);
+}
+.nav-item.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.nav-item.active svg {
+  transform: scale(1.1);
+}
+
+/* Helper for sticky header height calculation, if needed via JS */
+/*
+.app-header-height-fix {
+  height: 120px; // Example, should match actual header height
+}
+*/
+
+/* Lucide icon default size (can be overridden by props) */
+.lucide {
+  stroke-width: 2; /* Default Lucide stroke */
+}
