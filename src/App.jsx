@@ -15,6 +15,7 @@ import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import SSOCallback from './components/SSOCallback/SSOCallback'; // Import the SSO callback component
 import './App.css';
+import StudentPathExplorer from './components/pathsDirections/PathDirections';
 
 // Define all routes in a single array for better maintainability
 const publicRoutes = [
@@ -28,6 +29,8 @@ const publicRoutes = [
 const protectedRoutes = [
   { path: '/assessment', element: <CareerAssessment /> },
   { path: '/cdashboard', element: <CareerDashboard /> },
+   { path: '/explore', element: <StudentPathExplorer /> },
+
 ];
 
 // Custom ProtectedRoute Component

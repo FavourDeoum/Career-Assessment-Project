@@ -10,33 +10,49 @@ const Contact = () => {
     email: '',
     message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+    console.log(`api key -${import.meta.env.VITE_EMAILJS_SERVICE_ID}`)
+     console.log(`api key -${import.meta.env.VITE_EMAILJS_TEMPLATE_ID}`)
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
 
-    emailjs
-      .send(
-        'service_56f423c', // Replace with your EmailJS service ID
-        'template_u9p26jh', // Replace with your EmailJS template ID
-        formData,
-        '4EZiQWGgEh74yrfH3' // Replace with your EmailJS user ID
-      )
+    // Validate form
+    if (!formData.name || !formData.email || !formData.message) {
+      setSubmitStatus('error');
+      setIsSubmitting(false);
+      return;
+    }
+  
+
+    emailjs.send(
+ import.meta.env.VITE_EMAILJS_SERVICE_ID,
+ import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+  formData,
+ import.meta.env.VITE_EMAILJS_USER_ID
+)
       .then(
         (response) => {
-          alert('Message sent successfully!');
-          setFormData({ name: '', email: '', message: '' }); // Reset form
+          setSubmitStatus('success');
+          setFormData({ name: '', email: '', message: '' });
         },
         (error) => {
+          setSubmitStatus('error');
           console.error('Failed to send message:', error);
-          alert('Failed to send message. Please try again.');
         }
-      );
+      )
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -46,6 +62,28 @@ const Contact = () => {
     >
       <div className="contact-container">
         <h1 className="contact-title">Contact Us</h1>
+        
+        {/* Status Messages */}
+        {submitStatus === 'success' && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="alert success"
+          >
+            Message sent successfully!
+          </motion.div>
+        )}
+        
+        {submitStatus === 'error' && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="alert error"
+          >
+            Failed to send message. Please try again.
+          </motion.div>
+        )}
+
         <form onSubmit={handleSubmit} className="contact-form">
           <div className="form-group">
             <label htmlFor="name" className="form-label">
@@ -59,6 +97,7 @@ const Contact = () => {
               onChange={handleChange}
               className="form-input"
               required
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
@@ -73,6 +112,7 @@ const Contact = () => {
               onChange={handleChange}
               className="form-input"
               required
+              disabled={isSubmitting}
             />
           </div>
           <div className="form-group">
@@ -82,11 +122,13 @@ const Contact = () => {
             <textarea
               id="message"
               name="message"
+              placeholder='Write down Your feedbacks, how EduVate has helped you!'
               value={formData.message}
               onChange={handleChange}
               rows={4}
               className="form-input"
               required
+              disabled={isSubmitting}
             ></textarea>
           </div>
           <motion.button
@@ -94,9 +136,10 @@ const Contact = () => {
             whileTap={{ scale: 0.95 }}
             type="submit"
             className="submit-button"
+            disabled={isSubmitting}
           >
             <FaPaperPlane className="button-icon" />
-            Send Message
+            {isSubmitting ? 'Sending...' : 'Send Message'}
           </motion.button>
         </form>
       </div>
@@ -105,4 +148,3 @@ const Contact = () => {
 };
 
 export default Contact;
-

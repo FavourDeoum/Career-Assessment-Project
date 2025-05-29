@@ -413,9 +413,11 @@ const CareerDashboard = () => {
                         <div className="path-details">
                           <p className="path-explanation">{recommendation.explanation}</p>
                           <div className="path-actions">
+                            <Link to="/explore">
                             <button className="path-action-button">
                               Explore This Path <ArrowRight size={16} />
                             </button>
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -486,6 +488,58 @@ const CareerDashboard = () => {
               />
 
               <ExpandableCard
+                id="resources"
+                title="Learning Resources"
+                icon={<Book className="card-icon-svg" />}
+                content={
+                  <div className="resources">
+                    <div className="resource-section">
+                      <h4>Recommended Courses</h4>
+                      <div className="resource-cards">
+                        {mockSkillsData.slice(0, 3).map((skill, index) => (
+                          <div key={index} className="resource-card">
+                            <h5>Advanced {skill.name} Skills</h5>
+                            <p className="resource-provider">Professional Learning Academy</p>
+                            <p className="resource-description">
+                              This course focuses on developing advanced {skill.name.toLowerCase()} skills required for
+                              career progression in your field.
+                            </p>
+                            <button className="resource-button">View Course</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                }
+              />
+
+              <ExpandableCard
+                id="resources"
+                title="Learning Resources"
+                icon={<Book className="card-icon-svg" />}
+                content={
+                  <div className="resources">
+                    <div className="resource-section">
+                      <h4>Recommended Courses</h4>
+                      <div className="resource-cards">
+                        {mockSkillsData.slice(0, 3).map((skill, index) => (
+                          <div key={index} className="resource-card">
+                            <h5>Advanced {skill.name} Skills</h5>
+                            <p className="resource-provider">Professional Learning Academy</p>
+                            <p className="resource-description">
+                              This course focuses on developing advanced {skill.name.toLowerCase()} skills required for
+                              career progression in your field.
+                            </p>
+                            <button className="resource-button">View Course</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                }
+              />
+
+              {/* <ExpandableCard
                 id="mentorship"
                 title="Mentorship Opportunities"
                 icon={<Users className="card-icon-svg" />}
@@ -510,7 +564,7 @@ const CareerDashboard = () => {
                     </div>
                   </div>
                 }
-              />
+              /> */}
             </div>
           </div>
         )
