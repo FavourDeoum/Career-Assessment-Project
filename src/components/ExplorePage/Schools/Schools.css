@@ -1,0 +1,703 @@
+/* Schools Page Styles */
+.schools-page {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding: 2rem;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.schools-header {
+  margin-bottom: 2rem;
+}
+
+.schools-header .back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  color: #4c6fff;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+  width: fit-content;
+}
+
+.schools-header .back-button:hover {
+  background-color: #f0f7ff;
+  transform: translateX(-4px);
+}
+
+.schools-header h1 {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #2d3748;
+}
+
+.schools-header p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #4a5568;
+}
+
+.schools-header .header-content {
+  margin-bottom: 2rem;
+}
+
+.schools-header .search-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.schools-header .search-box {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  flex: 1;
+}
+
+.schools-header .search-box input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #4a5568;
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+.schools-header .filter-btn {
+  padding: 0.75rem 1.25rem;
+  background-color: #4c6fff;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(76, 111, 255, 0.2);
+}
+
+.schools-header .filter-btn:hover {
+  background-color: #3b5bff;
+  transform: translateY(-2px);
+}
+
+.schools-header .filters-section {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.schools-header .filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.schools-header .filter-group label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.schools-header .filter-group select {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #4a5568;
+  outline: none;
+}
+
+/* Schools Content */
+.schools-content {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.schools-content .results-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+.schools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.school-card {
+  background-color: #f8fafc;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.school-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.school-image-container {
+  position: relative;
+}
+
+.school-image-container img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.school-type-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.school-content {
+  padding: 1.5rem;
+}
+
+.school-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.school-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.school-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #f59e0b;
+}
+
+.school-location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+}
+
+.school-programs {
+  color: #4a5568;
+  margin-bottom: 1rem;
+}
+
+.school-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.school-stats .stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.school-stats .stat-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.school-stats .stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.school-tuition {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4c6fff;
+  margin-bottom: 1rem;
+}
+
+.school-actions .explore-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4c6fff;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.school-actions .explore-btn:hover {
+  background-color: #3b5bff;
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #4a5568;
+}
+
+.no-results h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+/* School Detail View Styles */
+.school-detail-view {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding: 2rem;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.school-detail-header {
+  margin-bottom: 2rem;
+}
+
+.school-detail-header .back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  color: #4c6fff;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+  width: fit-content;
+}
+
+.school-detail-header .back-button:hover {
+  background-color: #f0f7ff;
+  transform: translateX(-4px);
+}
+
+.school-hero {
+  background: linear-gradient(135deg, #4c6fff 0%, #6c8fff 100%);
+  border-radius: 1rem;
+  color: white;
+  box-shadow: 0 8px 20px rgba(76, 111, 255, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.school-hero-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.school-hero-content {
+  padding: 2rem;
+}
+
+.school-hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.school-rating-location {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.school-rating-location .rating {
+  color: #f59e0b;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.school-rating-location .location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1.1rem;
+}
+
+.school-quick-stats {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.school-quick-stats .quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.school-detail-content {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.school-overview h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+.school-overview p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.school-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background-color: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-card svg {
+  width: 32px;
+  height: 32px;
+  color: #4c6fff;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4c6fff;
+}
+
+.school-programs h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+.programs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.program-card {
+  background-color: #edf2ff;
+  color: #4c6fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.school-requirements h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+.requirements-list {
+  list-style: none;
+  padding: 0;
+}
+
+.requirements-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  color: #4a5568;
+}
+
+.requirement-bullet {
+  color: #10b981;
+  font-size: 1.2rem;
+}
+
+.application-process h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+.process-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.process-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #4c6fff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step-content {
+  font-size: 1.1rem;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.campus-life h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+}
+
+.campus-life p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.apply-section {
+  text-align: center;
+}
+
+.apply-now-btn {
+  padding: 1rem 2rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.apply-now-btn:hover {
+  background-color: #0b815a;
+}
+
+/* Application Form Styles */
+.application-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.application-form {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 700px;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.form-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.form-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #4a5568;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.form-actions .cancel-btn,
+.form-actions .submit-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-actions .cancel-btn {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  border: none;
+}
+
+.form-actions .cancel-btn:hover {
+  background-color: #cbd5e0;
+}
+
+.form-actions .submit-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+}
+
+.form-actions .submit-btn:hover {
+  background-color: #0b815a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .schools-page {
+    padding: 1rem;
+  }
+
+  .schools-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .schools-header .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .schools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .school-detail-view {
+    padding: 1rem;
+  }
+
+  .school-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .application-form {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}

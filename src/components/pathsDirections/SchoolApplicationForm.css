@@ -1,0 +1,685 @@
+/* SCOPED CSS for School Application Form */
+
+.school-application-form {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fafb 0%, #dbeafe 100%);
+  transition: all 1s ease;
+  opacity: 0;
+}
+
+.school-application-form.visible {
+  opacity: 1;
+}
+
+/* Header */
+.school-application-form .application-header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.school-application-form .application-header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .school-application-form .application-header-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.school-application-form .back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.school-application-form .back-button:hover {
+  color: #2563eb;
+}
+
+.school-application-form .application-title h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .school-application-form .application-title h1 {
+    font-size: 1.875rem;
+  }
+}
+
+.school-application-form .application-title p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Progress Steps */
+.school-application-form .progress-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.school-application-form .progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.school-application-form .progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.school-application-form .step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  transition: all 0.3s ease;
+}
+
+.school-application-form .progress-step.active .step-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  transform: scale(1.1);
+}
+
+.school-application-form .progress-step.completed .step-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.school-application-form .step-info {
+  text-align: center;
+}
+
+.school-application-form .step-number {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #6b7280;
+}
+
+.school-application-form .progress-step.active .step-number,
+.school-application-form .progress-step.completed .step-number {
+  color: #2563eb;
+}
+
+.school-application-form .step-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+@media (min-width: 640px) {
+  .school-application-form .step-title {
+    font-size: 0.875rem;
+  }
+}
+
+.school-application-form .progress-step.active .step-title,
+.school-application-form .progress-step.completed .step-title {
+  color: #1f2937;
+}
+
+.school-application-form .progress-bar {
+  position: relative;
+  height: 2px;
+  background-color: #e5e7eb;
+  border-radius: 1px;
+  margin-top: -1.5rem;
+  z-index: 1;
+}
+
+.school-application-form .progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 1px;
+  transition: width 0.5s ease;
+}
+
+/* Form Container */
+.school-application-form .form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.school-application-form .form-step {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  animation: slideInFromBottom 0.5s ease-out;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.school-application-form .step-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .school-application-form .step-title {
+    font-size: 1.875rem;
+    text-align: left;
+  }
+}
+
+/* Form Grid */
+.school-application-form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .school-application-form .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.school-application-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.school-application-form .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.school-application-form .form-group label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.school-application-form .input-wrapper {
+  position: relative;
+}
+
+.school-application-form .input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  z-index: 1;
+}
+
+.school-application-form input,
+.school-application-form select,
+.school-application-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.school-application-form .input-wrapper input {
+  padding-left: 2.5rem;
+}
+
+.school-application-form input:focus,
+.school-application-form select:focus,
+.school-application-form textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.school-application-form input.error,
+.school-application-form select.error,
+.school-application-form textarea.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.school-application-form .error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Documents Upload */
+.school-application-form .documents-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .school-application-form .documents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.school-application-form .document-upload {
+  border: 2px dashed #d1d5db;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background-color: #f9fafb;
+}
+
+.school-application-form .document-upload:hover {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.school-application-form .upload-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.school-application-form .upload-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.school-application-form .required {
+  background-color: #fef2f2;
+  color: #dc2626;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.school-application-form .optional {
+  background-color: #f0f9ff;
+  color: #0369a1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.school-application-form .upload-area {
+  position: relative;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.school-application-form .upload-area input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.school-application-form .upload-area p {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.school-application-form .upload-area span {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.school-application-form .uploaded-file,
+.school-application-form .uploaded-files {
+  margin-top: 1rem;
+}
+
+.school-application-form .uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f0f9ff;
+  border-radius: 0.5rem;
+  color: #0369a1;
+  font-size: 0.875rem;
+}
+
+.school-application-form .document-note {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #fef3c7;
+  border-radius: 0.5rem;
+  border-left: 4px solid #f59e0b;
+  margin-top: 2rem;
+}
+
+.school-application-form .document-note p {
+  color: #78350f;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Payment */
+.school-application-form .payment-summary {
+  background-color: #f9fafb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.school-application-form .payment-summary h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.school-application-form .fee-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.school-application-form .fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.school-application-form .fee-item.total {
+  border-bottom: none;
+  border-top: 2px solid #2563eb;
+  padding-top: 1rem;
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #2563eb;
+}
+
+.school-application-form .payment-methods {
+  margin-bottom: 2rem;
+}
+
+.school-application-form .payment-methods h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.school-application-form .payment-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .school-application-form .payment-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.school-application-form .payment-option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.school-application-form .payment-option:hover {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.school-application-form .payment-option input[type="radio"] {
+  margin-right: 0.75rem;
+  width: auto;
+}
+
+.school-application-form .payment-option input[type="radio"]:checked + .option-content {
+  color: #2563eb;
+}
+
+.school-application-form .option-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.school-application-form .card-details {
+  margin-top: 1.5rem;
+}
+
+.school-application-form .payment-security {
+  margin-top: 2rem;
+}
+
+.school-application-form .security-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #f0f9ff;
+  border-radius: 0.5rem;
+  color: #0369a1;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Review Step */
+.school-application-form .review-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.school-application-form .review-section {
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border-left: 4px solid #2563eb;
+}
+
+.school-application-form .review-section h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.school-application-form .review-content p {
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.school-application-form .document-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #059669;
+  font-size: 0.875rem;
+}
+
+.school-application-form .terms-agreement {
+  margin-bottom: 2rem;
+}
+
+.school-application-form .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.school-application-form .checkbox-label input[type="checkbox"] {
+  margin: 0;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.school-application-form .submission-note {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #fef3c7;
+  border-radius: 0.5rem;
+  border-left: 4px solid #f59e0b;
+  margin-bottom: 2rem;
+}
+
+.school-application-form .submission-note p {
+  color: #78350f;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Navigation */
+.school-application-form .form-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  bottom: 1rem;
+}
+
+.school-application-form .nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.school-application-form .prev-button {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.school-application-form .prev-button:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.school-application-form .next-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  margin-left: auto;
+}
+
+.school-application-form .next-button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+}
+
+.school-application-form .submit-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  margin-left: auto;
+}
+
+.school-application-form .submit-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+.school-application-form .submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .school-application-form .form-step {
+    padding: 1.5rem;
+    margin: 0 -0.5rem 2rem;
+    border-radius: 0.75rem;
+  }
+
+  .school-application-form .progress-steps {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .school-application-form .step-info {
+    min-width: 60px;
+  }
+
+  .school-application-form .form-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .school-application-form .form-container {
+    padding-bottom: 6rem;
+  }
+}

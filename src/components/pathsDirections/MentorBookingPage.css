@@ -1,0 +1,1028 @@
+/* SCOPED CSS for Mentor Booking Page */
+
+.mentor-booking-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fafb 0%, #dbeafe 100%);
+  transition: all 1s ease;
+  opacity: 0;
+}
+
+.mentor-booking-page.visible {
+  opacity: 1;
+}
+
+/* Header */
+.mentor-booking-page .booking-header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.mentor-booking-page .booking-header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .booking-header-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.mentor-booking-page .back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.mentor-booking-page .back-button:hover {
+  color: #2563eb;
+}
+
+.mentor-booking-page .booking-title h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .booking-title h1 {
+    font-size: 1.875rem;
+  }
+}
+
+.mentor-booking-page .booking-title p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Mentor Info Card */
+.mentor-booking-page .mentor-info-card {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.mentor-booking-page .mentor-profile {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .mentor-profile {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.mentor-booking-page .mentor-avatar-large {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.mentor-booking-page .mentor-avatar-large img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #dbeafe;
+}
+
+.mentor-booking-page .online-status {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background-color: #10b981;
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+.mentor-booking-page .mentor-details {
+  flex: 1;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .mentor-details {
+    text-align: left;
+  }
+}
+
+.mentor-booking-page .mentor-name {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.mentor-booking-page .mentor-title {
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .mentor-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .mentor-stats-row {
+    justify-content: flex-start;
+  }
+}
+
+.mentor-booking-page .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.mentor-booking-page .stat-icon {
+  color: #2563eb;
+}
+
+.mentor-booking-page .mentor-expertise-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .mentor-expertise-tags {
+    justify-content: flex-start;
+  }
+}
+
+.mentor-booking-page .expertise-tag {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.mentor-booking-page .mentor-bio {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.mentor-booking-page .mentor-bio h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .mentor-bio p {
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* Progress Steps */
+.mentor-booking-page .progress-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.mentor-booking-page .progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.mentor-booking-page .progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.mentor-booking-page .step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  transition: all 0.3s ease;
+}
+
+.mentor-booking-page .progress-step.active .step-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  transform: scale(1.1);
+}
+
+.mentor-booking-page .progress-step.completed .step-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.mentor-booking-page .step-info {
+  text-align: center;
+}
+
+.mentor-booking-page .step-number {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #6b7280;
+}
+
+.mentor-booking-page .progress-step.active .step-number,
+.mentor-booking-page .progress-step.completed .step-number {
+  color: #2563eb;
+}
+
+.mentor-booking-page .step-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+@media (min-width: 640px) {
+  .mentor-booking-page .step-title {
+    font-size: 0.875rem;
+  }
+}
+
+.mentor-booking-page .progress-step.active .step-title,
+.mentor-booking-page .progress-step.completed .step-title {
+  color: #1f2937;
+}
+
+.mentor-booking-page .progress-bar {
+  position: relative;
+  height: 2px;
+  background-color: #e5e7eb;
+  border-radius: 1px;
+  margin-top: -1.5rem;
+  z-index: 1;
+}
+
+.mentor-booking-page .progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 1px;
+  transition: width 0.5s ease;
+}
+
+/* Form Container */
+.mentor-booking-page .booking-form-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.mentor-booking-page .form-step {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  animation: slideInFromBottom 0.5s ease-out;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mentor-booking-page .step-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .step-title {
+    font-size: 1.875rem;
+    text-align: left;
+  }
+}
+
+/* Scheduling Grid */
+.mentor-booking-page .scheduling-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .scheduling-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mentor-booking-page .session-type-selection,
+.mentor-booking-page .duration-selection,
+.mentor-booking-page .date-selection,
+.mentor-booking-page .time-selection {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .session-type-selection {
+    grid-column: 1 / -1;
+  }
+
+  .mentor-booking-page .duration-selection {
+    grid-column: 1 / -1;
+  }
+}
+
+.mentor-booking-page .scheduling-grid h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .session-types {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .mentor-booking-page .session-types {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mentor-booking-page .session-type-option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.mentor-booking-page .session-type-option:hover {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.mentor-booking-page .session-type-option input[type="radio"] {
+  margin-right: 0.75rem;
+  width: auto;
+}
+
+.mentor-booking-page .session-type-option input[type="radio"]:checked + .option-content {
+  color: #2563eb;
+}
+
+.mentor-booking-page .option-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.mentor-booking-page .option-icon {
+  color: #6b7280;
+}
+
+.mentor-booking-page .session-type-option input[type="radio"]:checked + .option-content .option-icon {
+  color: #2563eb;
+}
+
+.mentor-booking-page .duration-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .mentor-booking-page .duration-options {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mentor-booking-page .duration-option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.mentor-booking-page .duration-option:hover {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.mentor-booking-page .duration-option input[type="radio"] {
+  margin-right: 0.75rem;
+  width: auto;
+}
+
+.mentor-booking-page .duration-option .option-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  width: 100%;
+}
+
+.mentor-booking-page .duration-option .price {
+  font-weight: bold;
+  color: #059669;
+  font-size: 0.875rem;
+}
+
+.mentor-booking-page .date-selection input[type="date"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.mentor-booking-page .date-selection input[type="date"]:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.mentor-booking-page .time-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.mentor-booking-page .time-slot {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.mentor-booking-page .time-slot:hover {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.mentor-booking-page .time-slot.selected {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.mentor-booking-page .availability-note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  border-left: 4px solid #2563eb;
+}
+
+.mentor-booking-page .availability-languages,
+.mentor-booking-page .availability-schedule {
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .availability-languages:last-child,
+.mentor-booking-page .availability-schedule:last-child {
+  margin-bottom: 0;
+}
+
+.mentor-booking-page .availability-note h4 {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.mentor-booking-page .languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mentor-booking-page .language-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.mentor-booking-page .availability-times {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mentor-booking-page .availability-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Form Grid */
+.mentor-booking-page .form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mentor-booking-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mentor-booking-page .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.mentor-booking-page .form-group label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.mentor-booking-page .input-wrapper {
+  position: relative;
+}
+
+.mentor-booking-page .input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  z-index: 1;
+}
+
+.mentor-booking-page input,
+.mentor-booking-page select,
+.mentor-booking-page textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.mentor-booking-page .input-wrapper input {
+  padding-left: 2.5rem;
+}
+
+.mentor-booking-page input:focus,
+.mentor-booking-page select:focus,
+.mentor-booking-page textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.mentor-booking-page input.error,
+.mentor-booking-page select.error,
+.mentor-booking-page textarea.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.mentor-booking-page .error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Payment Summary */
+.mentor-booking-page .payment-summary {
+  background-color: #f9fafb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.mentor-booking-page .payment-summary h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .session-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mentor-booking-page .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mentor-booking-page .detail-row.total {
+  border-bottom: none;
+  border-top: 2px solid #2563eb;
+  padding-top: 1rem;
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #2563eb;
+}
+
+.mentor-booking-page .payment-methods {
+  margin-bottom: 2rem;
+}
+
+.mentor-booking-page .payment-methods h3 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .payment-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .mentor-booking-page .payment-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mentor-booking-page .payment-option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.mentor-booking-page .payment-option:hover {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.mentor-booking-page .payment-option input[type="radio"] {
+  margin-right: 0.75rem;
+  width: auto;
+}
+
+.mentor-booking-page .payment-option input[type="radio"]:checked + .option-content {
+  color: #2563eb;
+}
+
+.mentor-booking-page .card-details {
+  margin-top: 1.5rem;
+}
+
+.mentor-booking-page .payment-security {
+  margin-top: 2rem;
+}
+
+.mentor-booking-page .security-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #f0f9ff;
+  border-radius: 0.5rem;
+  color: #0369a1;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Confirmation */
+.mentor-booking-page .confirmation-card {
+  text-align: center;
+}
+
+.mentor-booking-page .confirmation-header {
+  margin-bottom: 2rem;
+}
+
+.mentor-booking-page .success-icon {
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .confirmation-header h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.mentor-booking-page .confirmation-header p {
+  color: #6b7280;
+}
+
+.mentor-booking-page .booking-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .mentor-booking-page .booking-summary {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mentor-booking-page .summary-section {
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border-left: 4px solid #2563eb;
+}
+
+.mentor-booking-page .summary-section h4 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mentor-booking-page .summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.mentor-booking-page .summary-row.total {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #2563eb;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.mentor-booking-page .terms-agreement {
+  margin-bottom: 2rem;
+}
+
+.mentor-booking-page .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+  text-align: left;
+  justify-content: center;
+}
+
+.mentor-booking-page .checkbox-label input[type="checkbox"] {
+  margin: 0;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.mentor-booking-page .next-steps {
+  background-color: #f0f9ff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.mentor-booking-page .next-steps h4 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.mentor-booking-page .next-steps ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mentor-booking-page .next-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.mentor-booking-page .next-steps li:before {
+  content: "✓";
+  color: #10b981;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* Navigation */
+.mentor-booking-page .form-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  bottom: 1rem;
+}
+
+.mentor-booking-page .nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.mentor-booking-page .prev-button {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.mentor-booking-page .prev-button:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.mentor-booking-page .next-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  margin-left: auto;
+}
+
+.mentor-booking-page .next-button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+}
+
+.mentor-booking-page .confirm-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  margin-left: auto;
+}
+
+.mentor-booking-page .confirm-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+.mentor-booking-page .confirm-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .mentor-booking-page .mentor-info-card {
+    padding: 1rem;
+  }
+
+  .mentor-booking-page .mentor-profile {
+    padding: 1.5rem;
+  }
+
+  .mentor-booking-page .form-step {
+    padding: 1.5rem;
+    margin: 0 -0.5rem 2rem;
+    border-radius: 0.75rem;
+  }
+
+  .mentor-booking-page .progress-steps {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .mentor-booking-page .step-info {
+    min-width: 60px;
+  }
+
+  .mentor-booking-page .form-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .mentor-booking-page .booking-form-container {
+    padding-bottom: 6rem;
+  }
+
+  .mentor-booking-page .time-slots {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+
+  .mentor-booking-page .session-types {
+    grid-template-columns: 1fr;
+  }
+
+  .mentor-booking-page .duration-options {
+    grid-template-columns: 1fr;
+  }
+}

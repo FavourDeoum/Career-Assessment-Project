@@ -13,9 +13,13 @@ import CareerAssessment from './components/CareerAssessment/CareerAssessment';
 import CareerDashboard from './components/AssesmentDashboard/ADashboard';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
-import SSOCallback from './components/SSOCallback/SSOCallback'; // Import the SSO callback component
+import SSOCallback from './components/SSOCallback/SSOCallback';
+
 import './App.css';
-import StudentPathExplorer from './components/pathsDirections/PathDirections';
+import CareerExplorePage from './components/pathsDirections/PathDirections';
+import SchoolDetailsWrapper from './components/pathsDirections/SchoolDetailsWrapper';
+import SchoolApplicationFormWrapper from './components/pathsDirections/SchoolApplicationFormWrapper';
+import MentorBookingWrapper from './components/pathsDirections/MentorBookingWrapper';
 
 // Define all routes in a single array for better maintainability
 const publicRoutes = [
@@ -29,8 +33,10 @@ const publicRoutes = [
 const protectedRoutes = [
   { path: '/assessment', element: <CareerAssessment /> },
   { path: '/cdashboard', element: <CareerDashboard /> },
-   { path: '/explore', element: <StudentPathExplorer /> },
-
+  { path: '/explore', element: <CareerExplorePage /> },
+  { path: '/explore/school/:schoolId', element: <SchoolDetailsWrapper /> },
+  { path: '/explore/school/:schoolId/apply', element: <SchoolApplicationFormWrapper /> },
+  { path: '/explore/mentor/:mentorId', element: <MentorBookingWrapper /> },
 ];
 
 // Custom ProtectedRoute Component
@@ -60,7 +66,7 @@ function App() {
               {/* Authentication routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/signup/sso-callback" element={<SSOCallback />} /> {/* Define the SSO callback route */}
+              <Route path="/signup/sso-callback" element={<SSOCallback />} />
 
               {/* Protected routes */}
               {protectedRoutes.map(({ path, element }) => (

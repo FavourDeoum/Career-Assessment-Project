@@ -1,615 +1,605 @@
-import React, { useState, useEffect } from 'react';
+"use client"
+
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import {
+  ArrowRight,
+  PlayCircle,
+  GraduationCap,
+  Users,
+  ArrowLeft,
+  ExternalLink,
+  Star,
+  MapPin,
+  Clock,
+  TrendingUp,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react"
 import "./PathDirections.css"
-import { Search, MapPin, Star, Phone, MessageCircle, Filter, BookOpen, Users, Award, ChevronRight, Heart, Share2 } from 'lucide-react';
+import { allMockSchools } from "./mockApi"
 
-const StudentPathExplorer = () => {
-  const [activeTab, setActiveTab] = useState('paths');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [favorites, setFavorites] = useState(new Set());
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+// const mockSchool= allMockSchools
+const cameroonianSchoolsFormatted=allMockSchools
+console.log("mock school is- ", cameroonianSchoolsFormatted)
 
-  // Mock data - In real app, this would come from API
-  const careerPaths = [
-    {
-      id: 1,
-      title: "Software Engineering",
-      description: "Build the future with code, creating applications and systems.",
-      icon: "💻",
-      demand: "Very High",
-      avgSalary: "$80k - $130k",
-      duration: "2-4 years",
-      category: "technology"
-    },
-    {
-      id: 2,
-      title: "Digital Marketing",
-      description: "Connect brands with audiences online through various channels.",
-      icon: "📱",
-      demand: "High",
-      avgSalary: "$50k - $90k",
-      duration: "6 months - 2 years",
-      category: "business"
-    },
-    {
-      id: 3,
-      title: "Graphic Design",
-      description: "Create visual concepts to communicate ideas that inspire.",
-      icon: "🎨",
-      demand: "Medium",
-      avgSalary: "$45k - $75k",
-      duration: "1-3 years",
-      category: "creative"
-    },
-    {
-      id: 4,
-      title: "Data Science",
-      description: "Turn complex data into actionable insights and predictions.",
-      icon: "📊",
-      demand: "Very High",
-      avgSalary: "$90k - $150k",
-      duration: "2-4 years",
-      category: "technology"
-    },
-    {
-      id: 5,
-      title: "Nursing",
-      description: "Provide compassionate care and promote health.",
-      icon: "🏥",
-      demand: "High",
-      avgSalary: "$60k - $95k",
-      duration: "2-4 years",
-      category: "healthcare"
-    },
-    {
-      id: 6,
-      title: "Culinary Arts",
-      description: "Master the art of cooking and food presentation.",
-      icon: "👨‍🍳",
-      demand: "Medium",
-      avgSalary: "$40k - $70k",
-      duration: "6 months - 2 years",
-      category: "creative"
-    },
-    {
-      id: 7,
-      title: "Business Management",
-      description: "Lead teams and organizations towards strategic goals.",
-      icon: "📈",
-      demand: "High",
-      avgSalary: "$65k - $110k",
-      duration: "1-4 years",
-      category: "business"
-    },
-    {
-      id: 8,
-      title: "Cybersecurity Analysis",
-      description: "Protect digital assets and information systems from threats.",
-      icon: "🛡️",
-      demand: "Very High",
-      avgSalary: "$70k - $120k",
-      duration: "1-3 years",
-      category: "technology"
-    }
-  ];
+const CareerExplorePage = () => {
+  const [activeTab, setActiveTab] = useState("videos")
+  const [isVisible, setIsVisible] = useState(false)
+  const [descExpanded, setDescExpanded] = useState(false)
+  const navigate = useNavigate()
 
-  const schools = [
-    {
-      id: 1,
-      name: "Tech Valley Institute",
-      image: "https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=250&fit=crop",
-      rating: 4.8,
-      location: "San Francisco, CA",
-      programs: ["Software Engineering", "Data Science", "AI"],
-      tuition: "$25,000/year",
-      type: "Private",
-      pathId: 1 // Links to Software Engineering
-    },
-    {
-      id: 2,
-      name: "Creative Arts Academy",
-      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9d1?w=400&h=250&fit=crop",
-      rating: 4.6,
-      location: "Los Angeles, CA",
-      programs: ["Graphic Design", "Digital Media", "Animation"],
-      tuition: "$18,000/year",
-      type: "Private",
-      pathId: 3 // Links to Graphic Design
-    },
-    {
-      id: 3,
-      name: "Metro Community College",
-      image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=250&fit=crop",
-      rating: 4.3,
-      location: "Chicago, IL",
-      programs: ["Nursing", "Business Admin", "IT Support"],
-      tuition: "$8,500/year",
-      type: "Public",
-      pathId: 5 // Links to Nursing (primarily, but offers others)
-    },
-    {
-      id: 4,
-      name: "Digital Marketing Hub",
-      image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=250&fit=crop",
-      rating: 4.5,
-      location: "New York, NY",
-      programs: ["Digital Marketing", "Social Media Strategy", "SEO Specialization"],
-      tuition: "$15,000/year",
-      type: "Online",
-      pathId: 2 // Links to Digital Marketing
-    },
-    {
-      id: 5,
-      name: "Gourmet Culinary Institute",
-      image: "https://images.unsplash.com/photo-1556909172-6ab63f18fd12?w=400&h=250&fit=crop",
-      rating: 4.7,
-      location: "Paris, FR (Online options)",
-      programs: ["Classic French Cuisine", "Pastry Arts", "Restaurant Management"],
-      tuition: "$22,000/course",
-      type: "Specialized",
-      pathId: 6 // Links to Culinary Arts
-    },
-    {
-      id: 6,
-      name: "Apex Business School",
-      image: "https://images.unsplash.com/photo-1551829149-a2a990099453?w=400&h=250&fit=crop",
-      rating: 4.9,
-      location: "London, UK",
-      programs: ["MBA", "Masters in Management", "Entrepreneurship"],
-      tuition: "$30,000/year",
-      type: "Private",
-      pathId: 7 // Links to Business Management
-    },
-    {
-      id: 7,
-      name: "CyberSec Training Academy",
-      image: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=400&h=250&fit=crop",
-      rating: 4.6,
-      location: "Austin, TX",
-      programs: ["Ethical Hacking", "Network Security", "CISSP Prep"],
-      tuition: "$12,000/bootcamp",
-      type: "Bootcamp",
-      pathId: 8 // Links to Cybersecurity Analysis
-    },
-    {
-      id: 8,
-      name: "Future Tech University",
-      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=250&fit=crop",
-      rating: 4.4,
-      location: "Boston, MA",
-      programs: ["Data Science Masters", "Robotics", "Software Development BSc"],
-      tuition: "$28,000/year",
-      type: "University",
-      pathId: 4 // Links to Data Science (primarily)
-    },
-    {
-      id: 9,
-      name: "HealWell Nursing College",
-      image: "https://images.unsplash.com/photo-1605103871575-3969081067e3?w=400&h=250&fit=crop",
-      rating: 4.7,
-      location: "Toronto, CA",
-      programs: ["Registered Nurse (RN)", "Practical Nursing (PN)", "Healthcare Assistant"],
-      tuition: "$17,000/year",
-      type: "Public College",
-      pathId: 5 // Links to Nursing
-    }
-  ];
+  // Mock data - in real app, this would come from props or API based on the career path
+  const careerData = {
+    title: "Data Science",
+    description:
+      "Data science is an interdisciplinary field that uses scientific methods, processes, algorithms and systems to extract knowledge and insights from structured and unstructured data. Data scientists combine domain expertise, programming skills, and knowledge of mathematics and statistics to extract meaningful insights from data.",
+    roadmapImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop&auto=format",
 
-  const tutors = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b332c3f0?w=150&h=150&fit=crop&crop=face",
-      specialty: "Software Engineering",
-      rating: 4.9,
-      experience: "8 years",
-      hourlyRate: "$45/hour",
-      phone: "+1234567890",
-      bio: "Senior full-stack developer with expertise in React, Node.js, and cloud technologies.",
-      pathId: 1,
-      availability: "Mon-Fri, Evenings"
-    },
-    {
-      id: 2,
-      name: "Marcus Johnson",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      specialty: "Data Science & ML",
-      rating: 4.8,
-      experience: "6 years",
-      hourlyRate: "$50/hour",
-      phone: "+1234567891",
-      bio: "Data scientist specializing in machine learning, Python, and statistical analysis.",
-      pathId: 4,
-      availability: "Flexible, Weekends"
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      specialty: "Digital Marketing",
-      rating: 4.7,
-      experience: "5 years",
-      hourlyRate: "$40/hour",
-      phone: "+1234567892",
-      bio: "Marketing strategist with proven track record in social media, SEO, and content marketing.",
-      pathId: 2,
-      availability: "Weekends, Tue/Thu Evenings"
-    },
-    {
-      id: 4,
-      name: "David Kim",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-      specialty: "Graphic & UI/UX Design",
-      rating: 4.6,
-      experience: "7 years",
-      hourlyRate: "$35/hour",
-      phone: "+1234567893",
-      bio: "Creative director with expertise in branding, UI/UX design, and digital illustration tools.",
-      pathId: 3,
-      availability: "Mon-Wed, Flexible"
-    },
-    {
-      id: 5,
-      name: "Chef Antoine Moreau",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      specialty: "Culinary Arts & Pastry",
-      rating: 4.9,
-      experience: "15 years",
-      hourlyRate: "$60/hour",
-      phone: "+33123456789",
-      bio: "Michelin-experienced chef passionate about teaching classic techniques and modern gastronomy.",
-      pathId: 6,
-      availability: "Sat-Sun, Special Workshops"
-    },
-    {
-      id: 6,
-      name: "Isabella Rossi",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-      specialty: "Business Management & Strategy",
-      rating: 4.8,
-      experience: "10 years",
-      hourlyRate: "$55/hour",
-      phone: "+44123456789",
-      bio: "Experienced business consultant and MBA lecturer. Specializes in startups and market entry.",
-      pathId: 7,
-      availability: "Evenings, Project-based"
-    },
-    {
-      id: 7,
-      name: "Raj Patel",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
-      specialty: "Cybersecurity & Ethical Hacking",
-      rating: 4.7,
-      experience: "6 years",
-      hourlyRate: "$65/hour",
-      phone: "+1987654321",
-      bio: "Certified ethical hacker (CEH) and cybersecurity analyst. Focus on practical defense skills.",
-      pathId: 8,
-      availability: "Flexible Online Sessions"
-    },
-    {
-      id: 8,
-      name: "Ken Adams, NP",
-      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
-      specialty: "Nursing & Healthcare Practice",
-      rating: 4.9,
-      experience: "12 years",
-      hourlyRate: "$50/hour",
-      phone: "+1555123456",
-      bio: "Nurse Practitioner with clinical and teaching experience. Passionate about evidence-based care.",
-      pathId: 5,
-      availability: "Mon/Wed/Fri Afternoons"
-    },
-     {
-      id: 9,
-      name: "Dr. Lena Petrova",
-      image: "https://images.unsplash.com/photo-1580894732444-8ec0efb762c4?w=150&h=150&fit=crop&crop=face",
-      specialty: "Advanced Data Analytics",
-      rating: 4.8,
-      experience: "9 years",
-      hourlyRate: "$70/hour",
-      phone: "+17778889999",
-      bio: "PhD in Statistics, specializing in big data, machine learning algorithms and visualization tools.",
-      pathId: 4,
-      availability: "Flexible, Online Only"
-    }
-  ];
+    videos: [
+      {
+        id: 1,
+        title: "Introduction to Data Science in 2024",
+        duration: "15:30",
+        views: "2.3M",
+        thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=200&fit=crop",
+        author: "DataTech Academy",
+        rating: 4.8,
+      },
+      {
+        id: 2,
+        title: "Machine Learning Fundamentals",
+        duration: "22:45",
+        views: "1.8M",
+        thumbnail: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=300&h=200&fit=crop",
+        author: "ML Mastery",
+        rating: 4.9,
+      },
+      {
+        id: 3,
+        title: "Python for Data Science - Complete Guide",
+        duration: "45:12",
+        views: "950K",
+        thumbnail: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=300&h=200&fit=crop",
+        author: "CodeWith Data",
+        rating: 4.7,
+      },
+      {
+        id: 4,
+        title: "Data Visualization with Tableau",
+        duration: "18:20",
+        views: "1.2M",
+        thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=200&fit=crop",
+        author: "Visual Analytics",
+        rating: 4.6,
+      },
+      {
+        id: 5,
+        title: "SQL for Data Scientists",
+        duration: "35:50",
+        views: "800K",
+        thumbnail: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=300&h=200&fit=crop",
+        author: "Database Pro",
+        rating: 4.8,
+      },
+      {
+        id: 6,
+        title: "Deep Learning Neural Networks",
+        duration: "28:15",
+        views: "1.5M",
+        thumbnail: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
+        author: "AI Research Lab",
+        rating: 4.9,
+      },
+    ],
 
-  const categories = ['all', 'technology', 'business', 'creative', 'healthcare'];
+    schools: [
+      {
+        id: 1,
+        name: "Stanford University",
+        program: "MS in Data Science",
+        location: "California, USA",
+        duration: "2 Years",
+        tuition: "$58,000/year",
+        ranking: "#1",
+        rating: 4.9,
+        image: "https://images.unsplash.com/photo-1562774053-701939374585?w=300&h=200&fit=crop",
+        description:
+          "Stanford's Master of Science in Data Science is a rigorous program that combines statistical theory, computational methods, and real-world applications. Students work with world-renowned faculty and gain hands-on experience with cutting-edge technologies.",
+        requirements: [
+          "Bachelor's degree in Computer Science, Mathematics, Statistics, or related field",
+          "GPA of 3.5 or higher",
+          "GRE scores (minimum 320 combined)",
+          "TOEFL/IELTS for international students",
+          "3 letters of recommendation",
+          "Statement of purpose",
+          "Programming experience in Python/R",
+        ],
+        applicationProcess:
+          "Applications are reviewed holistically. Submit all required documents through the Stanford Graduate Admissions portal. Early applications are encouraged as admission is highly competitive.",
+      },
+      {
+        id: 2,
+        name: "MIT",
+        program: "Master of Business Analytics",
+        location: "Massachusetts, USA",
+        duration: "12 Months",
+        tuition: "$78,000",
+        ranking: "#2",
+        rating: 4.8,
+        image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=300&h=200&fit=crop",
+        description:
+          "MIT's Master of Business Analytics is an intensive 12-month program that prepares students to harness the power of data analytics to drive business decisions. The program combines technical rigor with business acumen.",
+        requirements: [
+          "Bachelor's degree from an accredited institution",
+          "Strong quantitative background",
+          "GMAT or GRE scores",
+          "2+ years of work experience preferred",
+          "English proficiency (TOEFL/IELTS)",
+          "Essays and recommendations",
+          "Interview (by invitation)",
+        ],
+        applicationProcess:
+          "Submit application through MIT Sloan portal. Include all transcripts, test scores, essays, and recommendations. Interview invitations are extended to qualified candidates.",
+      },
+      {
+        id: 3,
+        name: "University of California, Berkeley",
+        program: "Master of Information & Data Science",
+        location: "California, USA",
+        duration: "20 Months",
+        tuition: "$70,000",
+        ranking: "#3",
+        rating: 4.7,
+        image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=300&h=200&fit=crop",
+        description:
+          "UC Berkeley's MIDS program is designed for working professionals who want to advance their careers in data science. The program offers both online and on-campus options with flexible scheduling.",
+        requirements: [
+          "Bachelor's degree with minimum 3.0 GPA",
+          "Statistics and programming coursework",
+          "Professional work experience",
+          "Statement of purpose",
+          "Resume",
+          "2 letters of recommendation",
+          "No GRE required",
+        ],
+        applicationProcess:
+          "Applications are submitted online through UC Berkeley's application system. Rolling admissions with multiple start dates throughout the year.",
+      },
+      {
+        id: 4,
+        name: "Carnegie Mellon University",
+        program: "MS in Computational Data Science",
+        location: "Pennsylvania, USA",
+        duration: "2 Years",
+        tuition: "$52,000/year",
+        ranking: "#4",
+        rating: 4.8,
+        image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=300&h=200&fit=crop",
+        description:
+          "CMU's MS in Computational Data Science focuses on the computational and statistical foundations needed to work with large-scale data. Students learn from faculty across multiple departments.",
+        requirements: [
+          "Bachelor's degree in relevant field",
+          "Strong mathematical background",
+          "Programming experience",
+          "GRE scores recommended",
+          "3 letters of recommendation",
+          "Personal statement",
+          "Transcripts from all institutions",
+        ],
+        applicationProcess:
+          "Submit application through CMU's online portal. Include all required documents and pay application fee. Decisions are made on a rolling basis.",
+      },
+      {
+        id: 5,
+        name: "Harvard University",
+        program: "Data Science Master's",
+        location: "Massachusetts, USA",
+        duration: "2 Years",
+        tuition: "$65,000/year",
+        ranking: "#5",
+        rating: 4.9,
+        image: "https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=300&h=200&fit=crop",
+        description:
+          "Harvard's Data Science Master's program combines rigorous training in statistical methods, computational techniques, and domain expertise. Students work on real-world projects with industry partners.",
+        requirements: [
+          "Bachelor's degree with strong academic record",
+          "Mathematics and statistics background",
+          "Programming proficiency",
+          "GRE or GMAT scores",
+          "TOEFL/IELTS for international students",
+          "3 recommendation letters",
+          "Research statement",
+        ],
+        applicationProcess:
+          "Applications are submitted through Harvard's centralized application system. All materials must be received by the deadline. Interviews may be required for selected candidates.",
+      },
+      {
+        id: 6,
+        name: "University of Washington",
+        program: "MS in Data Science",
+        location: "Washington, USA",
+        duration: "18 Months",
+        tuition: "$45,000",
+        ranking: "#6",
+        rating: 4.6,
+        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop",
+        description:
+          "UW's MS in Data Science is a professional master's program that emphasizes practical skills and real-world applications. The program includes a capstone project with industry partners.",
+        requirements: [
+          "Bachelor's degree from accredited institution",
+          "Calculus and linear algebra coursework",
+          "Programming experience (Python/R preferred)",
+          "Minimum 3.0 GPA",
+          "Statement of purpose",
+          "Resume",
+          "2 letters of recommendation",
+        ],
+        applicationProcess:
+          "Submit application online with all supporting documents. Applications are reviewed in the order received. Early application is recommended due to limited enrollment.",
+      },
+    ],
 
-  const toggleFavorite = (id, type) => {
-    const key = `${type}-${id}`;
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(key)) {
-      newFavorites.delete(key);
-    } else {
-      newFavorites.add(key);
-    }
-    setFavorites(newFavorites);
-  };
+    mentors: [
+      {
+        id: 1,
+        name: "Dr. Sarah Chen",
+        title: "Senior Data Scientist at Google",
+        experience: "8+ years",
+        expertise: ["Machine Learning", "Big Data", "Python"],
+        rating: 4.9,
+        sessions: 150,
+        price: "$120/hour",
+        image: "https://images.unsplash.com/photo-1494790108755-2616c02a0e15?w=150&h=150&fit=crop&crop=face",
+        bio: "Dr. Sarah Chen is a Senior Data Scientist at Google with over 8 years of experience in machine learning and big data analytics. She holds a PhD in Computer Science from MIT and has published numerous papers in top-tier conferences.",
+        specializations: ["Deep Learning", "Natural Language Processing", "Computer Vision", "MLOps"],
+        availability: ["Monday 9AM-5PM PST", "Wednesday 1PM-8PM PST", "Friday 10AM-6PM PST"],
+        languages: ["English", "Mandarin"],
+        sessionTypes: ["1-on-1 Mentoring", "Code Review", "Career Guidance", "Technical Interview Prep"],
+      },
+      {
+        id: 2,
+        name: "Michael Rodriguez",
+        title: "Lead Data Engineer at Microsoft",
+        experience: "10+ years",
+        expertise: ["Data Engineering", "Cloud Computing", "SQL"],
+        rating: 4.8,
+        sessions: 200,
+        price: "$100/hour",
+        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+        bio: "Michael Rodriguez is a Lead Data Engineer at Microsoft with extensive experience in building scalable data pipelines and cloud infrastructure. He specializes in Azure, AWS, and modern data stack technologies.",
+        specializations: ["Data Pipeline Architecture", "Cloud Platforms", "ETL/ELT", "Data Warehousing"],
+        availability: ["Tuesday 8AM-4PM PST", "Thursday 12PM-8PM PST", "Saturday 9AM-3PM PST"],
+        languages: ["English", "Spanish"],
+        sessionTypes: ["Architecture Review", "System Design", "Career Mentoring", "Technical Consultation"],
+      },
+      {
+        id: 3,
+        name: "Dr. Emily Watson",
+        title: "AI Research Scientist at Meta",
+        experience: "12+ years",
+        expertise: ["Deep Learning", "NLP", "Computer Vision"],
+        rating: 5.0,
+        sessions: 95,
+        price: "$150/hour",
+        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+        bio: "Dr. Emily Watson is an AI Research Scientist at Meta focusing on cutting-edge research in deep learning and computer vision. She has led multiple breakthrough projects and holds several patents in AI.",
+        specializations: ["Research Methodology", "Paper Writing", "Conference Presentations", "AI Ethics"],
+        availability: ["Monday 2PM-8PM EST", "Wednesday 10AM-4PM EST", "Friday 1PM-7PM EST"],
+        languages: ["English", "French"],
+        sessionTypes: ["Research Guidance", "Paper Review", "PhD Mentoring", "Industry Transition"],
+      },
+      {
+        id: 4,
+        name: "James Park",
+        title: "VP of Analytics at Netflix",
+        experience: "15+ years",
+        expertise: ["Business Analytics", "Strategy", "Leadership"],
+        rating: 4.9,
+        sessions: 180,
+        price: "$200/hour",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+        bio: "James Park is VP of Analytics at Netflix, leading data-driven decision making across the platform. He has extensive experience in scaling analytics teams and implementing data strategies at Fortune 500 companies.",
+        specializations: ["Executive Leadership", "Team Building", "Data Strategy", "Business Intelligence"],
+        availability: ["Tuesday 3PM-7PM PST", "Thursday 9AM-1PM PST", "Sunday 11AM-3PM PST"],
+        languages: ["English", "Korean"],
+        sessionTypes: ["Leadership Coaching", "Career Strategy", "Executive Mentoring", "Business Consultation"],
+      },
+      {
+        id: 5,
+        name: "Dr. Priya Sharma",
+        title: "Principal Data Scientist at Amazon",
+        experience: "9+ years",
+        expertise: ["Statistics", "A/B Testing", "R"],
+        rating: 4.7,
+        sessions: 120,
+        price: "$110/hour",
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+        bio: "Dr. Priya Sharma is a Principal Data Scientist at Amazon with deep expertise in statistical modeling and experimentation. She leads the A/B testing platform used across Amazon's e-commerce ecosystem.",
+        specializations: ["Statistical Modeling", "Experimental Design", "Causal Inference", "Product Analytics"],
+        availability: ["Monday 11AM-5PM EST", "Wednesday 2PM-8PM EST", "Friday 9AM-3PM EST"],
+        languages: ["English", "Hindi"],
+        sessionTypes: ["Statistical Consulting", "Experiment Design", "Data Analysis", "Academic Mentoring"],
+      },
+      {
+        id: 6,
+        name: "Alex Thompson",
+        title: "Senior ML Engineer at Tesla",
+        experience: "7+ years",
+        expertise: ["MLOps", "AutoML", "Deployment"],
+        rating: 4.8,
+        sessions: 88,
+        price: "$130/hour",
+        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+        bio: "Alex Thompson is a Senior ML Engineer at Tesla working on autonomous driving systems. He specializes in MLOps, model deployment, and building production-ready machine learning systems.",
+        specializations: ["Model Deployment", "CI/CD for ML", "Monitoring & Observability", "Edge Computing"],
+        availability: ["Tuesday 10AM-6PM PST", "Thursday 1PM-7PM PST", "Saturday 8AM-2PM PST"],
+        languages: ["English"],
+        sessionTypes: ["Technical Mentoring", "Code Review", "System Architecture", "Career Guidance"],
+      },
+    ],
+  }
 
-  const openWhatsApp = (phone, name, specialty) => {
-    const message = encodeURIComponent(`Hi ${name}, I'm interested in learning ${specialty}. Can you help me get started?`);
-    window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
-  };
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
-  const getDemandColor = (demand) => {
-    switch(demand) {
-      case 'Very High': return '#ff4757'; // Strong Red
-      case 'High': return '#ff6b35'; // Orange-Red
-      case 'Medium': return '#ffc048'; // Amber/Gold
-      default: return '#70a1ff'; // Light Blue (for Low or N/A)
-    }
-  };
+  const handleNavigateToSchool = (school) => {
+    navigate(`/explore/school/${school.id}`)
+  }
 
-  // Filtered data for display
-  // TODO: Implement dynamic filtering for schools and tutors based on selected path
-  const filteredPaths = careerPaths.filter(path => {
-    const matchesSearch = path.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         path.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || path.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const handleNavigateToMentor = (mentor) => {
+    navigate(`/explore/mentor/${mentor.id}`)
+  }
 
-  // For now, schools and tutors are filtered by search query if active tab matches
-  // A more robust solution would filter them based on a selected career path
-  const filteredSchools = schools.filter(school =>
-    school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    school.programs.join(' ').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    school.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const TabButton = ({ id, label, icon, isActive, onClick }) => (
+    <button onClick={() => onClick(id)} className={`tab-button ${isActive ? "tab-button-active" : ""}`}>
+      {icon}
+      <span className="tab-button-text">{label}</span>
+    </button>
+  )
 
-  const filteredTutors = tutors.filter(tutor =>
-    tutor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tutor.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tutor.bio.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const PathCard = ({ path }) => (
-    <div className="path-card" onClick={() => {
-        // Potentially set a selectedPath state here to filter schools/tutors
-        setActiveTab('schools');
-      }}>
-      <div className="path-header">
-        <div className="path-icon">{path.icon}</div>
-        <div className="path-info">
-          <h3>{path.title}</h3>
-          <p>{path.description}</p>
+  const VideoCard = ({ video }) => (
+    <div className="video-card">
+      <div className="video-thumbnail-container">
+        <img src={video.thumbnail || "/placeholder.svg"} alt={video.title} className="video-thumbnail" />
+        <div className="video-overlay">
+          <PlayCircle className="play-icon" size={48} />
         </div>
-        <button
-          className="favorite-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite(path.id, 'path');
-          }}
-        >
-          <Heart
-            size={20}
-            fill={favorites.has(`path-${path.id}`) ? 'var(--error-color)' : 'none'}
-            color={favorites.has(`path-${path.id}`) ? 'var(--error-color)' : '#666'}
-          />
-        </button>
-      </div>
-
-      <div className="path-stats">
-        <div className="stat">
-          <span className="stat-label">Demand</span>
-          <span
-            className="stat-value demand-badge"
-            style={{ backgroundColor: getDemandColor(path.demand) }}
-          >
-            {path.demand}
-          </span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Salary</span>
-          <span className="stat-value">{path.avgSalary}</span>
-        </div>
-        <div className="stat">
-          <span className="stat-label">Duration</span>
-          <span className="stat-value">{path.duration}</span>
+        <div className="video-duration">{video.duration}</div>
+        <div className="video-rating">
+          <Star className="star-icon" size={16} />
+          <span className="rating-text">{video.rating}</span>
         </div>
       </div>
-
-      <div className="path-actions">
-        <button className="action-btn primary" onClick={(e) => { e.stopPropagation(); setActiveTab('schools'); /* TODO: Filter schools by path.id */ }}>
-          Explore Schools <ChevronRight size={16} />
-        </button>
-        <button className="action-btn secondary" onClick={(e) => { e.stopPropagation(); setActiveTab('tutors'); /* TODO: Filter tutors by path.id */ }}>
-          Find Tutors
-        </button>
+      <div className="video-content">
+        <h3 className="video-title">{video.title}</h3>
+        <p className="video-author">{video.author}</p>
+        <div className="video-footer">
+          <span className="video-views">{video.views} views</span>
+          <button className="watch-button">
+            <PlayCircle size={16} />
+            Watch
+          </button>
+        </div>
       </div>
     </div>
-  );
+  )
 
   const SchoolCard = ({ school }) => (
     <div className="school-card">
-      <div className="school-image">
-        <img src={school.image} alt={school.name} />
-        <div className="school-type">{school.type}</div>
-        <button
-          className="favorite-btn school-favorite"
-          onClick={() => toggleFavorite(school.id, 'school')}
-        >
-          <Heart
-            size={18}
-            fill={favorites.has(`school-${school.id}`) ? 'var(--error-color)' : 'none'}
-            color={favorites.has(`school-${school.id}`) ? 'var(--error-color)' : '#fff'}
-          />
+      <div className="school-image-container">
+        <img src={school.image || "/placeholder.svg"} alt={school.name} className="school-image" />
+        <div className="school-ranking">{school.ranking}</div>
+        <div className="school-rating">
+          <Star className="star-icon" size={16} />
+          <span className="rating-text">{school.rating}</span>
+        </div>
+      </div>
+      <div className="school-content">
+        <h3 className="school-name">{school.name}</h3>
+        <p className="school-program">{school.program}</p>
+        <div className="school-details">
+          <div className="school-detail">
+            <MapPin size={16} />
+            <span className="detail-text">{school.location}</span>
+          </div>
+          <div className="school-detail">
+            <Clock size={16} />
+            <span className="detail-text">{school.duration}</span>
+          </div>
+          <div className="school-detail">
+            <TrendingUp size={16} />
+            <span className="tuition-text">{school.tuition}</span>
+          </div>
+        </div>
+        <button className="explore-button" onClick={() => handleNavigateToSchool(school)}>
+          <ExternalLink size={16} />
+          Explore Program
         </button>
       </div>
+    </div>
+  )
 
-      <div className="school-content">
-        <div className="school-header">
-          <h3>{school.name}</h3>
-          <div className="school-rating">
-            <Star size={16} fill="var(--accent-color)" color="var(--accent-color)" />
-            <span>{school.rating}</span>
+  const MentorCard = ({ mentor }) => (
+    <div className="mentor-card">
+      <div className="mentor-content">
+        <div className="mentor-header">
+          <div className="mentor-avatar-container">
+            <img src={mentor.image || "/placeholder.svg"} alt={mentor.name} className="mentor-avatar" />
+            <div className="online-indicator"></div>
+          </div>
+          <div className="mentor-info">
+            <h3 className="mentor-name">{mentor.name}</h3>
+            <p className="mentor-title">{mentor.title}</p>
           </div>
         </div>
 
-        <div className="school-location">
-          <MapPin size={16} color="#666" />
-          <span>{school.location}</span>
+        <div className="mentor-stats">
+          <div className="mentor-stat">
+            <span className="stat-label">Experience</span>
+            <span className="stat-value">{mentor.experience}</span>
+          </div>
+          <div className="mentor-stat">
+            <span className="stat-label">Sessions</span>
+            <span className="stat-value">{mentor.sessions}</span>
+          </div>
+          <div className="mentor-stat">
+            <span className="stat-label">Rating</span>
+            <div className="rating-container">
+              <Star className="star-icon" size={16} />
+              <span className="stat-value">{mentor.rating}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="school-programs">
-          <BookOpen size={16} color="#666" />
-          <span>{school.programs.join(', ')}</span>
-        </div>
-
-        <div className="school-tuition">
-          <strong>{school.tuition}</strong>
-        </div>
-
-        <div className="school-actions">
-          <button className="action-btn primary">Apply Now</button>
-          <button className="action-btn secondary">Learn More</button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const TutorCard = ({ tutor }) => (
-    <div className="tutor-card">
-      <div className="tutor-image">
-        <img src={tutor.image} alt={tutor.name} />
-        <div className="tutor-rating">
-          <Star size={14} fill="var(--accent-color)" color="var(--accent-color)" />
-          <span>{tutor.rating}</span>
-        </div>
-         <button
-          className="favorite-btn" /* Can be styled more specifically if needed */
-          style={{ position: 'absolute', top: '1.2rem', right: '1.2rem', background: 'rgba(255,255,255,0.3)', borderRadius: '50%'}}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite(tutor.id, 'tutor');
-          }}
-        >
-          <Heart
-            size={18}
-            fill={favorites.has(`tutor-${tutor.id}`) ? 'var(--error-color)' : 'none'}
-            color={favorites.has(`tutor-${tutor.id}`) ? 'var(--error-color)' : '#333'}
-          />
-        </button>
-      </div>
-
-      <div className="tutor-info">
-        <h3>{tutor.name}</h3>
-        <p className="tutor-specialty">{tutor.specialty}</p>
-        <p className="tutor-experience">{tutor.experience} experience</p>
-        <p className="tutor-rate">{tutor.hourlyRate}</p>
-        <p className="tutor-availability">Available: {tutor.availability}</p>
-        <p className="tutor-bio">{tutor.bio}</p>
-
-        <div className="tutor-actions">
-          <button
-            className="action-btn whatsapp"
-            onClick={() => openWhatsApp(tutor.phone, tutor.name, tutor.specialty)}
-          >
-            <MessageCircle size={16} />
-            WhatsApp
-          </button>
-          <button className="action-btn secondary">
-            <Phone size={16} />
-            Call
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="app-container">
-      {/* Header */}
-      <header className="app-header">
-      
-
-        {/* Filter Pills for Career Paths */}
-        {isFilterOpen && activeTab === 'paths' && (
-          <div className="filter-pills">
-            {categories.map(category => (
-              <button
-                key={category}
-                className={`pill ${selectedCategory === category ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
+        <div className="mentor-expertise">
+          <p className="expertise-label">Expertise:</p>
+          <div className="expertise-tags">
+            {mentor.expertise.map((skill, index) => (
+              <span key={index} className="expertise-tag">
+                {skill}
+              </span>
             ))}
           </div>
-        )}
-      </header>
+        </div>
 
-      {/* Navigation Tabs */}
-      <nav className="nav-tabs">
-        {[
-          { key: 'paths', label: 'Career Paths', icon: BookOpen },
-          { key: 'schools', label: 'Schools', icon: Award }, // Icon was Award, could be School for clarity
-          { key: 'tutors', label: 'Tutors', icon: Users }
-        ].map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            className={`nav-tab ${activeTab === key ? 'active' : ''}`}
-            onClick={() => setActiveTab(key)}
-          >
-            <Icon size={20} />
-            <span>{label}</span>
+        <div className="mentor-booking">
+          <span className="mentor-price">{mentor.price}</span>
+          <button className="book-button" onClick={() => handleNavigateToMentor(mentor)}>
+            <Users size={16} />
+            Book Session
           </button>
-        ))}
-      </nav>
-
-      {/* Content */}
-      <main className="main-content">
-        {activeTab === 'paths' && (
-          <div className="paths-grid">
-            {filteredPaths.length > 0 ? filteredPaths.map(path => (
-              <PathCard key={path.id} path={path} />
-            )) : <p>No career paths match your search or filter.</p>}
-          </div>
-        )}
-
-        {activeTab === 'schools' && (
-          <div className="schools-grid">
-            {/* In a real app, filter schools by selected pathId or search query */}
-            {filteredSchools.length > 0 ? filteredSchools.map(school => (
-              <SchoolCard key={school.id} school={school} />
-            )) : <p>No schools match your search. Try a broader search or explore career paths first.</p>}
-          </div>
-        )}
-
-        {activeTab === 'tutors' && (
-          <div className="tutors-grid">
-            {/* In a real app, filter tutors by selected pathId or search query */}
-            {filteredTutors.length > 0 ? filteredTutors.map(tutor => (
-              <TutorCard key={tutor.id} tutor={tutor} />
-            )) : <p>No tutors match your search. Try a broader search or explore career paths first.</p>}
-          </div>
-        )}
-      </main>
-
-      {/* Bottom Navigation */}
-      {/* This is a conceptual bottom nav. State management for its active item is not implemented here for brevity. */}
-      <nav className="bottom-nav">
-        <button className={`nav-item ${activeTab === 'paths' ? 'active' : ''}`} onClick={() => setActiveTab('paths')}>
-          <BookOpen size={24} />
-          <span>Explore</span>
-        </button>
-        <button className="nav-item"> {/* TODO: Implement Favorites View */}
-          <Heart size={24} />
-          <span>Favorites</span>
-        </button>
-        <button className={`nav-item ${activeTab === 'tutors' ? 'active' : ''}`} onClick={() => setActiveTab('tutors')}>
-          <Users size={24} />
-          <span>Connect</span>
-        </button>
-        <button className={`nav-item ${activeTab === 'schools' ? 'active' : ''}`} onClick={() => setActiveTab('schools')}>
-          <Award size={24} />
-          <span>Schools</span>
-        </button>
-      </nav>
+        </div>
+      </div>
     </div>
-  );
-};
+  )
 
-export default StudentPathExplorer;
+  return (
+    <div className={`career-explore-page ${isVisible ? "visible" : ""}`}>
+      {/* Header Section */}
+      <div className="header">
+        <div className="header-content">
+          <button className="back-button" onClick={() => navigate("/cdashboard")}>
+            <ArrowLeft size={20} />
+            <span className="back-text">Back to Dashboard</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="main-content">
+        {/* Career Title and Roadmap with Description */}
+        <div className="hero-section">
+          <div className="hero-text">
+            <h1 className="career-title">{careerData.title}</h1>
+            <div className={`description-container ${descExpanded ? "expanded" : "collapsed"}`}>
+              <p className="description-text">{descExpanded ? careerData.description : careerData.description.slice(0, 150) + "..."}</p>
+              <button
+                className="desc-toggle-button"
+                onClick={() => setDescExpanded(!descExpanded)}
+                aria-label={descExpanded ? "Collapse description" : "Expand description"}
+              >
+                {descExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              </button>
+            </div>
+          </div>
+
+          <div className="roadmap-container">
+            <div className="roadmap-card">
+              <img src={careerData.roadmapImage || "/placeholder.svg"} alt="Career Roadmap" className="roadmap-image" />
+              <div className="roadmap-content">
+                <h3 className="roadmap-title">Career Roadmap</h3>
+                <p className="roadmap-description">Your path to success in {careerData.title}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* More About Section */}
+        <div className="more-about-section">
+          <h2 className="section-title">
+            More about <span className="title-highlight">{careerData.title}</span>
+          </h2>
+
+          {/* Tab Navigation */}
+          <div className="tab-navigation">
+            <TabButton
+              id="videos"
+              label="Videos"
+              icon={<PlayCircle size={20} />}
+              isActive={activeTab === "videos"}
+              onClick={setActiveTab}
+            />
+            <TabButton
+              id="schools"
+              label="Schools"
+              icon={<GraduationCap size={20} />}
+              isActive={activeTab === "schools"}
+              onClick={setActiveTab}
+            />
+            <TabButton
+              id="mentors"
+              label="Mentors"
+              icon={<Users size={20} />}
+              isActive={activeTab === "mentors"}
+              onClick={setActiveTab}
+            />
+          </div>
+
+          {/* Tab Content */}
+          <div className="tab-content">
+            {activeTab === "videos" && (
+              <div className="content-section">
+                <div className="section-header">
+                  <h3 className="content-title">Featured Videos</h3>
+                  <button className="view-all-button">
+                    View All <ArrowRight size={16} />
+                  </button>
+                </div>
+                <div className="cards-grid">
+                  {careerData.videos.map((video) => (
+                    <VideoCard key={video.id} video={video} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "schools" && (
+              <div className="content-section">
+                <div className="section-header">
+                  <h3 className="content-title">Top Schools & Programs</h3>
+                  <button className="view-all-button">
+                    View All <ArrowRight size={16} />
+                  </button>
+                </div>
+                <div className="cards-grid">
+                  {careerData.schools.map((school) => (
+                    <SchoolCard key={school.id} school={school} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "mentors" && (
+              <div className="content-section">
+                <div className="section-header">
+                  <h3 className="content-title">Expert Mentors</h3>
+                  <button className="view-all-button">
+                    View All <ArrowRight size={16} />
+                  </button>
+                </div>
+                <div className="cards-grid">
+                  {careerData.mentors.map((mentor) => (
+                    <MentorCard key={mentor.id} mentor={mentor} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default CareerExplorePage
