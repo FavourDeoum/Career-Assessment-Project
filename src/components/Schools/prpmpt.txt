@@ -1,0 +1,1 @@
+Could you help enhance the card such that where we have the contact button, it should be, book session, and on the book session page, thats where the session types, and pricing details should be displayed. As a web developer, come up with an innovative and creative book session page

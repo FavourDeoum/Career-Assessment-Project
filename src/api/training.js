@@ -1,13 +1,16 @@
-// /api/process-assessment.js
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Cors from 'cors';
-const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg"
 
+// WARNING: Storing API keys directly in code is insecure for production. 
+// Use environment variables or a secret manager.
+const API_KEY = "YOUR_GOOGLE_AI_API_KEY"; // Replace with your actual API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    origin: 'http://localhost:5173', // Your frontend URL
+    // Adjust origins as needed for your deployment
+    origin: ['http://localhost:5173', 'https://your-frontend-app.vercel.app', 'https://career-assessment-project.vercel.app'],
     methods: ['POST', 'GET', 'OPTIONS'],
     credentials: true,
 });
@@ -24,785 +27,12 @@ function runMiddleware(req, res, fn) {
     });
 }
 
-
-// Create a structured prompt from the assessment answers
-const createPrompt = (answers, categories) => {
-    let prompt = `As a career development AI specialist, analyze the following detailed career assessment results and provide comprehensive career guidance. The assessment covers multiple dimensions of career preferences and abilities:
-
-`;
-
-    categories.forEach(category => {
-        prompt += `\n${category.title}:\n`;
-        category.questions.forEach(question => {
-            const answer = answers[question.id];
-            if (answer) {
-                prompt += `- ${question.text}: ${mapAnswerToText(answer)}\n`;
-            }
-        });
-    });
-
-    prompt += `\nBased on this comprehensive assessment, please provide:
-1. Top 3 recommended career paths with detailed explanations of alignment
-2. Key strengths and areas for development
-3. Suggested next steps for career development
-4. Potential challenges and how to overcome them
-5. Long-term career growth opportunities
-
-Please structure the response in a clear, organized format with sections and bullet points where appropriate. Include specific action items and resources for further development.`;
-
-    return prompt;
-};
-// Process and enhance the LLM response
-const enhanceResponse = (llmResponse) => {
-    // Parse the response and add additional structure
-    const sections = llmResponse.split('\n\n');
-
-    return {
-        timestamp: new Date().toISOString(),
-        analysis: {
-            careerPaths: sections[0],
-            strengths: sections[1],
-            nextSteps: sections[2],
-            challenges: sections[3],
-            growthOpportunities: sections[4]
-        },
-        metadata: {
-            confidenceScore: 0.85,
-            assessmentVersion: "1.0",
-            analysisId: Math.random().toString(36).substr(2, 9)
-        },
-        resources: {
-            recommendedCourses: [
-                "Professional Development 101",
-                "Leadership Essentials",
-                "Industry-Specific Training"
-            ],
-            suggestedReadings: [
-                "Career Development in the Digital Age",
-                "Professional Networking Strategies",
-                "Industry Trends and Insights"
-            ]
-        }
-    };
-};
-
-
-const mapAnswerToText = (value) => {
-    const mappings = {
-        not_at_all: "no interest in",
-        slightly: "slight interest in",
-        moderately: "moderate interest in",
-        very_much: "strong interest in",
-        extremely: "extreme passion for",
-        // Add more mappings as needed
-    };
-    return mappings[value] || value;
-};
-
-const handler = async (req, res) => {
-    // Run the CORS middleware
-    await runMiddleware(req, res, cors);
-
-    if (!API_KEY) {
-        console.error('GOOGLE_API_KEY is not configured');
-        return res.status(500).json({
-            message: 'Server configuration error',
-            error: 'API key not configured'
-        });
-    }
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
-
-    try {
-        const { answers, categories } = req.body;
-
-        // Log the received data
-        console.log('Received assessment answers:', answers);
-
-        // Create the prompt
-        const prompt = createPrompt(answers, categories);
-        console.log('Generated prompt:', prompt);
-
-        // Get response from Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(prompt);
-        const llmResponse = result.response.text();
-
-        console.log('Raw LLM response:', llmResponse);
-
-        // Enhance and structure the response
-        const enhancedResponse = enhanceResponse(llmResponse);
-        console.log('Enhanced response:', enhancedResponse);
-
-        return res.status(200).json(enhancedResponse);
-    } catch (error) {
-        console.error('Error processing assessment:', error);
-        return res.status(500).json({
-            message: 'Error processing assessment',
-            error: error.message
-        });
-    }
-};
-
-export default handler;
-
-
-
-
-
-
-
-
-
-
-
-
-  // Interest levels
-        not_at_all: "no interest in",
-        slightly: "slight interest in",
-        moderately: "moderate interest in",
-        very_much: "strong interest in",
-        extremely: "extreme passion for",
-        
-        // Skill levels
-        novice: "beginner level in",
-        beginner: "basic knowledge of",
-        intermediate: "competent with",
-        advanced: "advanced skills in",
-        expert: "expert mastery of",
-        
-        // Agreement levels
-        strongly_disagree: "strongly disagrees with",
-        disagree: "disagrees with",
-        neutral: "neutral about",
-        agree: "agrees with",
-        strongly_agree: "strongly agrees with",
-        
-        // Frequency
-        never: "never engages in",
-        rarely: "rarely engages in",
-        sometimes: "sometimes engages in",
-        often: "often engages in",
-        always: "always engages in",
-        
-        // Yes/No with context
-        yes: "confirms",
-        no: "does not confirm",
-        maybe: "is uncertain about"
-
-
-
-
-
-
-
-
-
-
-        // import { GoogleGenerativeAI } from "@google/generative-ai";
-// import Cors from 'cors';
-
-// const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg";
-// const genAI = new GoogleGenerativeAI(API_KEY);
-
-// // Initialize CORS middleware
-// const cors = Cors({
-//     origin: 'http://localhost:5173', // frontend URL
-//     methods: ['POST', 'GET', 'OPTIONS'],
-//     credentials: true,
-// });
-
-// // Helper to run middleware
-// function runMiddleware(req, res, fn) {
-//     return new Promise((resolve, reject) => {
-//         fn(req, res, (result) => {
-//             if (result instanceof Error) {
-//                 return reject(result);
-//             }
-//             return resolve(result);
-//         });
-//     });
-// }
-
-// // Generate a more robust unique ID
-// const generateUniqueId = () => {
-//     const timestamp = Date.now().toString(36);
-//     const randomPart = Math.random().toString(36).substring(2, 9);
-//     const counter = (generateUniqueId.counter = (generateUniqueId.counter || 0) + 1);
-    
-//     return `${timestamp}-${randomPart}-${counter}`.substring(0, 36);
-// };
-
-// // Create a more detailed and structured prompt
-// const createPrompt = (answers, categories) => {
-//     let prompt = `As a career development AI specialist, provide a comprehensive career analysis based on the following assessment results:`;
-
-//     categories.forEach(category => {
-//         prompt += `\n\n${category.title.toUpperCase()}:\n`;
-//         category.questions.forEach(question => {
-//             const answer = answers[question.id];
-//             if (answer) {
-//                 prompt += `- ${question.text}: ${mapAnswerToText(answer)}\n`;
-//             }
-//         });
-//     });
-
-//     // Detailed output instructions
-//     prompt += `\n\nGenerate a comprehensive career analysis with these specific requirements:
-
-// 1. CAREER RECOMMENDATIONS:
-//    - Provide 5 specific job titles exactly matching this profile
-//    - Explain why each job is a perfect match
-//    - Include precise salary ranges and growth projections
-//    - Rank recommendations from most to least suitable
-
-// 2. SKILLS ANALYSIS:
-//    - Identify top 5 strengths with precise development strategies
-//    - Recommend 3-5 critical skills to enhance career potential
-//    - Provide specific learning paths for skill improvement
-
-// 3. ACTION PLAN:
-//    - Immediate next steps (3 actionable items)
-//    - 6-12 month strategic goals
-//    - Long-term career development roadmap
-//    - Prioritize actions with estimated impact
-
-// 4. POTENTIAL CHALLENGES:
-//    - Identify top 3 career obstacles
-//    - Develop targeted mitigation strategies
-//    - Provide resilience-building recommendations
-
-// 5. GROWTH OPPORTUNITIES:
-//    - Highlight 3 high-potential industry sectors
-//    - Identify emerging roles in next 3-5 years
-//    - Recommend cutting-edge skill acquisitions
-
-// Format response in clear, conversational language. Avoid technical jargon. Use concrete, actionable insights.`;
-
-//     return prompt;
-// };
-
-// // Enhanced mapping function
-// const mapAnswerToText = (value) => {
-//     if (typeof value === 'object') {
-//         return JSON.stringify(value);
-//     }
-    
-//     const mappings = {
-//         not_at_all: "no interest in",
-//         slightly: "slight interest in",
-//         moderately: "moderate interest in",
-//         very_much: "strong interest in",
-//         extremely: "extreme passion for",
-        
-//         novice: "beginner level skill",
-//         beginner: "basic competency",
-//         intermediate: "solid working knowledge",
-//         advanced: "advanced professional skill",
-//         expert: "expert-level mastery",
-        
-//         strongly_disagree: "strongly challenges",
-//         disagree: "has reservations about",
-//         neutral: "open-minded towards",
-//         agree: "strongly supports",
-//         strongly_agree: "deeply aligns with",
-        
-//         never: "does not engage",
-//         rarely: "occasionally explores",
-//         sometimes: "moderately interested in",
-//         often: "consistently pursues",
-//         always: "passionately committed to"
-//     };
-    
-//     return mappings[value] || value;
-// };
-
-// // Comprehensive response processor
-// const processResponse = (llmResponse) => {
-//     const cleanResponse = llmResponse.replace(/\*/g, '');
-    
-//     return {
-//         assessmentMetadata: {
-//             analysisId: generateUniqueId(),
-//             timestamp: new Date().toISOString(),
-//             version: "3.0",
-//             profileStrength: calculateProfileStrength(cleanResponse)
-//         },
-//         careerRecommendations: extractCareerRecommendations(cleanResponse),
-//         skillsAnalysis: extractSkillsAnalysis(cleanResponse),
-//         actionPlans: extractActionPlans(cleanResponse),
-//         potentialChallenges: extractPotentialChallenges(cleanResponse),
-//         growthOpportunities: extractGrowthOpportunities(cleanResponse),
-//         personalInsights: {
-//             keyTakeaways: extractKeyTakeaways(cleanResponse),
-//             motivationalQuote: generateMotivationalQuote()
-//         }
-//     };
-// };
-
-// // Helper functions for extraction (placeholders - to be implemented with regex)
-// const extractCareerRecommendations = (response) => {
-//     const recommendationSection = response.match(/CAREER RECOMMENDATIONS:([\s\S]*?)(?=\d+\.)/i);
-//     return recommendationSection ? parseRecommendedRoles(recommendationSection[1]) : [];
-// };
-
-// const parseRecommendedRoles = (section) => {
-//     const roles = section.split('\n')
-//         .filter(line => line.trim().startsWith('-'))
-//         .map(line => ({
-//             title: line.replace(/^-\s*/, '').split(':')[0].trim(),
-//             matchReasons: line.split(':')[1] ? line.split(':')[1].trim().split('\n') : []
-//         }));
-    
-//     return roles;
-// };
-
-// const extractSkillsAnalysis = (response) => {
-//     const skillsSection = response.match(/SKILLS ANALYSIS:([\s\S]*?)(?=\d+\.)/i);
-//     return skillsSection ? processSkillsSection(skillsSection[1]) : {};
-// };
-
-// const processSkillsSection = (section) => ({
-//     strengths: section.split('\n')
-//         .filter(line => line.trim().startsWith('-'))
-//         .map(line => line.replace(/^-\s*/, '').trim())
-// });
-
-// // Placeholder extraction functions for other sections
-// const extractActionPlans = (response) => ({});
-// const extractPotentialChallenges = (response) => ({});
-// const extractGrowthOpportunities = (response) => ({});
-// const extractKeyTakeaways = (response) => [];
-
-// const calculateProfileStrength = (response) => ({
-//     compatibilityScore: Math.min(90, (response.match(/strong/gi) || []).length * 15),
-//     matchConfidence: determineConfidenceLevel(response)
-// });
-
-// const determineConfidenceLevel = (response) => {
-//     const confidenceLevels = ['Low', 'Medium', 'High', 'Very High'];
-//     const score = (response.match(/strong/gi) || []).length * 15;
-    
-//     if (score < 30) return 'Low';
-//     if (score < 60) return 'Medium';
-//     if (score < 85) return 'High';
-//     return 'Very High';
-// };
-
-// const generateMotivationalQuote = () => {
-//     const quotes = [
-//         "Your career is a journey of continuous growth and discovery.",
-//         "Embrace challenges as opportunities for personal development.",
-//         "Success is not a destination, but a continuous evolution."
-//     ];
-//     return quotes[Math.floor(Math.random() * quotes.length)];
-// };
-
-// const generateResources = (answers, categories) => ({
-//     recommendedCourses: [
-//         // "Professional Development Masterclass",
-//         // "Advanced Career Strategy Workshop",
-//         // "Industry-Specific Skill Bootcamp"
-//     ],
-//     suggestedReadings: [
-//         // "Navigating Your Career Trajectory",
-//         // "Strategic Professional Growth",
-//         // "Innovative Career Development"
-//     ],
-//     professionalTools: [
-//         // "LinkedIn Learning",
-//         // "Coursera Career Track",
-//         // "Professional Networking Platforms"
-//     ]
-// });
-
-// const handler = async (req, res) => {
-//     await runMiddleware(req, res, cors);
-
-//     if (!API_KEY) {
-//         return res.status(500).json({
-//             message: 'Server configuration error',
-//             error: 'API key not configured'
-//         });
-//     }
-
-//     if (req.method !== 'POST') {
-//         return res.status(405).json({ message: 'Method not allowed' });
-//     }
-
-//     try {
-//         const { answers, categories } = req.body;
-
-//         const prompt = createPrompt(answers, categories);
-        
-//         const model = genAI.getGenerativeModel({ 
-//             model: "gemini-1.5-flash",
-//             generationConfig: {
-//                 temperature: 0.7,
-//                 topP: 0.9,
-//                 topK: 40,
-//                 maxOutputTokens: 2048,
-//             }
-//         });
-        
-//         const result = await model.generateContent(prompt);
-//         const llmResponse = result.response.text();
-
-//         console.log(llmResponse);
-
-//         const processedResponse = processResponse(llmResponse);
-//         console.log(processedResponse);
-
-//         processedResponse.resources = generateResources(answers, categories);
-        
-//         return res.status(200).json(processedResponse);
-//     } catch (error) {
-//         console.error('Error processing assessment:', error);
-//         return res.status(500).json({
-//             message: 'Error processing career assessment',
-//             error: error.message
-//         });
-//     }
-// };
-
-// export default handler;
-
-
-
-
-
-
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import Cors from 'cors';
-
-const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg";
-const genAI = new GoogleGenerativeAI(API_KEY);
-
-// Initialize CORS middleware
-const cors = Cors({
-    origin: 'http://localhost:5173', // Allow only your frontend URL
-    methods: ['POST', 'GET', 'OPTIONS'],
-    credentials: true,
-});
-
-// Helper to run middleware
-function runMiddleware(req, res, fn) {
-    return new Promise((resolve, reject) => {
-        fn(req, res, (result) => {
-            if (result instanceof Error) {
-                return reject(result);
-            }
-            return resolve(result);
-        });
-    });
-}
-
-// Generate a unique ID
-const generateUniqueId = () => {
-    const timestamp = Date.now().toString(36);
-    const randomPart = Math.random().toString(36).substring(2, 9);
-    const counter = (generateUniqueId.counter = (generateUniqueId.counter || 0) + 1);
-    return `${timestamp}-${randomPart}-${counter}`.substring(0, 36);
-};
-
-const createPrompt = (answers, categories) => {
-    let prompt = `As a career development AI specialist, provide a comprehensive career analysis based on the following assessment results:`;
-
-    categories.forEach(category => {
-        prompt += `\n\n${category.title.toUpperCase()}:\n`;
-        category.questions.forEach(question => {
-            const answer = answers[question.id];
-            if (answer) {
-                prompt += `- ${question.text}: ${mapAnswerToText(answer)}\n`;
-            }
-        });
-    });
-
-    prompt += `\n\nGenerate a comprehensive career analysis with these specific requirements:
-1. CAREER RECOMMENDATIONS: Provide 5 specific job titles, explain why each is a match, and include salary ranges.
-2. SKILLS ANALYSIS: Identify top 5 strengths and recommend 3-5 critical skills to develop.
-3. ACTION PLAN: Provide immediate next steps, 6-12 month goals, and a long-term roadmap.
-4. POTENTIAL CHALLENGES: Identify top 3 obstacles and mitigation strategies.
-5. GROWTH OPPORTUNITIES: Highlight 3 high-potential industry sectors and emerging roles.
-6. RESOURCES: Recommend courses, readings, and tools for professional development.
-
-Please provide a structured JSON response based on the following details:
-{
-    "careerRecommendations": [],
-    "skillsAnalysis": {
-        "strengths": [],
-        "skillsToDevelop": []
-    },
-    "actionPlans": {
-        "immediateNextSteps": [],
-        "shortTermGoals": [],
-        "longTermRoadmap": []
-    },
-    "potentialChallenges": {
-        "challenges": [],
-        "mitigationStrategies": []
-    },
-    "growthOpportunities": {
-        "sectors": [],
-        "emergingRoles": []
-    },
-    "personalInsights": {
-        "keyTakeaways": [],
-        "motivationalQuote": ""
-    },
-    "resources": {
-        "recommendedCourses": [],
-        "suggestedReadings": [],
-        "professionalTools": []
-    }
-}
-
-User Data:
-${JSON.stringify(answers, null, 2)}
-
-Make sure the response is always a valid JSON format. And then where we have the job title, it should always come along with the explanation only.`;
-
-    return prompt;
-};
-
-// Map answers to text
-const mapAnswerToText = (value) => {
-    const mappings = {
-        // Interest levels
-        not_at_all: "no interest in",
-        slightly: "slight interest in",
-        moderately: "moderate interest in",
-        very_much: "strong interest in",
-        extremely: "extreme passion for",
-        
-        // Skill levels
-        novice: "beginner level in",
-        beginner: "basic knowledge of",
-        intermediate: "competent with",
-        advanced: "advanced skills in",
-        expert: "expert mastery of",
-        
-        // Agreement levels
-        strongly_disagree: "strongly disagrees with",
-        disagree: "disagrees with",
-        neutral: "neutral about",
-        agree: "agrees with",
-        strongly_agree: "strongly agrees with",
-        
-        // Frequency
-        never: "never engages in",
-        rarely: "rarely engages in",
-        sometimes: "sometimes engages in",
-        often: "often engages in",
-        always: "always engages in",
-        
-        // Yes/No with context
-        yes: "confirms",
-        no: "does not confirm",
-        maybe: "is uncertain about"
-    };
-    return mappings[value] || value;
-};
-
-// Process the LLM response
-
-
-// Helper functions for extraction
-const extractCareerRecommendations = (response) => {
-    const recommendationSection = response.match(/CAREER RECOMMENDATIONS:([\s\S]*?)(?=\d+\.)/i);
-    return recommendationSection ? parseRecommendedRoles(recommendationSection[1]) : [];
-};
-
-const parseRecommendedRoles = (section) => {
-    return section.split('\n')
-        .filter(line => line.trim().startsWith('-'))
-        .map(line => ({
-            title: line.replace(/^-\s*/, '').split(':')[0].trim(),
-            matchReasons: line.split(':')[1] ? line.split(':')[1].trim().split('\n') : []
-        }));
-};
-
-const extractSkillsAnalysis = (response) => {
-    const skillsSection = response.match(/SKILLS ANALYSIS:([\s\S]*?)(?=\d+\.)/i);
-    return skillsSection ? processSkillsSection(skillsSection[1]) : {};
-};
-
-const processSkillsSection = (section) => ({
-    strengths: section.split('\n')
-        .filter(line => line.trim().startsWith('-'))
-        .map(line => line.replace(/^-\s*/, '').trim())
-});
-
-// Placeholder extraction functions
-const extractActionPlans = (response) => ({});
-const extractPotentialChallenges = (response) => ({});
-const extractGrowthOpportunities = (response) => ({});
-const extractKeyTakeaways = (response) => [];
-
-const calculateProfileStrength = (response) => ({
-    compatibilityScore: Math.min(90, (response.match(/strong/gi) || []).length * 15),
-    matchConfidence: determineConfidenceLevel(response)
-});
-
-const determineConfidenceLevel = (response) => {
-    const score = (response.match(/strong/gi) || []).length * 15;
-    if (score < 30) return 'Low';
-    if (score < 60) return 'Medium';
-    if (score < 85) return 'High';
-    return 'Very High';
-};
-
-const generateMotivationalQuote = () => {
-    const quotes = [
-        "Your career is a journey of continuous growth and discovery.",
-        "Embrace challenges as opportunities for personal development.",
-        "Success is not a destination, but a continuous evolution."
-    ];
-    return quotes[Math.floor(Math.random() * quotes.length)];
-};
-
-const generateResources = (answers, categories) => ({
-    recommendedCourses: [],
-    suggestedReadings: [],
-    professionalTools: []
-});
-
-// Handler function
-const handler = async (req, res) => {
-    await runMiddleware(req, res, cors);
-
-    if (!API_KEY) {
-        return res.status(500).json({ message: 'Server configuration error', error: 'API key not configured' });
-    }
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
-
-    try {
-        const { answers, categories } = req.body;
-
-        // Log incoming data
-        console.log("Received Answers:", answers);
-        console.log("Received Categories:", categories);
-
-        if (!answers || !categories) {
-            return res.status(400).json({ message: 'Invalid request data' });
-        }
-
-        const prompt = createPrompt(answers, categories);
-        console.log("Generated Prompt:", prompt);
-
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = await model.generateContent(prompt);
-        const llmResponse = result.response.text();
-        console.log("LLM Response:", llmResponse);
-
-        // Process the AI model's response
-        const processedResponse = processResponse(llmResponse);
-        console.log("Processed Response:", processedResponse);
-
-        // Generate resources based on answers and categories
-        processedResponse.resources = generateResources(answers, categories);
-
-        const responseData = {
-            analysis: {
-                careerRecommendations: processedResponse.careerRecommendations || [],
-                skillsAnalysis: processedResponse.skillsAnalysis || {},
-                actionPlan: processedResponse.actionPlans || {},
-                potentialChallenges: processedResponse.potentialChallenges || {},
-                growthOpportunities: processedResponse.growthOpportunities || {},
-                insights: {
-                    keyTakeaways: processedResponse.personalInsights?.keyTakeaways || [],
-                    motivationalQuote: processedResponse.personalInsights?.motivationalQuote || "",
-                },
-                resources: processedResponse.resources || {}
-            }
-        };
-
-        return res.status(200).json(responseData);
-    } catch (error) {
-        console.error('Error processing assessment:', error);
-        return res.status(500).json({ message: 'Error processing career assessment', error: error.message });
-    }
-};
-
-// Updated processResponse function
-const processResponse = (response) => {
-    // Remove any leading/trailing backticks or extra formatting characters
-    response = response.replace(/```json|```/g, '').trim();
-
-    try {
-        const parsedResponse = JSON.parse(response);
-
-        return {
-            careerRecommendations: parsedResponse.careerRecommendations || [],
-            skillsAnalysis: {
-                strengths: parsedResponse.skillsAnalysis?.strengths || [],
-                skillsToDevelop: parsedResponse.skillsAnalysis?.skillsToDevelop || []
-            },
-            actionPlans: {
-                immediateNextSteps: parsedResponse.actionPlans?.immediateNextSteps || [],
-                shortTermGoals: parsedResponse.actionPlans?.shortTermGoals || [],
-                longTermRoadmap: parsedResponse.actionPlans?.longTermRoadmap || []
-            },
-            potentialChallenges: {
-                challenges: parsedResponse.potentialChallenges?.challenges || [],
-                mitigationStrategies: parsedResponse.potentialChallenges?.mitigationStrategies || []
-            },
-            growthOpportunities: {
-                sectors: parsedResponse.growthOpportunities?.sectors || [],
-                emergingRoles: parsedResponse.growthOpportunities?.emergingRoles || []
-            },
-            personalInsights: {
-                keyTakeaways: parsedResponse.personalInsights?.keyTakeaways || [],
-                motivationalQuote: parsedResponse.personalInsights?.motivationalQuote || ""
-            },
-            resources: {
-                recommendedCourses: parsedResponse.resources?.recommendedCourses || [],
-                suggestedReadings: parsedResponse.resources?.suggestedReadings || [],
-                professionalTools: parsedResponse.resources?.professionalTools || []
-            }
-        };
-    } catch (error) {
-        console.error("Error parsing response:", error);
-        return {
-            careerRecommendations: [],
-            skillsAnalysis: {},
-            actionPlans: {},
-            potentialChallenges: {},
-            growthOpportunities: {},
-            personalInsights: {
-                keyTakeaways: [],
-                motivationalQuote: ""
-            },
-            resources: {
-                recommendedCourses: [],
-                suggestedReadings: [],
-                professionalTools: []
-            }
-        };
-    }
-};
-
-export default handler;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// (generateUniqueId is not used in the current flow, but can be kept if needed elsewhere)
+// const generateUniqueId = () => { ... };
+
+// THE SCHOOLS DATA (as provided in your prompt)
+// In a real application, you might load this from a file or database on server start
+// to avoid passing it in every request or hardcoding such a large string.
 const SCHOOLS_DATA_STRING = `[
   {
     "id": "uba_coltech",
@@ -839,8 +69,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     },
@@ -873,8 +102,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
       },
@@ -907,8 +135,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Great mentor for graduate-level research and business applications",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Great mentor for graduate-level research and business applications"
           }
         ]
       },
@@ -941,8 +168,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Great mentor for graduate-level research and business applications",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Great mentor for graduate-level research and business applications"
           }
         ]
     },
@@ -975,8 +201,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Great mentor for graduate-level research and business applications",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Great mentor for graduate-level research and business applications"
           }
         ]
     },
@@ -1009,8 +234,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Great mentor for graduate-level research and business applications",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Great mentor for graduate-level research and business applications"
           }
         ]
     },
@@ -1042,8 +266,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Great mentor for graduate-level research and business applications",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Great mentor for graduate-level research and business applications"
           }
         ]
     },
@@ -1076,8 +299,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Great mentor for graduate-level research and business applications",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Great mentor for graduate-level research and business applications"
           }
         ]
     }
@@ -1136,8 +358,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "77,360 XAF (Save 5,000 XAF)",
               "10sessions": "149,720 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lauren Adams",
@@ -1166,8 +387,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "68,435 XAF (Save 5,000 XAF)",
               "10sessions": "131,870 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Donna Thompson DDS",
@@ -1196,8 +416,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "88,990 XAF (Save 5,000 XAF)",
               "10sessions": "172,980 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       },
@@ -1239,8 +458,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "75,010 XAF (Save 5,000 XAF)",
               "10sessions": "145,020 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Stuart Bush DDS",
@@ -1269,8 +487,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "58,730 XAF (Save 5,000 XAF)",
               "10sessions": "112,460 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Brianna Hernandez",
@@ -1299,8 +516,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "65,195 XAF (Save 5,000 XAF)",
               "10sessions": "125,390 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       },
@@ -1343,8 +559,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "113,840 XAF (Save 5,000 XAF)",
               "10sessions": "222,680 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Steven Parker",
@@ -1373,8 +588,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "69,125 XAF (Save 5,000 XAF)",
               "10sessions": "133,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Kimberly Salas",
@@ -1403,8 +617,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "73,145 XAF (Save 5,000 XAF)",
               "10sessions": "141,290 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       }
@@ -1442,8 +655,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "85,000 XAF (Save 5,000 XAF)",
               "10sessions": "160,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Outstanding tutor with deep knowledge of both traditional and digital communication",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Outstanding tutor with deep knowledge of both traditional and digital communication"
           }
         ]
       },
@@ -1476,8 +688,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "120,000 XAF (Save 5,000 XAF)",
               "10sessions": "230,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Exceptional guidance for PhD students, especially in integrating technology with communication research",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Exceptional guidance for PhD students, especially in integrating technology with communication research"
           }
         ]
       }
@@ -1535,8 +746,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,580 XAF (Save 5,000 XAF)",
               "10sessions": "178,160 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Kenneth Lewis",
@@ -1565,8 +775,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "105,615 XAF (Save 5,000 XAF)",
               "10sessions": "206,230 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       },
@@ -1609,8 +818,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,705 XAF (Save 5,000 XAF)",
               "10sessions": "178,410 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lisa Russell",
@@ -1639,8 +847,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "90,290 XAF (Save 5,000 XAF)",
               "10sessions": "175,580 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       }
@@ -1689,8 +896,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -1719,8 +925,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       },
@@ -1763,8 +968,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "71,315 XAF (Save 5,000 XAF)",
               "10sessions": "137,630 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lindsay Warner",
@@ -1793,8 +997,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,945 XAF (Save 5,000 XAF)",
               "10sessions": "178,890 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
       },
@@ -1836,8 +1039,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -1866,8 +1068,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -1908,8 +1109,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -1938,8 +1138,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -1981,8 +1180,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -2011,8 +1209,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2054,8 +1251,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -2084,8 +1280,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2126,8 +1321,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -2156,8 +1350,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2198,8 +1391,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "71,315 XAF (Save 5,000 XAF)",
               "10sessions": "137,630 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lindsay Warner",
@@ -2228,8 +1420,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,945 XAF (Save 5,000 XAF)",
               "10sessions": "178,890 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2270,8 +1461,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -2300,8 +1490,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2342,8 +1531,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "71,315 XAF (Save 5,000 XAF)",
               "10sessions": "137,630 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lindsay Warner",
@@ -2372,8 +1560,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,945 XAF (Save 5,000 XAF)",
               "10sessions": "178,890 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2414,8 +1601,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "71,315 XAF (Save 5,000 XAF)",
               "10sessions": "137,630 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lindsay Warner",
@@ -2444,8 +1630,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,945 XAF (Save 5,000 XAF)",
               "10sessions": "178,890 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2486,8 +1671,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -2516,8 +1700,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2558,8 +1741,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "71,315 XAF (Save 5,000 XAF)",
               "10sessions": "137,630 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Lindsay Warner",
@@ -2588,8 +1770,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "91,945 XAF (Save 5,000 XAF)",
               "10sessions": "178,890 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2630,8 +1811,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "82,125 XAF (Save 5,000 XAF)",
               "10sessions": "159,250 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           },
           {
             "name": "Daniel Hernandez",
@@ -2660,8 +1840,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "74,850 XAF (Save 5,000 XAF)",
               "10sessions": "144,700 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Very engaging tutor with practical insights and academic depth.",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Very engaging tutor with practical insights and academic depth."
           }
         ]
     },
@@ -2714,8 +1893,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "75,000 XAF (Save 5,000 XAF)",
               "10sessions": "145,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at breaking down complex accounting concepts into understandable parts",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at breaking down complex accounting concepts into understandable parts"
           },
           {
             "name": "Tayuh Favour",
@@ -2734,8 +1912,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "45,000 XAF (Save 5,000 XAF)",
               "10sessions": "85,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Good for beginners, patient and understanding approach",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Good for beginners, patient and understanding approach"
           }
         ]
       }
@@ -2779,8 +1956,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     },
@@ -2812,8 +1988,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     },
@@ -2845,8 +2020,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     },
@@ -2878,8 +2052,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     },
@@ -2910,8 +2083,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     },
@@ -2942,8 +2114,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent at explaining complex project management concepts with real-world examples"
           }
         ]
     }],
@@ -2985,8 +2156,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "95,000 XAF (Save 5,000 XAF)",
               "10sessions": "180,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Strong background in systems thinking, great for engineering students",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Strong background in systems thinking, great for engineering students"
           },
           {
             "name": "John Brindi",
@@ -3005,8 +2175,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "65,000 XAF (Save 5,000 XAF)",
               "10sessions": "125,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Good technical knowledge, especially helpful for security aspects of engineering",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Good technical knowledge, especially helpful for security aspects of engineering"
           }
         ]
       },
@@ -3038,8 +2207,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "105,000 XAF (Save 5,000 XAF)",
               "10sessions": "200,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Top-tier expertise in computer engineering, excellent for advanced topics",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Top-tier expertise in computer engineering, excellent for advanced topics"
           },
           {
             "name": "NchanJi Faithfull",
@@ -3058,8 +2226,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "85,000 XAF (Save 5,000 XAF)",
               "10sessions": "160,000 XAF (Save 20,000 XAF)"
             },
-            "studentFeedback": "Excellent mobile development mentor with practical industry experience",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Excellent mobile development mentor with practical industry experience"
           },
           {
             "name": "Tracy Jessy",
@@ -3078,8 +2245,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "55,000 XAF (Save 5,000 XAF)",
               "10sessions": "105,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Good for foundational concepts, patient with beginners",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Good for foundational concepts, patient with beginners"
           },
           {
             "name": "Abdul Fadiga",
@@ -3136,8 +2302,7 @@ const SCHOOLS_DATA_STRING = `[
               "5sessions": "70,000 XAF (Save 5,000 XAF)",
               "10sessions": "135,000 XAF (Save 15,000 XAF)"
             },
-            "studentFeedback": "Experienced in mobile development with good project guidance",
-            "image": "https://example.com/images/dr_felix_abanda.jpg"
+            "studentFeedback": "Experienced in mobile development with good project guidance"
           }
         ]
       }
@@ -3186,8 +2351,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "90,000 XAF (Save 10,000 XAF)",
             "10sessions": "170,000 XAF (Save 30,000 XAF)"
           },
-          "studentFeedback": "Incredibly knowledgeable and supportive, with a passion for teaching.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Incredibly knowledgeable and supportive, with a passion for teaching."
         }
       ]
     },
@@ -3223,8 +2387,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "85,000 XAF (Save 5,000 XAF)",
             "10sessions": "160,000 XAF (Save 40,000 XAF)"
           },
-          "studentFeedback": "Very practical and hands-on approach to teaching laboratory skills.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Very practical and hands-on approach to teaching laboratory skills."
         }
       ]
     },
@@ -3263,8 +2426,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "100,000 XAF (Save 10,000 XAF)",
             "10sessions": "190,000 XAF (Save 50,000 XAF)"
           },
-          "studentFeedback": "Exceptional at guiding students through complex rehabilitation processes.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Exceptional at guiding students through complex rehabilitation processes."
         }
       ]
     }
@@ -3308,8 +2470,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "110,000 XAF (Save 15,000 XAF)",
             "10sessions": "210,000 XAF (Save 40,000 XAF)"
           },
-          "studentFeedback": "Incredibly insightful and provides practical strategies for curriculum design.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Incredibly insightful and provides practical strategies for curriculum design."
         }
       ]
     }
@@ -3352,8 +2513,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "90,000 XAF (Save 10,000 XAF)",
             "10sessions": "170,000 XAF (Save 30,000 XAF)"
           },
-          "studentFeedback": "Very thorough and provides real-world examples that enhance understanding.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Very thorough and provides real-world examples that enhance understanding."
         }
       ]
     }
@@ -3396,8 +2556,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "100,000 XAF (Save 10,000 XAF)",
             "10sessions": "190,000 XAF (Save 50,000 XAF)"
           },
-          "studentFeedback": "Passionate about teaching and provides excellent support for student teachers.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Passionate about teaching and provides excellent support for student teachers."
         }
       ]
     }
@@ -3440,8 +2599,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "90,000 XAF (Save 10,000 XAF)",
             "10sessions": "170,000 XAF (Save 30,000 XAF)"
           },
-          "studentFeedback": "Very engaging and knowledgeable, with a focus on practical applications.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Very engaging and knowledgeable, with a focus on practical applications."
         }
       ]
     }
@@ -3484,8 +2642,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "110,000 XAF (Save 15,000 XAF)",
             "10sessions": "210,000 XAF (Save 40,000 XAF)"
           },
-          "studentFeedback": "Highly knowledgeable and provides excellent insights into translation practices.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Highly knowledgeable and provides excellent insights into translation practices."
         }
       ]
     }
@@ -3528,8 +2685,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "100,000 XAF (Save 10,000 XAF)",
             "10sessions": "190,000 XAF (Save 50,000 XAF)"
           },
-          "studentFeedback": "Very experienced and provides practical insights into laboratory practices.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Very experienced and provides practical insights into laboratory practices."
         }
       ]
     }
@@ -3586,8 +2742,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "115,000 XAF (Save 10,000 XAF)",
             "10sessions": "220,000 XAF (Save 30,000 XAF)"
           },
-          "studentFeedback": "Exceptional at explaining complex financial concepts in an accessible manner.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Exceptional at explaining complex financial concepts in an accessible manner."
         }
       ]
     },
@@ -3621,8 +2776,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "90,000 XAF (Save 10,000 XAF)",
             "10sessions": "170,000 XAF (Save 30,000 XAF)"
           },
-          "studentFeedback": "Provides practical, real-world learning experiences in management.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Provides practical, real-world learning experiences in management."
         }
       ]
     },
@@ -3655,8 +2809,7 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "145,000 XAF (Save 5,000 XAF)",
             "10sessions": "280,000 XAF (Save 20,000 XAF)"
           },
-          "studentFeedback": "Deeply insightful with a strong emphasis on critical thinking and research.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Deeply insightful with a strong emphasis on critical thinking and research."
         },
         {
           "name": "Dr. Felix Abanda",
@@ -3675,16 +2828,306 @@ const SCHOOLS_DATA_STRING = `[
             "5sessions": "130,000 XAF (Save 10,000 XAF)",
             "10sessions": "250,000 XAF (Save 30,000 XAF)"
           },
-          "studentFeedback": "Excellent at bridging theory with practice in health economics.",
-          "image": "https://example.com/images/dr_felix_abanda.jpg"
+          "studentFeedback": "Excellent at bridging theory with practice in health economics."
         }
       ]
     }
   ],
-  "location": "Big Mankon, Bamenda, Cameroon",
+  "location": "California, USA",
   "ranking": "3rd in Cameroon and 21402nd in the world",
   "rating": 4.9,
   "image": "https://images.unsplash.com/photo-1562774053-701939374585?w=300&h=200&fit=crop",
   "description": "The Catholic University of Cameroon (CATUC) in Bamenda was established in 2010 by the Bishops of the Bamenda Ecclesiastical Province with the goal of providing high-quality, holistic, and Christian-based education. It aims to be a center of learning where revealed and human truths are explored in depth, relevant to the Cameroon experience."
 }
 ]`;
+
+const schoolsData = JSON.parse(SCHOOLS_DATA_STRING);
+
+
+// Create a prompt for the AI
+const createPrompt = (answers, categories, schoolDb) => { // Added schoolDb parameter
+    let prompt = `As a career development AI specialist, provide a comprehensive career analysis based on the following student assessment results:`;
+
+    categories.forEach(category => {
+        prompt += `\n\n${category.title.toUpperCase()}:\n`;
+        category.questions.forEach(question => {
+            const answer = answers[question.id];
+            if (answer) {
+                prompt += `- ${question.text}: ${mapAnswerToText(answer)}\n`;
+            }
+        });
+    });
+
+    prompt += `\n\nBased on this student profile, generate a comprehensive career analysis with these specific requirements:
+1.  CAREER RECOMMENDATIONS: Provide 3-5 specific job titles. For each, explain why it's a match for the student and include typical salary ranges (e.g., in XAF or USD, specify which).
+2.  SKILLS ANALYSIS: Identify the student's top 5 strengths based on their answers. Recommend 3-5 critical skills they should develop for their suggested career paths.
+3.  ACTION PLAN:
+    *   Immediate Next Steps (e.g., research specific roles, network).
+    *   6-12 Month Goals (e.g., complete a relevant course, start a project).
+    *   Long-Term Roadmap (e.g., gain specific experience, aim for a senior role).
+4.  POTENTIAL CHALLENGES: Identify 2-3 potential obstacles the student might face and suggest mitigation strategies for each.
+5.  GROWTH OPPORTUNITIES: Highlight 2-3 high-potential industry sectors relevant to the career recommendations and any emerging roles within them.
+6.  RESOURCES: Recommend 2-3 online courses (e.g., Coursera, Udemy), 2-3 insightful books or articles, and 2-3 helpful professional tools or communities.
+7.  RECOMMENDED SCHOOLS: Based on the CAREER RECOMMENDATIONS you generate AND the AVAILABLE SCHOOLS DATA provided below, recommend 2-4 suitable schools. For each school, provide:
+    *   schoolId: The ID of the school from the provided data.
+    *   schoolName: The name of the school.
+    *   relevantPrograms: An array of 1-3 specific program names from that school that align with the recommended career paths.
+    *   reasonForRecommendation: A brief explanation of why this school and its programs are a good fit for one or more of the career recommendations.
+
+Please provide a structured JSON response. Ensure all specified fields are present, even if with empty arrays or default values if no specific information can be derived.
+The JSON structure should be:
+{
+    "careerRecommendations": [
+        { "jobTitle": "...", "explanation": "...", "salaryRange": "..." }
+    ],
+    "skillsAnalysis": {
+        "strengths": [],
+        "skillsToDevelop": []
+    },
+    "actionPlans": {
+        "immediateNextSteps": [],
+        "shortTermGoals": [],
+        "longTermRoadmap": []
+    },
+    "potentialChallenges": {
+        "challenges": [],
+        "mitigationStrategies": []
+    },
+    "growthOpportunities": {
+        "sectors": [],
+        "emergingRoles": []
+    },
+    "personalInsights": {
+        "keyTakeaways": [],
+        "motivationalQuote": ""
+    },
+    "resources": {
+        "recommendedCourses": [],
+        "suggestedReadings": [],
+        "professionalTools": []
+    },
+    "recommendedSchools": [
+        { "schoolId": "...", "schoolName": "...", "relevantPrograms": ["...", "..."], "reasonForRecommendation": "..." }
+    ]
+}
+
+USER ASSESSMENT DATA:
+${JSON.stringify(answers, null, 2)}
+
+AVAILABLE SCHOOLS DATA (Use this to populate 'recommendedSchools'):
+${JSON.stringify(schoolDb, null, 2)}
+
+Make sure the response is always a valid JSON format. Focus on matching the generated career recommendations to relevant programs in the provided school data for the 'recommendedSchools' section. The explanation for job titles should be concise and directly related to the user's assessment data.
+`;
+
+    return prompt;
+};
+
+// Map answers to text
+const mapAnswerToText = (value) => {
+    const mappings = {
+        not_at_all: "no interest in",
+        slightly: "slight interest in",
+        moderately: "moderate interest in",
+        very_much: "strong interest in",
+        extremely: "extreme passion for",
+        novice: "beginner level in",
+        beginner: "basic knowledge of",
+        intermediate: "competent with",
+        advanced: "advanced skills in",
+        expert: "expert mastery of",
+        strongly_disagree: "strongly disagrees with",
+        disagree: "disagrees with",
+        neutral: "neutral about",
+        agree: "agrees with",
+        strongly_agree: "strongly agrees with",
+        never: "never engages in",
+        rarely: "rarely engages in",
+        sometimes: "sometimes engages in",
+        often: "often engages in",
+        always: "always engages in",
+        yes: "confirms",
+        no: "does not confirm",
+        maybe: "is uncertain about"
+    };
+    return mappings[value] || value;
+};
+
+// Generate resources (this is a placeholder, AI will generate them based on prompt)
+const generateResources = (answers, categories) => ({
+    recommendedCourses: [],
+    suggestedReadings: [],
+    professionalTools: []
+});
+
+// Process the AI response
+const processResponse = (response) => {
+    response = response.replace(/```json|```/g, '').trim();
+
+    if (!response.startsWith('{') && !response.startsWith('[')) {
+        console.error("Invalid JSON response from AI (does not start with { or [):", response);
+        // Return a default structure to prevent crashes
+        return {
+            careerRecommendations: [],
+            skillsAnalysis: { strengths: [], skillsToDevelop: [] },
+            actionPlans: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+            potentialChallenges: { challenges: [], mitigationStrategies: [] },
+            growthOpportunities: { sectors: [], emergingRoles: [] },
+            personalInsights: { keyTakeaways: [], motivationalQuote: "" },
+            resources: { recommendedCourses: [], suggestedReadings: [], professionalTools: [] },
+            recommendedSchools: []
+        };
+    }
+
+    try {
+        const parsedResponse = JSON.parse(response);
+
+        return {
+            careerRecommendations: parsedResponse.careerRecommendations || [],
+            skillsAnalysis: {
+                strengths: parsedResponse.skillsAnalysis?.strengths || [],
+                skillsToDevelop: parsedResponse.skillsAnalysis?.skillsToDevelop || []
+            },
+            actionPlans: {
+                immediateNextSteps: parsedResponse.actionPlans?.immediateNextSteps || [],
+                shortTermGoals: parsedResponse.actionPlans?.shortTermGoals || [],
+                longTermRoadmap: parsedResponse.actionPlans?.longTermRoadmap || []
+            },
+            potentialChallenges: {
+                challenges: parsedResponse.potentialChallenges?.challenges || [],
+                mitigationStrategies: parsedResponse.potentialChallenges?.mitigationStrategies || []
+            },
+            growthOpportunities: {
+                sectors: parsedResponse.growthOpportunities?.sectors || [],
+                emergingRoles: parsedResponse.growthOpportunities?.emergingRoles || []
+            },
+            personalInsights: {
+                keyTakeaways: parsedResponse.personalInsights?.keyTakeaways || [],
+                motivationalQuote: parsedResponse.personalInsights?.motivationalQuote || ""
+            },
+            resources: { // AI will populate this based on the prompt
+                recommendedCourses: parsedResponse.resources?.recommendedCourses || [],
+                suggestedReadings: parsedResponse.resources?.suggestedReadings || [],
+                professionalTools: parsedResponse.resources?.professionalTools || []
+            },
+            recommendedSchools: parsedResponse.recommendedSchools || [] // Ensure this new field is processed
+        };
+    } catch (error) {
+        console.error("Error parsing JSON response from AI:", error);
+        console.error("Problematic AI Response causing parse error:", response); // Log the problematic response
+         // Return a default structure to prevent crashes
+        return {
+            careerRecommendations: [],
+            skillsAnalysis: { strengths: [], skillsToDevelop: [] },
+            actionPlans: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+            potentialChallenges: { challenges: [], mitigationStrategies: [] },
+            growthOpportunities: { sectors: [], emergingRoles: [] },
+            personalInsights: { keyTakeaways: [], motivationalQuote: "" },
+            resources: { recommendedCourses: [], suggestedReadings: [], professionalTools: [] },
+            recommendedSchools: []
+        };
+    }
+};
+
+// Handler function
+const handler = async (req, res) => {
+    await runMiddleware(req, res, cors);
+
+    if (!API_KEY || API_KEY === "YOUR_GOOGLE_AI_API_KEY") { // Check if API key is placeholder
+        console.error('API key not configured or is placeholder.');
+        return res.status(500).json({ message: 'Server configuration error', error: 'API key not configured' });
+    }
+
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
+
+    try {
+        const { answers, categories } = req.body;
+
+        if (!answers || Object.keys(answers).length === 0 || !categories || categories.length === 0) {
+            return res.status(400).json({ message: 'Invalid request data: Answers and categories are required' });
+        }
+
+        console.log("Received Answers:", JSON.stringify(answers, null, 2).substring(0, 500) + "..."); // Log snippet
+        console.log("Received Categories:", JSON.stringify(categories, null, 2).substring(0, 500) + "..."); // Log snippet
+
+        // Pass the globally defined schoolsData to createPrompt
+        const prompt = createPrompt(answers, categories, schoolsData);
+        // console.log("Generated Prompt:", prompt); // Prompt can be very long, log with caution or snippets
+        console.log("Generated Prompt (first 1000 chars):", prompt.substring(0,1000) + "...");
+
+
+        // It's good practice to set safety settings, though "gemini-2.0-flash" might be an older or different model name.
+        // For current Gemini models (e.g., "gemini-1.5-flash"), you'd do:
+        const model = genAI.getGenerativeModel({
+             model: "gemini-1.5-flash-latest", // Or "gemini-pro" or "gemini-1.5-pro-latest"
+             safetySettings: [
+                {
+                  category: "HARM_CATEGORY_HARASSMENT",
+                  threshold: "BLOCK_MEDIUM_AND_ABOVE",
+                },
+                {
+                  category: "HARM_CATEGORY_HATE_SPEECH",
+                  threshold: "BLOCK_MEDIUM_AND_ABOVE",
+                },
+                {
+                  category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                  threshold: "BLOCK_MEDIUM_AND_ABOVE",
+                },
+                {
+                  category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                  threshold: "BLOCK_MEDIUM_AND_ABOVE",
+                },
+              ],
+              generationConfig: { // Ensure JSON output
+                responseMimeType: "application/json",
+              }
+        });
+        
+        const result = await model.generateContent(prompt);
+        // With responseMimeType: "application/json", the response.text() should be a JSON string.
+        const llmResponseText = result.response.text(); 
+        console.log("LLM Raw Response Text:", llmResponseText);
+
+        const processedResponse = processResponse(llmResponseText); // processResponse already handles JSON parsing
+        console.log("Processed Response:", JSON.stringify(processedResponse, null, 2));
+
+
+        // The AI is now responsible for generating resources and school recommendations as per the prompt.
+        // So, we don't need to call generateResources separately if the AI does it.
+
+        const responseData = {
+            analysis: {
+                careerRecommendations: processedResponse.careerRecommendations || [],
+                skillsAnalysis: processedResponse.skillsAnalysis || {},
+                actionPlan: processedResponse.actionPlans || {}, // Renamed from actionPlans
+                potentialChallenges: processedResponse.potentialChallenges || {},
+                growthOpportunities: processedResponse.growthOpportunities || {},
+                insights: {
+                    keyTakeaways: processedResponse.personalInsights?.keyTakeaways || [],
+                    motivationalQuote: processedResponse.personalInsights?.motivationalQuote || "",
+                },
+                resources: processedResponse.resources || {},
+                recommendedSchools: processedResponse.recommendedSchools || [] // Added this line
+            }
+        };
+        console.log("response data is:", responseData)
+
+        return res.status(200).json(responseData);
+    } catch (error) {
+        console.error('Error processing assessment:', error);
+        let errorMessage = 'Error processing career assessment';
+        if (error.message) {
+            errorMessage += `: ${error.message}`;
+        }
+        // If the error object has more details (e.g., from the AI API), log them
+        if (error.response && error.response.data) {
+            console.error('AI API Error Response:', error.response.data);
+        }
+        return res.status(500).json({ message: errorMessage, error: error.toString() });
+    }
+};
+
+export default handler;
+

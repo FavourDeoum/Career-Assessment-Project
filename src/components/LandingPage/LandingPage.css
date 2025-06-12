@@ -388,6 +388,7 @@ body {
 
 .stat-item {
   text-align: center;
+  flex-direction: column;
 }
 
 .stat-number {
@@ -650,21 +651,21 @@ body {
   height: 5rem;
   border-radius: 1.5rem;
   font-size: 2rem;
-  /* color: white; */
+  color: white;
   margin-bottom: 1rem;
   transition: all 0.3s ease;
 }
 
 .feature-icon-purple {
-  /* background: linear-gradient(135deg, #6b46c1, #9333ea); */
+  background: linear-gradient(135deg, #6b46c1, #9333ea);
 }
 
 .feature-icon-blue {
-  /* background: linear-gradient(135deg, #3b82f6, #1e40af); */
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
 }
 
 .feature-icon-pink {
-  /* background: linear-gradient(135deg, #ec4899, #be185d); */
+  background: linear-gradient(135deg, #ec4899, #be185d);
 }
 
 .feature-card:hover .feature-icon {

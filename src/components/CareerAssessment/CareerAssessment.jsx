@@ -2,8 +2,7 @@
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { FaBookOpen, FaBrain, FaBriefcase, FaHeart, FaChartBar, FaUsers, FaGraduationCap } from "react-icons/fa"
-import "./CareerAssessment.css"
+import { FaBookOpen, FaBrain, FaBriefcase, FaHeart, FaChartBar, FaUsers, FaGraduationCap, FaArrowLeft, FaArrowRight, FaCheckCircle } from "react-icons/fa"
 import { useUser } from "@clerk/clerk-react"
 import { storeAssessmentResults } from "../../supabaseClient"
 
@@ -23,7 +22,6 @@ const categories = [
           { value: "commercial", label: "Commercial" },
           { value: "industrial", label: "Industrial" },
           { value: "agricultural", label: "Agricultural" },
-          // { value: 'other', label: 'Other (Specify)' }
         ],
       },
       {
@@ -41,19 +39,9 @@ const categories = [
           { value: "literature", label: "Literature" },
           { value: "history", label: "History" },
           { value: "computer_science", label: "Computer Science" },
-          // { value: 'other', label: 'Others (Specify)' }
         ],
-        multiple: true, // Allow multiple selections
+        multiple: true,
       },
-      // {
-      //   id: 'q3',
-      //   text: 'Did you take any professional training or certification courses outside of your school syllabus?',
-      //   subtext: 'Select the most relevant option',
-      //   options: [
-      //     { value: 'yes', label: 'Yes' },
-      //     { value: 'no', label: 'No' }
-      //   ]
-      // }
     ],
   },
   {
@@ -76,9 +64,8 @@ const categories = [
           { value: "engineering", label: "Engineering & Construction" },
           { value: "communication", label: "Communication & Media" },
           { value: "finance", label: "Finance & Banking" },
-          // { value: 'other', label: 'Other (Specify)' }
         ],
-        multiple: true, // Allow multiple selections
+        multiple: true,
       },
       {
         id: "q5",
@@ -115,7 +102,7 @@ const categories = [
           { value: "writing", label: "Writing & Storytelling" },
           { value: "programming", label: "Programming & Software Development" },
         ],
-        multiple: true, // Allow multiple selections
+        multiple: true,
       },
       {
         id: "q7",
@@ -252,10 +239,16 @@ const categories = [
 ]
 
 const LoadingSpinner = () => (
-  <div className="loading-spinner">
-    <div className="spinner"></div>
-    <p>Analyzing your responses...</p>
-  </div>
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+  >
+    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100 text-center">
+      <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-gray-700 font-medium">Analyzing your responses...</p>
+    </div>
+  </motion.div>
 )
 
 const CareerAssessment = () => {
@@ -267,18 +260,15 @@ const CareerAssessment = () => {
   const [validationError, setValidationError] = useState("")
   const { user } = useUser()
 
-  // Create a ref for the assessment container to scroll to top
   const assessmentContainerRef = useRef(null)
 
   const scrollToTop = () => {
-    // Scroll to the top of the assessment container
     if (assessmentContainerRef.current) {
       assessmentContainerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       })
     } else {
-      // Fallback to window scroll if ref is not available
       window.scrollTo({
         top: 0,
         behavior: "smooth",
@@ -291,8 +281,8 @@ const CareerAssessment = () => {
       if (multiple) {
         const currentAnswers = prev[questionId] || []
         const updatedAnswers = currentAnswers.includes(value)
-          ? currentAnswers.filter((v) => v !== value) // Deselect if already selected
-          : [...currentAnswers, value] // Add to selection
+          ? currentAnswers.filter((v) => v !== value)
+          : [...currentAnswers, value]
         return { ...prev, [questionId]: updatedAnswers }
       } else {
         return { ...prev, [questionId]: value }
@@ -307,9 +297,9 @@ const CareerAssessment = () => {
     const currentQuestions = categories[currentCategory].questions
     const answeredAll = currentQuestions.every((q) => {
       if (q.multiple) {
-        return answers[q.id] && answers[q.id].length > 0 // Ensure at least one selection for multiple-choice questions
+        return answers[q.id] && answers[q.id].length > 0
       } else {
-        return answers[q.id] // Ensure a single selection for single-choice questions
+        return answers[q.id]
       }
     })
     if (!answeredAll) {
@@ -324,13 +314,11 @@ const CareerAssessment = () => {
 
     if (currentCategory < categories.length - 1) {
       setCurrentCategory((prev) => prev + 1)
-      // Scroll to top after category change
       setTimeout(scrollToTop, 100)
     } else {
       setIsSubmitting(true)
       try {
-        // Process assessment with your API
-        const response = await fetch("http://localhost:3000/api/app", {
+        const response = await fetch("http://localhost:3000/api/app-test", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -346,8 +334,8 @@ const CareerAssessment = () => {
         }
 
         const results = await response.json()
+        console.log("results are-", results)
 
-        // Store in Supabase using service role
         if (user) {
           await storeAssessmentResults(user.id, {
             answers,
@@ -374,7 +362,6 @@ const CareerAssessment = () => {
   const handlePrevious = () => {
     if (currentCategory > 0) {
       setCurrentCategory((prev) => prev - 1)
-      // Scroll to top after category change
       setTimeout(scrollToTop, 100)
     }
   }
@@ -382,83 +369,227 @@ const CareerAssessment = () => {
   const CategoryIcon = categories[currentCategory].icon
   const progress = (Object.keys(answers).length / categories.reduce((acc, cat) => acc + cat.questions.length, 0)) * 100
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  }
+
   return (
-    <div className="assessment-page" ref={assessmentContainerRef}>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100/50 py-8 px-4" ref={assessmentContainerRef}>
+      {/* Animated background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
       <AnimatePresence>
-        {isSubmitting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="loading-overlay"
-          >
-            <LoadingSpinner />
-          </motion.div>
-        )}
+        {isSubmitting && <LoadingSpinner />}
       </AnimatePresence>
 
-      <div className="assessment-container">
-        <div className="assessment-content">
-          <div className="assessment-sidebar">
-            <div className="icon-container">
-              <CategoryIcon className="category-icon" />
-            </div>
-            <h3 className="sidebar-title">{categories[currentCategory].title}</h3>
-            <div className="progress-section">
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${progress}%` }} />
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible" 
+        className="max-w-7xl mx-auto relative z-10"
+      >
+        {/* Header Section */}
+        <motion.div variants={itemVariants} className="text-center mb-8">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-4">
+            Career Assessment
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Discover your perfect career path through our comprehensive assessment designed for students in Cameroon
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Sidebar */}
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100 sticky top-8">
+              <div className="text-center mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <CategoryIcon className="text-3xl text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">{categories[currentCategory].title}</h3>
+                <p className="text-gray-600">Step {currentCategory + 1} of {categories.length}</p>
               </div>
-              <p className="progress-text">{Math.round(progress)}% Complete</p>
-            </div>
-            <div className="student-image">
-              <FaGraduationCap className="student-icon" />
-              <p>Shape Your Future</p>
-            </div>
-          </div>
 
-          <div className="questions-section">
-            {validationError && <div className="error-message">{validationError}</div>}
+              {/* Progress Section */}
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-gray-700">Progress</span>
+                  <span className="text-sm font-bold text-purple-600">{Math.round(progress)}%</span>
+                </div>
+                <div className="w-full bg-purple-100 rounded-full h-3 overflow-hidden">
+                  <motion.div 
+                    className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+              </div>
 
-            <div className="questions-container">
-              {categories[currentCategory].questions.map((question) => (
-                <motion.div
-                  key={question.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="question-card"
+              {/* Category Navigation */}
+              <div className="space-y-3">
+                {categories.map((category, index) => {
+                  const Icon = category.icon
+                  const isCompleted = index < currentCategory
+                  const isCurrent = index === currentCategory
+                  
+                  return (
+                    <div 
+                      key={category.id}
+                      className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
+                        isCurrent 
+                          ? 'bg-purple-100 border-2 border-purple-300' 
+                          : isCompleted 
+                            ? 'bg-green-50 border border-green-200' 
+                            : 'bg-gray-50 border border-gray-200'
+                      }`}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                        isCurrent 
+                          ? 'bg-purple-500 text-white' 
+                          : isCompleted 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-gray-300 text-gray-600'
+                      }`}>
+                        {isCompleted ? <FaCheckCircle /> : <Icon />}
+                      </div>
+                      <span className={`text-sm font-medium ${
+                        isCurrent ? 'text-purple-700' : isCompleted ? 'text-green-700' : 'text-gray-600'
+                      }`}>
+                        {category.title}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Motivational Section */}
+              <div className="mt-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-3xl p-6 text-white text-center">
+                <FaGraduationCap className="text-3xl mx-auto mb-3 opacity-90" />
+                <h4 className="font-bold text-lg mb-2">Shape Your Future</h4>
+                <p className="text-purple-100 text-sm">Your responses help us understand you better and recommend the perfect career path</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Main Content */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100">
+              {/* Validation Error */}
+              {validationError && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3"
                 >
-                  <p className="question-text">{question.text}</p>
-                  <p className="question-subtext">{question.subtext}</p>
-                  <div className="answer-options">
-                    {question.options.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => handleAnswer(question.id, option.value, question.multiple)}
-                        className={`answer-button ${question.multiple && answers[question.id]?.includes(option.value) ? "selected" : answers[question.id] === option.value ? "selected" : ""}`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-red-500 text-sm">!</span>
                   </div>
+                  <p className="text-red-800 font-medium">{validationError}</p>
                 </motion.div>
-              ))}
-            </div>
+              )}
 
-            <div className="navigation-buttons">
-              <button
-                onClick={handlePrevious}
-                disabled={currentCategory === 0}
-                className={`nav-button ${currentCategory === 0 ? "disabled" : ""}`}
-              >
-                Previous
-              </button>
-              <button onClick={handleNext} className="nav-button">
-                {currentCategory === categories.length - 1 ? "Complete" : "Next"}
-              </button>
+              {/* Questions */}
+              <div className="space-y-8">
+                {categories[currentCategory].questions.map((question, qIndex) => (
+                  <motion.div
+                    key={question.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: qIndex * 0.1 }}
+                    className="bg-gradient-to-r from-purple-50/50 to-white/50 rounded-2xl p-6 border border-purple-100/50"
+                  >
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{question.text}</h3>
+                      <p className="text-gray-600">{question.subtext}</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {question.options.map((option) => {
+                        const isSelected = question.multiple 
+                          ? answers[question.id]?.includes(option.value)
+                          : answers[question.id] === option.value
+
+                        return (
+                          <motion.button
+                            key={option.value}
+                            whileHover={{ scale: 1.02, x: 4 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleAnswer(question.id, option.value, question.multiple)}
+                            className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                              isSelected
+                                ? 'border-purple-500 bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
+                                : 'border-gray-200 bg-white/70 hover:border-purple-300 hover:bg-purple-50/50 text-gray-700'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium">{option.label}</span>
+                              {isSelected && (
+                                <FaCheckCircle className="text-white/90 flex-shrink-0 ml-3" />
+                              )}
+                            </div>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Navigation */}
+              <div className="flex justify-between items-center mt-12 pt-6 border-t border-purple-100">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handlePrevious}
+                  disabled={currentCategory === 0}
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                    currentCategory === 0
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white border-2 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 shadow-sm'
+                  }`}
+                >
+                  <FaArrowLeft />
+                  <span>Previous</span>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleNext}
+                  className="flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl"
+                >
+                  <span>{currentCategory === categories.length - 1 ? 'Complete Assessment' : 'Next'}</span>
+                  <FaArrowRight />
+                </motion.button>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
+
+        {/* Footer */}
+        <motion.div variants={itemVariants} className="text-center mt-12">
+          <p className="text-gray-500 text-sm">
+            Take your time and answer honestly. Your responses will help us provide the most accurate career recommendations.
+          </p>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

@@ -809,6 +809,13 @@
     width: 100%;
     padding: 0.75rem 1rem;
   }
+
+  .dashboard-grid-large {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
 }
 
 @media (max-width: 480px) {
@@ -835,6 +842,13 @@
   .welcome-card p {
     font-size: 1rem;
   }
+
+  .dashboard-grid-large {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
 }
 
 /* New styles for Schools and Mentors sections */
@@ -936,4 +950,111 @@
 .view-all-button:hover {
   background-color: #f0f7ff;
   transform: translateY(-2px);
+}
+
+
+
+
+
+
+
+/* ADashboard.css or new Resources.css */
+.dashboard-grid-large {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.resource-item-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.resource-item-card h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.resource-item-card p {
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.resource-provider, .resource-author, .resource-category {
+  font-style: italic;
+  font-size: 0.85em;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.resource-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+.resource-link-button:hover {
+  background-color: #0056b3;
+}
+
+.resource-link-button svg {
+  margin-left: 4px;
+}
+
+/* Adjustments for buttons in schools/mentors recommendation items */
+.school-recommendation-item .school-explore-button,
+.mentor-recommendation-item .mentor-explore-button {
+  background-color: #28a745; /* Example color */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none; /* For Link component */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.school-recommendation-item .school-explore-button:hover,
+.mentor-recommendation-item .mentor-explore-button:hover {
+  background-color: #218838;
+}
+
+.view-all-schools .view-all-button,
+.view-all-mentors .view-all-button {
+   background-color: #17a2b8; /* Example color */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none; /* For Link component */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  margin-top: 15px;
+}
+.view-all-schools .view-all-button:hover,
+.view-all-mentors .view-all-button:hover {
+  background-color: #138496;
 }
