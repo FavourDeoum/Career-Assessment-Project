@@ -219,14 +219,14 @@ const AllMentorsPage = () => {
                 <p className="text-purple-100 mb-6">
                   Connect with any of these amazing mentors and accelerate your learning journey today.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {/* <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button className="bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 backdrop-blur-sm">
                     Browse Programs
                   </button>
                   <button className="bg-white text-purple-700 hover:bg-purple-50 font-semibold py-3 px-6 rounded-xl transition-all duration-200">
                     Get Started
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           )}
