@@ -3,14 +3,38 @@ import Cors from 'cors';
 
 // WARNING: Storing API keys directly in code is insecure for production.
 // Use environment variables or a secret manager.
-const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg"; // Replace with your actual API key
+const API_KEY ="AIzaSyCG6yva8k42FYdRxO2M46WR8pPNBpmbcBU"; // Replace with your actual API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 
+if (!API_KEY) {
+  console.error("VITE_GOOGLE_API_KEY is not defined. Make sure it's set in your .env file and prefixed with VITE_");
+  // Handle the missing key appropriately, e.g., show an error, disable features
+} else {
+  console.log("Google API Key found:", API_KEY); // For debugging, remove in production
+  // Use API_KEY
+}
+
 // Initialize CORS middleware
-const cors = Cors({
-    // Adjust origins as needed for your deployment
-    origin: ['http://localhost:5173','https://career-assessment-project.vercel.app'],
-    methods: ['POST', 'GET', 'OPTIONS'],
+const corsInstance = Cors({
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'http://localhost:5173', // Your local dev frontend
+            'https://career-assessment-project.vercel.app' // Your deployed frontend
+            // Add any Vercel preview URLs if you use them often and want to be specific,
+            // or rely on a broader check for *.vercel.app if necessary
+        ];
+        if (!origin || allowedOrigins.includes(origin) || (origin && origin.endsWith('.vercel.app'))) {
+            // Allow requests with no origin (like curl, server-to-server)
+            // Allow specific origins
+            // Allow Vercel preview deployment origins (e.g., your-project-git-branch-org.vercel.app)
+            callback(null, true);
+        } else {
+            console.warn(`CORS: Origin not allowed: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['POST', 'GET', 'OPTIONS'], // Crucial: OPTIONS must be here
+    allowedHeaders: ['Content-Type', 'Authorization'], // Add any custom headers your frontend sends
     credentials: true,
 });
 
@@ -19,13 +43,13 @@ function runMiddleware(req, res, fn) {
     return new Promise((resolve, reject) => {
         fn(req, res, (result) => {
             if (result instanceof Error) {
+                console.error("Error in CORS middleware:", result); // Added logging
                 return reject(result);
             }
             return resolve(result);
         });
     });
 }
-
 // THE SCHOOLS DATA (as provided in your prompt)
 const SCHOOLS_DATA_STRING = `[
   {
@@ -3127,7 +3151,7 @@ const processResponse = (response) => {
 
 // Handler function
 const handler = async (req, res) => {
-    await runMiddleware(req, res, cors);
+    await runMiddleware(req, res, corsInstance);
 
     if (!API_KEY || API_KEY === "YOUR_GOOGLE_AI_API_KEY") { // Added the example key for check
         console.error('API key not configured or is placeholder.');
