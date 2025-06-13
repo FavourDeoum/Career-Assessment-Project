@@ -239,7 +239,7 @@ const categories = [
 ]
 
 const LoadingSpinner = () => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -317,8 +317,11 @@ const CareerAssessment = () => {
       setTimeout(scrollToTop, 100)
     } else {
       setIsSubmitting(true)
+      const API_BASE_URL = process.env.NODE_ENV === 'production'
+        ? '' // For production, requests are relative to the domain
+        : 'http://localhost:3000';
       try {
-        const response = await fetch("/api/app-test", {
+        const response = await fetch(`${API_BASE_URL}/api/app-test`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -327,8 +330,7 @@ const CareerAssessment = () => {
             answers,
             categories,
           }),
-        })
-
+        });
         if (!response.ok) {
           throw new Error("Failed to process assessment")
         }
@@ -401,7 +403,7 @@ const CareerAssessment = () => {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible" 
+        animate="visible"
         className="max-w-7xl mx-auto relative z-10"
       >
         {/* Header Section */}
@@ -433,7 +435,7 @@ const CareerAssessment = () => {
                   <span className="text-sm font-bold text-purple-600">{Math.round(progress)}%</span>
                 </div>
                 <div className="w-full bg-purple-100 rounded-full h-3 overflow-hidden">
-                  <motion.div 
+                  <motion.div
                     className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
@@ -448,30 +450,27 @@ const CareerAssessment = () => {
                   const Icon = category.icon
                   const isCompleted = index < currentCategory
                   const isCurrent = index === currentCategory
-                  
+
                   return (
-                    <div 
+                    <div
                       key={category.id}
-                      className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
-                        isCurrent 
-                          ? 'bg-purple-100 border-2 border-purple-300' 
-                          : isCompleted 
-                            ? 'bg-green-50 border border-green-200' 
+                      className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${isCurrent
+                          ? 'bg-purple-100 border-2 border-purple-300'
+                          : isCompleted
+                            ? 'bg-green-50 border border-green-200'
                             : 'bg-gray-50 border border-gray-200'
-                      }`}
+                        }`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                        isCurrent 
-                          ? 'bg-purple-500 text-white' 
-                          : isCompleted 
-                            ? 'bg-green-500 text-white' 
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isCurrent
+                          ? 'bg-purple-500 text-white'
+                          : isCompleted
+                            ? 'bg-green-500 text-white'
                             : 'bg-gray-300 text-gray-600'
-                      }`}>
+                        }`}>
                         {isCompleted ? <FaCheckCircle /> : <Icon />}
                       </div>
-                      <span className={`text-sm font-medium ${
-                        isCurrent ? 'text-purple-700' : isCompleted ? 'text-green-700' : 'text-gray-600'
-                      }`}>
+                      <span className={`text-sm font-medium ${isCurrent ? 'text-purple-700' : isCompleted ? 'text-green-700' : 'text-gray-600'
+                        }`}>
                         {category.title}
                       </span>
                     </div>
@@ -493,7 +492,7 @@ const CareerAssessment = () => {
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100">
               {/* Validation Error */}
               {validationError && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3"
@@ -522,7 +521,7 @@ const CareerAssessment = () => {
 
                     <div className="grid gap-3">
                       {question.options.map((option) => {
-                        const isSelected = question.multiple 
+                        const isSelected = question.multiple
                           ? answers[question.id]?.includes(option.value)
                           : answers[question.id] === option.value
 
@@ -532,11 +531,10 @@ const CareerAssessment = () => {
                             whileHover={{ scale: 1.02, x: 4 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleAnswer(question.id, option.value, question.multiple)}
-                            className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-                              isSelected
+                            className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${isSelected
                                 ? 'border-purple-500 bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
                                 : 'border-gray-200 bg-white/70 hover:border-purple-300 hover:bg-purple-50/50 text-gray-700'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center justify-between">
                               <span className="font-medium">{option.label}</span>
@@ -559,11 +557,10 @@ const CareerAssessment = () => {
                   whileTap={{ scale: 0.98 }}
                   onClick={handlePrevious}
                   disabled={currentCategory === 0}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all ${
-                    currentCategory === 0
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all ${currentCategory === 0
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'bg-white border-2 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 shadow-sm'
-                  }`}
+                    }`}
                 >
                   <FaArrowLeft />
                   <span>Previous</span>

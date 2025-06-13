@@ -1,23 +1,17 @@
-// /api/app-test.js
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Cors from 'cors';
 
-// === STEP 1: USE ENVIRONMENT VARIABLES ===
-// This is now secure and configured in your Vercel project settings.
-const API_KEY = process.env.GOOGLE_AI_API_KEY;
-
-if (!API_KEY) {
-    throw new Error("GOOGLE_AI_API_KEY environment variable not set");
-}
-
+// WARNING: Storing API keys directly in code is insecure for production.
+// Use environment variables or a secret manager.
+const API_KEY = "AIzaSyBoDQH2qx788AF_QG5fMw737S7PBoaq_yg"; // Replace with your actual API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Initialize CORS middleware
 const cors = Cors({
-    // Your origin list is correct.
-    origin: ['http://localhost:5173', 'https://career-assessment-project.vercel.app'],
+    // Adjust origins as needed for your deployment
+    origin: ['http://localhost:5173','https://career-assessment-project.vercel.app'],
     methods: ['POST', 'GET', 'OPTIONS'],
+    credentials: true,
 });
 
 // Helper to run middleware
@@ -32,10 +26,7 @@ function runMiddleware(req, res, fn) {
     });
 }
 
-// === STEP 3 (OPTIMIZATION): MOVE LARGE DATA OUTSIDE THE HANDLER ===
-// This data is constant. Define it once at the top level.
-// NOTE: I have truncated the data here for brevity, but you should use your full original data.
-
+// THE SCHOOLS DATA (as provided in your prompt)
 const SCHOOLS_DATA_STRING = `[
   {
     "id": "uba_coltech",
@@ -2923,17 +2914,14 @@ const SCHOOLS_DATA_STRING = `[
   "description": "The Catholic University of Cameroon (CATUC) in Bamenda was established in 2010 by the Bishops of the Bamenda Ecclesiastical Province with the goal of providing high-quality, holistic, and Christian-based education. It aims to be a center of learning where revealed and human truths are explored in depth, relevant to the Cameroon experience."
 }
 ]`;
+
 const schoolsData = JSON.parse(SCHOOLS_DATA_STRING);
-// Create a fast-lookup map for schools by their ID
-const schoolsDataMap = new Map(schoolsData.map(school => [school.id, school]));
 
 
-// === STEP 3 (OPTIMIZATION): CREATE A LEANER, FASTER PROMPT ===
-// We no longer send the giant school database to the AI.
-const createOptimizedPrompt = (answers, categories) => {
+// Create a prompt for the AI
+const createPrompt = (answers, categories, schoolDb) => {
     let prompt = `As a career development AI specialist, provide a comprehensive career analysis based on the following student assessment results:`;
 
-    // This part remains the same
     categories.forEach(category => {
         prompt += `\n\n${category.title.toUpperCase()}:\n`;
         category.questions.forEach(question => {
@@ -2944,147 +2932,248 @@ const createOptimizedPrompt = (answers, categories) => {
         });
     });
 
-    // We get the program list from our own data to help the AI.
-    const allPrograms = schoolsData.flatMap(school => school.programs.map(p => p.program));
-    const uniquePrograms = [...new Set(allPrograms)];
-
-    prompt += `\n\nBased on this student profile, generate a comprehensive career analysis with these specific requirements in a valid JSON format:
+    prompt += `\n\nBased on this student profile, generate a comprehensive career analysis with these specific requirements:
 1.  CAREER RECOMMENDATIONS: Provide 5 specific job titles. For each, explain detailly what the field is all about and why it's a match for the student and include typical salary ranges (e.g., in XAF or USD, specify which).
-2.  SKILLS ANALYSIS: Identify the student's top 5 strengths. Recommend 3-5 critical skills they should develop.
-3.  ACTION PLAN: Provide immediate, short-term, and long-term goals.
-4.  POTENTIAL CHALLENGES: Identify 2-3 potential obstacles and suggest mitigation strategies.
-5.  GROWTH OPPORTUNITIES: Highlight 2-3 high-potential industry sectors and emerging roles.
-6.  RESOURCES: Recommend 2-3 online courses, 2-3 books/articles, and 2-3 professional tools.
-7.  RECOMMENDED SCHOOLS:
-    -   Based on your career recommendations, identify which of the programs from the 'AVAILABLE PROGRAMS LIST' below would be most suitable.
-    -   For each suitable program, find the schools that offer it from the 'AVAILABLE PROGRAMS LIST'.
-    -   Return an array of school recommendations. Each object in the array MUST contain ONLY the following keys:
-        - "id": The string ID of the school (e.g., "uba_coltech").
-        - "identifiedRelevantPrograms": An array of 1-3 specific program names (strings) that you recommend from that school.
-        - "reasonForRecommendation": A concise string explaining why this school and its programs fit the student.
+2.  SKILLS ANALYSIS: Identify the student's top 5 strengths based on their answers. Recommend 3-5 critical skills they should develop for their suggested career paths.
+3.  ACTION PLAN:
+    *   Immediate Next Steps (e.g., research specific roles, network).
+    *   6-12 Month Goals (e.g., complete a relevant course, start a project).
+    *   Long-Term Roadmap (e.g., gain specific experience, aim for a senior role).
+4.  POTENTIAL CHALLENGES: Identify 2-3 potential obstacles the student might face and suggest mitigation strategies for each.
+5.  GROWTH OPPORTUNITIES: Highlight 2-3 high-potential industry sectors relevant to the career recommendations and any emerging roles within them.
+6.  RESOURCES: Recommend 2-3 online courses (e.g., Coursera, Udemy), 2-3 insightful books or articles, and 2-3 helpful professional tools or communities.
+7.  RECOMMENDED SCHOOLS: Based on the CAREER RECOMMENDATIONS you generate AND the AVAILABLE SCHOOLS DATA provided below, recommend 3-4 suitable schools for each recommended career.
+    For each recommended school, you must construct an object as follows:
+    a.  Start by finding the matching school in the 'AVAILABLE SCHOOLS DATA' using its 'id'.
+    b.  Take a **complete copy of all fields and values** from that matched school object.
+    c.  To this copied school object, add the following two new keys:
+        i.  \`identifiedRelevantPrograms\`: An array of 1-3 specific program names (strings) extracted from the school's \`programs\` list. These selected programs should directly align with the career recommendations you've generated for the student.
+        ii. \`reasonForRecommendation\`: A concise explanation (string) detailing why this school and the \`identifiedRelevantPrograms\` are a particularly good fit for the student, based on their assessment and your career recommendations.
 
-The final JSON structure MUST be:
+Please provide a structured JSON response. Ensure all specified fields are present, even if with empty arrays or default values if no specific information can be derived.
+The JSON structure should be:
 {
-    "careerRecommendations": [...],
-    "skillsAnalysis": {...},
-    "actionPlans": {...},
-    "potentialChallenges": {...},
-    "growthOpportunities": {...},
-    "personalInsights": {...},
-    "resources": {...},
+    "careerRecommendations": [
+        { "jobTitle": "...", "explanation": "...", "salaryRange": "..." }
+    ],
+    "skillsAnalysis": {
+        "strengths": [],
+        "skillsToDevelop": []
+    },
+    "actionPlans": {
+        "immediateNextSteps": [],
+        "shortTermGoals": [],
+        "longTermRoadmap": []
+    },
+    "potentialChallenges": {
+        "challenges": [],
+        "mitigationStrategies": []
+    },
+    "growthOpportunities": {
+        "sectors": [],
+        "emergingRoles": []
+    },
+    "personalInsights": {
+        "keyTakeaways": [],
+        "motivationalQuote": ""
+    },
+    "resources": {
+        "recommendedCourses": [],
+        "suggestedReadings": [],
+        "professionalTools": []
+    },
     "recommendedSchools": [
         {
-            "id": "school_id_from_data",
-            "identifiedRelevantPrograms": ["Program Name 1", "Program Name 2"],
-            "reasonForRecommendation": "Your concise reason here."
+            // All original fields from the matched school object in AVAILABLE SCHOOLS DATA will be here.
+            // For example:
+            "id": "uba_coltech", // This and other school fields are copied from the matched school object
+            "name": "College of Technology (COLTECH)",
+            "programs": [ /* The full array of program objects for this school as in AVAILABLE SCHOOLS DATA */ ],
+            "location": "Bambili, Bamenda, Cameroon (UBa Campus)",
+            "ranking": "N/A",
+            "rating": 4.6,
+            "image": "https://uniba.cm/images/coltech.jpg",
+            "description": "Premier technology school offering engineering, agriculture, and computer science programs with industry-focused training.",
+            // ... any other fields present in the school's data object ...
+            // New keys added by AI based on analysis:
+            "identifiedRelevantPrograms": ["B.Tech in Computer Engineering"],
+            "reasonForRecommendation": "This school's B.Tech program is highly relevant due to the student's interest in tech and problem-solving."
         }
+        // ... potentially other recommended schools, each following the same full structure (copied data + new keys)
     ]
 }
+
 
 USER ASSESSMENT DATA:
 ${JSON.stringify(answers, null, 2)}
 
-AVAILABLE PROGRAMS LIST (Use this to find relevant programs and their associated school IDs):
-${JSON.stringify(schoolsData.map(s => ({ id: s.id, name: s.name, programs: s.programs.map(p => p.program) })), null, 2)}
+AVAILABLE SCHOOLS DATA (Use this to populate 'recommendedSchools'. For each recommended school, copy its entire object from this data and add 'identifiedRelevantPrograms' and 'reasonForRecommendation' keys):
+${JSON.stringify(schoolDb, null, 2)}
 
-Ensure the entire response is a single, valid JSON object.
+Make sure the response is always a valid JSON format. Focus on matching the generated career recommendations to relevant programs in the provided school data for the 'recommendedSchools' section. The explanation for job titles should be concise and directly related to the user's assessment data.
 `;
 
     return prompt;
 };
 
-// Map answers to text (no changes needed here)
+
+// Map answers to text
 const mapAnswerToText = (value) => {
-    // ... same as your original function
-    const mappings = { not_at_all: "no interest in", slightly: "slight interest in", moderately: "moderate interest in", very_much: "strong interest in", extremely: "extreme passion for", novice: "beginner level in", beginner: "basic knowledge of", intermediate: "competent with", advanced: "advanced skills in", expert: "expert mastery of", strongly_disagree: "strongly disagrees with", disagree: "disagrees with", neutral: "neutral about", agree: "agrees with", strongly_agree: "strongly agrees with", never: "never engages in", rarely: "rarely engages in", sometimes: "sometimes engages in", often: "often engages in", always: "always engages in", yes: "confirms", no: "does not confirm", maybe: "is uncertain about" };
+    const mappings = {
+        not_at_all: "no interest in",
+        slightly: "slight interest in",
+        moderately: "moderate interest in",
+        very_much: "strong interest in",
+        extremely: "extreme passion for",
+        novice: "beginner level in",
+        beginner: "basic knowledge of",
+        intermediate: "competent with",
+        advanced: "advanced skills in",
+        expert: "expert mastery of",
+        strongly_disagree: "strongly disagrees with",
+        disagree: "disagrees with",
+        neutral: "neutral about",
+        agree: "agrees with",
+        strongly_agree: "strongly agrees with",
+        never: "never engages in",
+        rarely: "rarely engages in",
+        sometimes: "sometimes engages in",
+        often: "often engages in",
+        always: "always engages in",
+        yes: "confirms",
+        no: "does not confirm",
+        maybe: "is uncertain about"
+    };
     return mappings[value] || value;
 };
 
+// Process the AI response
+const processResponse = (response) => {
+    response = response.replace(/```json|```/g, '').trim();
 
-// === STEP 3 (OPTIMIZATION): PROCESS THE LEAN AI RESPONSE AND MERGE WITH FULL DATA ===
-const processAndMergeResponse = (responseText) => {
-    try {
-        const aiResponse = JSON.parse(responseText.replace(/```json|```/g, '').trim());
-
-        const mergedSchools = (aiResponse.recommendedSchools || []).map(rec => {
-            // Find the full school object from our local data using the ID from the AI
-            const fullSchoolData = schoolsDataMap.get(rec.id);
-
-            if (!fullSchoolData) {
-                return null; // or a default object if the ID is invalid
-            }
-
-            // Combine the full data with the AI's specific recommendations
-            return {
-                ...fullSchoolData, // All the original school data
-                identifiedRelevantPrograms: rec.identifiedRelevantPrograms || [],
-                reasonForRecommendation: rec.reasonForRecommendation || "No reason provided."
-            };
-        }).filter(Boolean); // Filter out any nulls if an ID wasn't found
-
-        // Return the full, structured response
+    if (!response.startsWith('{') && !response.startsWith('[')) {
+        console.error("Invalid JSON response from AI (does not start with { or [):", response);
         return {
-            careerRecommendations: aiResponse.careerRecommendations || [],
-            skillsAnalysis: aiResponse.skillsAnalysis || { strengths: [], skillsToDevelop: [] },
-            actionPlans: aiResponse.actionPlans || { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
-            potentialChallenges: aiResponse.potentialChallenges || { challenges: [], mitigationStrategies: [] },
-            growthOpportunities: aiResponse.growthOpportunities || { sectors: [], emergingRoles: [] },
-            personalInsights: aiResponse.personalInsights || { keyTakeaways: [], motivationalQuote: "" },
-            resources: aiResponse.resources || { recommendedCourses: [], suggestedReadings: [], professionalTools: [] },
-            recommendedSchools: mergedSchools
+            careerRecommendations: [],
+            skillsAnalysis: { strengths: [], skillsToDevelop: [] },
+            actionPlans: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+            potentialChallenges: { challenges: [], mitigationStrategies: [] },
+            growthOpportunities: { sectors: [], emergingRoles: [] },
+            personalInsights: { keyTakeaways: [], motivationalQuote: "" },
+            resources: { recommendedCourses: [], suggestedReadings: [], professionalTools: [] },
+            recommendedSchools: []
+        };
+    }
+
+    try {
+        const parsedResponse = JSON.parse(response);
+
+        // Ensure recommendedSchools is an array, and each item is an object
+        const validatedRecommendedSchools = (Array.isArray(parsedResponse.recommendedSchools)
+            ? parsedResponse.recommendedSchools.filter(school => typeof school === 'object' && school !== null)
+            : []
+        ).map(school => ({
+            ...school, // Spread all properties from the AI's school object
+            identifiedRelevantPrograms: Array.isArray(school.identifiedRelevantPrograms) ? school.identifiedRelevantPrograms : [],
+            reasonForRecommendation: typeof school.reasonForRecommendation === 'string' ? school.reasonForRecommendation : ""
+        }));
+
+
+        return {
+            careerRecommendations: parsedResponse.careerRecommendations || [],
+            skillsAnalysis: {
+                strengths: parsedResponse.skillsAnalysis?.strengths || [],
+                skillsToDevelop: parsedResponse.skillsAnalysis?.skillsToDevelop || []
+            },
+            actionPlans: {
+                immediateNextSteps: parsedResponse.actionPlans?.immediateNextSteps || [],
+                shortTermGoals: parsedResponse.actionPlans?.shortTermGoals || [],
+                longTermRoadmap: parsedResponse.actionPlans?.longTermRoadmap || []
+            },
+            potentialChallenges: {
+                challenges: parsedResponse.potentialChallenges?.challenges || [],
+                mitigationStrategies: parsedResponse.potentialChallenges?.mitigationStrategies || []
+            },
+            growthOpportunities: {
+                sectors: parsedResponse.growthOpportunities?.sectors || [],
+                emergingRoles: parsedResponse.growthOpportunities?.emergingRoles || []
+            },
+            personalInsights: {
+                keyTakeaways: parsedResponse.personalInsights?.keyTakeaways || [],
+                motivationalQuote: parsedResponse.personalInsights?.motivationalQuote || ""
+            },
+            resources: {
+                recommendedCourses: parsedResponse.resources?.recommendedCourses || [],
+                suggestedReadings: parsedResponse.resources?.suggestedReadings || [],
+                professionalTools: parsedResponse.resources?.professionalTools || []
+            },
+            recommendedSchools: validatedRecommendedSchools
         };
     } catch (error) {
-        console.error("Error parsing or merging AI response:", error);
-        console.error("Problematic AI Response causing error:", responseText);
-        // Return a default error structure
-        return { error: true, message: "Failed to process AI response." };
+        console.error("Error parsing JSON response from AI:", error);
+        console.error("Problematic AI Response causing parse error:", response);
+        return {
+            careerRecommendations: [],
+            skillsAnalysis: { strengths: [], skillsToDevelop: [] },
+            actionPlans: { immediateNextSteps: [], shortTermGoals: [], longTermRoadmap: [] },
+            potentialChallenges: { challenges: [], mitigationStrategies: [] },
+            growthOpportunities: { sectors: [], emergingRoles: [] },
+            personalInsights: { keyTakeaways: [], motivationalQuote: "" },
+            resources: { recommendedCourses: [], suggestedReadings: [], professionalTools: [] },
+            recommendedSchools: []
+        };
     }
 };
 
-// The main handler function
+// Handler function
 const handler = async (req, res) => {
     await runMiddleware(req, res, cors);
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+    if (!API_KEY || API_KEY === "YOUR_GOOGLE_AI_API_KEY") { // Added the example key for check
+        console.error('API key not configured or is placeholder.');
+        // It's better not to expose the placeholder key in error messages for security.
+        return res.status(500).json({ message: 'Server configuration error', error: 'API key issue' });
     }
 
+
     if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method Not Allowed' });
+        return res.status(405).json({ message: 'Method not allowed' });
     }
 
     try {
         const { answers, categories } = req.body;
-        if (!answers || !categories) {
-            return res.status(400).json({ message: 'Invalid request: Answers and categories are required.' });
+
+        if (!answers || Object.keys(answers).length === 0 || !categories || categories.length === 0) {
+            return res.status(400).json({ message: 'Invalid request data: Answers and categories are required' });
         }
 
-        const prompt = createOptimizedPrompt(answers, categories);
+        console.log("Received Answers (snippet):", JSON.stringify(answers, null, 2).substring(0, 200) + "...");
+        console.log("Received Categories (snippet):", JSON.stringify(categories, null, 2).substring(0, 200) + "...");
+
+        const prompt = createPrompt(answers, categories, schoolsData);
+        console.log("Generated Prompt (first 500 chars):", prompt.substring(0,500) + "...");
+
 
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-latest",
-            generationConfig: {
-                responseMimeType: "application/json",
-            },
-            // Your safety settings are good
-            safetySettings: [
+             model: "gemini-1.5-flash-latest",
+             safetySettings: [
                 { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
                 { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
                 { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
                 { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-            ],
+              ],
+              generationConfig: {
+                responseMimeType: "application/json",
+              }
         });
 
         const result = await model.generateContent(prompt);
         const llmResponseText = result.response.text();
+        console.log("LLM Raw Response Text (snippet):", llmResponseText.substring(0, 500) + "...");
 
-        const processedResponse = processAndMergeResponse(llmResponseText);
+        const processedResponse = processResponse(llmResponseText);
+        // console.log("Processed Response:", JSON.stringify(processedResponse, null, 2)); // Can be very large
 
-        if (processedResponse.error) {
-            return res.status(500).json({ message: processedResponse.message });
-        }
-
-        // Structure the final response exactly as your frontend expects it
         const responseData = {
             analysis: {
                 careerRecommendations: processedResponse.careerRecommendations,
@@ -3100,16 +3189,25 @@ const handler = async (req, res) => {
                 recommendedSchools: processedResponse.recommendedSchools
             }
         };
+        // console.log("Final Response Data to Client (snippet):", JSON.stringify(responseData, null, 2).substring(0, 500) + "...");
 
         return res.status(200).json(responseData);
-
     } catch (error) {
-        console.error('Error in handler:', error);
-        // Provide a more specific error message if the AI blocked the request
-        if (error.message && error.message.includes("Candidate was blocked due to")) {
-            return res.status(500).json({ message: 'AI response failed due to content safety filters. Please adjust your input.', error: error.toString() });
+        console.error('Error processing assessment:', error);
+        let errorMessage = 'Error processing career assessment';
+        if (error.message) {
+            errorMessage += `: ${error.message}`;
         }
-        return res.status(500).json({ message: 'An internal server error occurred.', error: error.toString() });
+        if (error.response && error.response.data) {
+            console.error('AI API Error Response:', error.response.data);
+        }
+        // Check if the error is due to blocked content from the AI
+        if (error.message && error.message.includes("Candidate was blocked due to")) {
+             // More specific error for blocked content
+            return res.status(500).json({ message: 'AI response generation failed due to content safety filters. Please try rephrasing your input or contact support.', error: error.toString() });
+        }
+
+        return res.status(500).json({ message: errorMessage, error: error.toString() });
     }
 };
 
