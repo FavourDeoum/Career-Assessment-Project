@@ -318,7 +318,7 @@ const CareerAssessment = () => {
     } else {
       setIsSubmitting(true)
       try {
-        const response = await fetch("http://localhost:3000/api/app-test", {
+        const response = await fetch("/api/app-test", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

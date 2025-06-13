@@ -115,7 +115,7 @@ const CareerDashboard = () => {
       <div className="flex justify-around items-center py-2 px-4">
         <Link to="/dashboard" className="flex flex-col items-center p-2 text-purple-600">
           <Home size={20} />
-          <span className="text-xs mt-1">Home</span>
+          <span className="text-xs mt-1">Dashboard</span>
         </Link>
         <Link to="/schools/all" className="flex flex-col items-center p-2 text-gray-500 hover:text-purple-600">
           <GraduationCap size={20} />

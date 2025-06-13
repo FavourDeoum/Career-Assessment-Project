@@ -5,7 +5,7 @@ import { useResults } from '../../contexts/ResultsContext';
 import {
   ArrowLeft, Star, Users, Briefcase, MessageSquare, Calendar, CheckCircle, ExternalLink, BookOpen
 } from 'lucide-react';
-import './MentorDetailsPage.css'; // Create this CSS file
+ // Create this CSS file
 
 // Helper
 const slugify = (text) => (text || '').toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
