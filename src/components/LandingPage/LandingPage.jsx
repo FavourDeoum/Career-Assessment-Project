@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
 import { FaRocket, FaChartBar, FaUserGraduate, FaStar, FaArrowRight, FaPlay, FaBrain } from "react-icons/fa"
 import "./LandingPage.css"
+import { Link } from "react-router-dom"
 
 const LandingPage = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -70,12 +71,14 @@ const LandingPage = () => {
                 <FaArrowRight className="button-icon" />
               </button>
 
+              <Link to="https://youtu.be/xNiFOWbpMRg?feature=shared">
               <button className="cta-secondary">
                 <div className="play-button">
                   <FaPlay />
                 </div>
                 <span>Watch Demo</span>
               </button>
+              </Link>
             </div>
 
             <div className="hero-stats">
