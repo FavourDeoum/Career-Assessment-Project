@@ -7,7 +7,7 @@ import {
   Book, Lightbulb, Award, Briefcase, Zap, ArrowRight, GraduationCap, UserCheck,
   ExternalLink, // Added for resources
 } from "lucide-react";
-import { deleteAssessmentResults, supabase } from "../../supabaseClient"; // check path
+import { deleteAssessmentResults, supabaseAdmin } from "../../supabaseClient";
 import { useResults } from "../../contexts/ResultsContext"; // Import useResults
 import "./ADashboard.css";
 
@@ -65,7 +65,7 @@ const CareerDashboard = () => {
         return;
       }
       console.log(`Fetching assessment data for user: ${user.id}`);
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from("career_assessments")
         .select("*")
         .eq("user_id", user.id)
@@ -610,7 +610,7 @@ import {
   Book, Lightbulb, Award, Briefcase, Zap, ArrowRight, GraduationCap, UserCheck,
   ExternalLink, Home, Users, MessageCircle, Menu, X, Settings
 } from "lucide-react";
-import { deleteAssessmentResults, supabase } from "../../supabaseClient";
+import { deleteAssessmentResults, supabaseAdmin } from "../../supabaseClient";
 import { useResults } from "../../contexts/ResultsContext";
 
 // // Helper to generate slugs

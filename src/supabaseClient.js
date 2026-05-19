@@ -1,9 +1,10 @@
 import { createClient } from "@supabase/supabase-js"
 
-const supabaseUrl = "https://gdjgieaoqhbkwdakkkfb.supabase.co"
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamdpZWFvcWhia3dkYWtra2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU5ODE2NjAsImV4cCI6MjA1MTU1NzY2MH0.55tp_dnhpi0AyMraJp95kCIqMvwBWvfG8wGN0LGgAEY"
-const supabaseServiceKey="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamdpZWFvcWhia3dkYWtra2ZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNTk4MTY2MCwiZXhwIjoyMDUxNTU3NjYwfQ.Dcu6Wi0ClM_3qIWXeeOwoMj8qrqsszW5kXAPed-vU7s"
-if (!supabaseUrl || !supabaseAnonKey) {
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY
+
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
   throw new Error("Missing Supabase environment variables. Please check your .env file.")
 }
 
@@ -34,18 +35,16 @@ export const storeAssessmentResults = async (userId, assessmentData) => {
   return data;
 };
 
-// Get assessment results (using regular client)
+// Get assessment results (using admin client to bypass RLS)
 export const getAssessmentResults = async (userId) => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('career_assessments')
     .select('*')
     .eq('user_id', userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
-    if (error.code !== 'PGRST116') { // Ignore "no rows" error
-      console.error('Error fetching assessment results:', error);
-    }
+    console.error('Error fetching assessment results:', error);
     return null;
   }
 

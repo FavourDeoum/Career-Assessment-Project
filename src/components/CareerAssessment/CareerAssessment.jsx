@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { FaBookOpen, FaBrain, FaBriefcase, FaHeart, FaChartBar, FaUsers, FaGraduationCap, FaArrowLeft, FaArrowRight, FaCheckCircle } from "react-icons/fa"
 import { useUser } from "@clerk/clerk-react"
 import { storeAssessmentResults } from "../../supabaseClient"
+import { analyzeAssessment } from "../../services/assessmentService"
 
 const categories = [
   {
@@ -317,25 +318,8 @@ const CareerAssessment = () => {
       setTimeout(scrollToTop, 100)
     } else {
       setIsSubmitting(true)
-      const API_BASE_URL = process.env.NODE_ENV === 'production'
-        ? '' // For production, requests are relative to the domain
-        : 'http://localhost:3000';
       try {
-        const response = await fetch(`${API_BASE_URL}/api/app-test`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            answers,
-            categories,
-          }),
-        });
-        if (!response.ok) {
-          throw new Error("Failed to process assessment")
-        }
-
-        const results = await response.json()
+        const results = await analyzeAssessment(answers, categories)
         console.log("results are-", results)
 
         if (user) {
