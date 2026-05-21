@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useResults } from '../../contexts/ResultsContext';
 import ProgramCard from './ProgramCard';
-import { ArrowLeft, MapPin, Globe, BookCheck, Users, Building, Lightbulb, Star, GraduationCap } from 'lucide-react';
+import {
+  ArrowLeft, MapPin, Globe, BookCheck, Users,
+  Building, Lightbulb, Star, GraduationCap
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
-const slugify = (text) => (text || '').toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, '');
+const slugify = (text) =>
+  (text || '').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
 const SchoolProfilePage = () => {
   const { schoolId: schoolSlugFromParams } = useParams();
@@ -16,48 +19,19 @@ const SchoolProfilePage = () => {
 
   useEffect(() => {
     if (!resultsLoading && results?.analysis?.recommendedSchools) {
-      const foundSchool = results.analysis.recommendedSchools.find(
-        s => s.id === schoolSlugFromParams || slugify(s.name) === schoolSlugFromParams
+      const found = results.analysis.recommendedSchools.find(
+        (s) => s.id === schoolSlugFromParams || slugify(s.name) === schoolSlugFromParams
       );
-      setSchoolData(foundSchool);
+      setSchoolData(found || null);
     }
   }, [results, resultsLoading, schoolSlugFromParams]);
 
-  const handleBack = () => navigate(-1);
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { duration: 0.4 }
-    }
-  };
-
   if (resultsLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100/50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-purple-200 rounded-full animate-pulse mx-auto mb-4"></div>
-          <p className="text-lg text-purple-600 font-medium">Loading school profile...</p>
+          <div className="w-8 h-8 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-gray-500 font-medium">Loading school profile…</p>
         </div>
       </div>
     );
@@ -65,22 +39,22 @@ const SchoolProfilePage = () => {
 
   if (!schoolData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100/50 flex items-center justify-center px-4">
-        <div className="text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <GraduationCap className="text-purple-600 text-3xl" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <GraduationCap size={24} className="text-gray-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">School Not Found</h2>
-          <p className="text-gray-600 mb-6">The profile you are looking for does not exist or could not be loaded.</p>
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleBack} 
-            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center space-x-2 mx-auto shadow-lg hover:shadow-xl"
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">School not found</h2>
+          <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+            This school profile couldn't be loaded. It may not be in your recommendations.
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-xl hover:bg-purple-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
           >
-            <ArrowLeft size={18} />
-            <span>Go Back</span>
-          </motion.button>
+            <ArrowLeft size={15} />
+            Go back
+          </button>
         </div>
       </div>
     );
@@ -89,202 +63,144 @@ const SchoolProfilePage = () => {
   const {
     name, image, location, description, ranking, website,
     generalAdmissionsInfo, campusLife, programs = [],
-    reasonForRecommendation
+    reasonForRecommendation,
   } = schoolData;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100/50">
-      {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      <div className="relative z-10">
-        {/* Header with Back Button */}
-        <div className="px-4 sm:px-6 lg:px-8 pt-8">
-          <Link to='/schools/all'>
-            <motion.button 
-              whileHover={{ scale: 1.05, x: -5 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white/80 backdrop-blur-sm hover:bg-white/90 text-purple-700 font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl border border-purple-100"
-            >
-              <ArrowLeft size={20} />
-              <span>Back to All Schools</span>
-            </motion.button>
-          </Link>
+        {/* Back link */}
+        <Link
+          to="/schools/all"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
+        >
+          <ArrowLeft size={15} />
+          Back to all schools
+        </Link>
+
+        {/* ── School header ─────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
+          <div className="flex items-start gap-5">
+            <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-100">
+              <img
+                src={image || '/placeholder.svg'}
+                alt={`${name} logo`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900 leading-snug">{name}</h1>
+                  {location && (
+                    <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
+                      <MapPin size={13} className="text-gray-400 flex-shrink-0" />
+                      {location}
+                    </p>
+                  )}
+                  {ranking && ranking !== 'N/A' && (
+                    <span className="inline-flex items-center gap-1 mt-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+                      <Star size={10} fill="currentColor" />
+                      {ranking}
+                    </span>
+                  )}
+                </div>
+
+                {website && (
+                  <a
+                    href={website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 border border-purple-200 px-3 py-1.5 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                  >
+                    <Globe size={13} />
+                    Visit website
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-        >
-          {/* School Header */}
-          <motion.header variants={itemVariants} className="mb-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100">
-              <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
-                <div className="relative">
-                  <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden shadow-lg">
-                    <img 
-                      src={image || '/placeholder.svg'} 
-                      alt={`${name} campus`} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  {ranking && ranking !== "N/A" && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg flex items-center space-x-1">
-                      <Star size={14} fill="currentColor" />
-                      <span>{ranking}</span>
-                    </div>
-                  )}
+        {/* ── Why recommended ───────────────────────────────────────────── */}
+        {reasonForRecommendation && (
+          <div className="bg-purple-50 border border-purple-100 rounded-2xl p-5 mb-4 flex items-start gap-3">
+            <Lightbulb size={15} className="text-purple-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-[11px] font-semibold text-purple-500 uppercase tracking-wider mb-1">
+                Why we recommended this school
+              </p>
+              <p className="text-sm text-gray-700 leading-relaxed">{reasonForRecommendation}</p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Info cards ────────────────────────────────────────────────── */}
+        {(description || generalAdmissionsInfo || campusLife) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {description && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Building size={14} className="text-gray-400" />
+                  <h3 className="text-sm font-semibold text-gray-700">About the school</h3>
                 </div>
-                
-                <div className="flex-1">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-4">
-                    {name}
-                  </h1>
-                  
-                  {location && (
-                    <div className="flex items-center space-x-2 text-gray-600 mb-4">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <MapPin size={16} className="text-purple-600" />
-                      </div>
-                      <span className="text-lg">{location}</span>
-                    </div>
-                  )}
-                  
-                  {website && (
-                    <motion.a 
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      href={website} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="inline-flex items-center space-x-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      <Globe size={18} />
-                      <span>Visit School Website</span>
-                    </motion.a>
-                  )}
-                </div>
+                <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
               </div>
-            </div>
-          </motion.header>
+            )}
 
-          {/* School Details Section */}
-          <motion.section variants={itemVariants} className="mb-12">
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* Recommendation Reason Card */}
-              {reasonForRecommendation && (
-                <motion.div 
-                  variants={cardVariants}
-                  whileHover={{ y: -5 }}
-                  className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-3xl p-8 shadow-xl col-span-full"
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Lightbulb size={24} />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold mb-3">Why We Recommend This School</h3>
-                      <p className="text-purple-100 leading-relaxed text-lg">{reasonForRecommendation}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* About the School */}
-              <motion.div 
-                variants={cardVariants}
-                whileHover={{ y: -5 }}
-                className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100"
-              >
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Building size={24} className="text-purple-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-800">About the School</h3>
+            {generalAdmissionsInfo && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <BookCheck size={14} className="text-gray-400" />
+                  <h3 className="text-sm font-semibold text-gray-700">Admissions</h3>
                 </div>
-                <p className="text-gray-600 leading-relaxed">{description || "No detailed description available."}</p>
-              </motion.div>
-
-              {/* General Admissions */}
-              {generalAdmissionsInfo && (
-                <motion.div 
-                  variants={cardVariants}
-                  whileHover={{ y: -5 }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100"
-                >
-                  <div className="flex items-start space-x-4 mb-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <BookCheck size={24} className="text-purple-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800">General Admissions</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">{generalAdmissionsInfo}</p>
-                </motion.div>
-              )}
-
-              {/* Campus Life */}
-              {campusLife && (
-                <motion.div 
-                  variants={cardVariants}
-                  whileHover={{ y: -5 }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100 md:col-span-2"
-                >
-                  <div className="flex items-start space-x-4 mb-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Users size={24} className="text-purple-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800">Campus Life & Facilities</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">{campusLife}</p>
-                </motion.div>
-              )}
-            </div>
-          </motion.section>
-
-          {/* Programs Section */}
-          <motion.section variants={itemVariants}>
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent mb-4">
-                  Recommended Programs at {name}
-                </h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-purple-700 rounded-full mx-auto"></div>
+                <p className="text-sm text-gray-600 leading-relaxed">{generalAdmissionsInfo}</p>
               </div>
-              
-              {programs.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {programs.map((program, index) => (
-                    <motion.div
-                      key={program.program || index}
-                      variants={cardVariants}
-                      whileHover={{ y: -5, scale: 1.02 }}
-                      className="transform transition-all duration-200"
-                    >
-                      <ProgramCard
-                        program={program}
-                        schoolId={schoolSlugFromParams}
-                      />
-                    </motion.div>
-                  ))}
+            )}
+
+            {campusLife && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:col-span-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <Users size={14} className="text-gray-400" />
+                  <h3 className="text-sm font-semibold text-gray-700">Campus life & facilities</h3>
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <GraduationCap className="text-purple-600 text-2xl" />
-                  </div>
-                  <p className="text-gray-600 text-lg">
-                    No specific programs were identified for this school based on your assessment.
-                  </p>
-                </div>
-              )}
+                <p className="text-sm text-gray-600 leading-relaxed">{campusLife}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Programs ──────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-base font-semibold text-gray-800">Programs</h2>
+            {programs.length > 0 && (
+              <span className="text-xs text-gray-400 font-medium">{programs.length} available</span>
+            )}
+          </div>
+
+          {programs.length > 0 ? (
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {programs.map((program, index) => (
+                <ProgramCard
+                  key={program.program || index}
+                  program={program}
+                  schoolId={schoolSlugFromParams}
+                />
+              ))}
             </div>
-          </motion.section>
-        </motion.div>
+          ) : (
+            <div className="text-center py-10">
+              <GraduationCap size={22} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-sm text-gray-400">
+                No programs identified for this school.
+              </p>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
