@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Compass, TrendingUp, Target, AlertTriangle, ChevronDown,
   Book, Lightbulb, Award, Briefcase, Zap, ArrowRight, GraduationCap, UserCheck,
-  ExternalLink, Home, Users, MessageCircle, RefreshCw, Menu, X
+  ExternalLink, Home, Users, MessageCircle, RefreshCw, Menu
 } from "lucide-react";
 import { deleteAssessmentResults, supabaseAdmin } from "../../supabaseClient";
 import { useResults } from "../../contexts/ResultsContext";
@@ -51,7 +51,6 @@ const CareerDashboard = () => {
   const { results, setResults, isLoading, setIsLoading } = useResults();
   const [activeSection, setActiveSection] = useState("overview");
   const [expandedCards, setExpandedCards] = useState(new Set(["career-matches", "next-steps"]));
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [fetchError, setFetchError] = useState(false);
   const [showRetakeConfirm, setShowRetakeConfirm] = useState(false);
   const [assessmentDate, setAssessmentDate] = useState(null);
@@ -165,36 +164,31 @@ const CareerDashboard = () => {
           ))}
         </div>
 
-        {/* Mobile dropdown */}
-        <div className="md:hidden relative">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-expanded={mobileMenuOpen}
-            className="w-full flex items-center justify-between px-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <span>{sections.find((s) => s.id === activeSection)?.label}</span>
-            {mobileMenuOpen ? <X size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
-          </button>
-          {mobileMenuOpen && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-gray-200 shadow-lg z-40 overflow-hidden">
-              {sections.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => { setActiveSection(s.id); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center justify-between px-4 py-3 text-sm text-left transition-colors ${
-                    activeSection === s.id
-                      ? "bg-purple-50 text-purple-700 font-medium"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {s.label}
-                  {s.count !== null && (
-                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium">{s.count}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
+        {/* Mobile scrollable pill tabs */}
+        <div className="md:hidden overflow-x-auto scrollbar-none -mx-4 px-4" role="tablist">
+          <div className="flex gap-2 pb-2">
+            {sections.map((s) => (
+              <button
+                key={s.id}
+                role="tab"
+                aria-selected={activeSection === s.id}
+                id={`tab-${s.id}`}
+                onClick={() => setActiveSection(s.id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                  activeSection === s.id
+                    ? "bg-purple-600 text-white"
+                    : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                {s.label}
+                {s.count !== null && (
+                  <span className={`text-xs font-medium ${activeSection === s.id ? "opacity-70" : "text-gray-400"}`}>
+                    {s.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -247,185 +241,93 @@ const CareerDashboard = () => {
       // ── OVERVIEW ──────────────────────────────────────────────────────────
       case "overview":
         return (
-          <div className="space-y-5">
-            {/* Hero card */}
+          <div className="space-y-4">
+            {/* Top Match hero */}
             {analysis.careerRecommendations?.length > 0 && (
-              <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <span className="text-xs font-semibold text-purple-500 uppercase tracking-wider">Top Match</span>
-                    <h2 className="text-xl font-bold text-gray-900 mt-1">
-                      {analysis.careerRecommendations[0].jobTitle}
-                    </h2>
-                    {analysis.careerRecommendations[0].salaryRange && (
-                      <p className="text-gray-500 text-sm mt-0.5">
-                        {analysis.careerRecommendations[0].salaryRange}
-                      </p>
-                    )}
-                  </div>
-                  <div className="w-11 h-11 bg-purple-50 border border-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Briefcase className="text-purple-600" size={20} />
-                  </div>
-                </div>
-                {(analysis.skillsAnalysis?.strengths?.[0] || analysis.actionPlan?.immediateNextSteps?.[0]) && (
-                  <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-50">
-                    {analysis.skillsAnalysis?.strengths?.[0] && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider">Top skill</span>
-                        <span className="text-xs bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full border border-purple-100 font-medium">
-                          {analysis.skillsAnalysis.strengths[0]}
-                        </span>
-                      </div>
-                    )}
-                    {analysis.actionPlan?.immediateNextSteps?.[0] && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Next action</span>
-                        <span className="text-xs bg-gray-50 text-gray-600 px-2.5 py-1 rounded-full border border-gray-200 font-medium">
-                          {analysis.actionPlan.immediateNextSteps[0]}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+              <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-5 sm:p-6 text-white">
+                <p className="text-purple-200 text-xs font-semibold uppercase tracking-widest mb-1">Top Match</p>
+                <h2 className="text-2xl font-bold leading-tight">
+                  {analysis.careerRecommendations[0].jobTitle}
+                </h2>
+                {analysis.careerRecommendations[0].salaryRange && (
+                  <p className="text-purple-200 text-sm mt-1">
+                    {analysis.careerRecommendations[0].salaryRange}
+                  </p>
                 )}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {analysis.skillsAnalysis?.strengths?.[0] && (
+                    <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full font-medium">
+                      {analysis.skillsAnalysis.strengths[0]}
+                    </span>
+                  )}
+                  {analysis.actionPlan?.immediateNextSteps?.[0] && (
+                    <span className="text-xs bg-white/10 text-purple-100 px-3 py-1 rounded-full border border-white/20">
+                      {analysis.actionPlan.immediateNextSteps[0]}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Career Matches */}
-              <ExpandableCard
-                id="career-matches"
-                title="Career Matches"
-                icon={<Compass size={18} />}
-                content={
-                  <div className="space-y-3">
-                    {analysis.careerRecommendations.map((rec, i) => (
-                      <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
-                        <span className="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+            {/* Career Matches — flat list */}
+            {analysis.careerRecommendations?.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Career Matches</p>
+                <div className="divide-y divide-gray-50">
+                  {analysis.careerRecommendations.map((rec, i) => (
+                    <div key={i} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                           {i + 1}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2 flex-wrap">
-                            <span className="font-semibold text-sm text-gray-800">{rec.jobTitle}</span>
-                            {rec.salaryRange && (
-                              <span className="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                {rec.salaryRange}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-gray-500 text-xs mt-0.5 leading-relaxed">{rec.explanation}</p>
-                        </div>
+                        <span className="text-sm font-medium text-gray-800 truncate">{rec.jobTitle}</span>
+                      </div>
+                      {rec.salaryRange && (
+                        <span className="text-xs text-green-700 bg-green-50 border border-green-100 px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                          {rec.salaryRange}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bottom row: Growth + Next Steps */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Growth Opportunities */}
+              {(analysis.growthOpportunities?.emergingRoles?.length > 0 || analysis.growthOpportunities?.sectors?.length > 0) && (
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Growth Opportunities</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {analysis.growthOpportunities.emergingRoles?.map((role, i) => (
+                      <span key={i} className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full">
+                        {role}
+                      </span>
+                    ))}
+                    {analysis.growthOpportunities.sectors?.map((sector, i) => (
+                      <span key={i} className="text-xs bg-teal-50 text-teal-700 border border-teal-100 px-2.5 py-1 rounded-full">
+                        {sector}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Next Steps */}
+              {analysis.actionPlan?.immediateNextSteps?.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Next Steps</p>
+                  <div className="space-y-2.5">
+                    {analysis.actionPlan.immediateNextSteps.slice(0, 3).map((step, i) => (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
+                        <p className="text-sm text-gray-600 leading-snug">{step}</p>
                       </div>
                     ))}
                   </div>
-                }
-              />
-
-              {/* Growth Opportunities */}
-              <ExpandableCard
-                id="growth"
-                title="Growth Opportunities"
-                icon={<TrendingUp size={18} />}
-                content={
-                  <div className="space-y-4">
-                    {analysis.growthOpportunities?.emergingRoles?.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Emerging Roles</p>
-                        <div className="flex flex-wrap gap-2">
-                          {analysis.growthOpportunities.emergingRoles.map((role, i) => (
-                            <span key={i} className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1 rounded-full">
-                              {role}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {analysis.growthOpportunities?.sectors?.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Growing Sectors</p>
-                        <div className="flex flex-wrap gap-2">
-                          {analysis.growthOpportunities.sectors.map((sector, i) => (
-                            <span key={i} className="text-xs bg-teal-50 text-teal-700 border border-teal-100 px-3 py-1 rounded-full">
-                              {sector}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                }
-              />
-
-              {/* Next Steps */}
-              <ExpandableCard
-                id="next-steps"
-                title="Next Steps"
-                icon={<Target size={18} />}
-                content={
-                  <div className="space-y-4">
-                    {analysis.actionPlan?.immediateNextSteps?.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Immediate</p>
-                        <div className="space-y-2">
-                          {analysis.actionPlan.immediateNextSteps.map((step, i) => (
-                            <div key={i} className="flex items-start gap-2.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
-                              <p className="text-sm text-gray-600 leading-relaxed">{step}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {analysis.actionPlan?.shortTermGoals?.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Short-term</p>
-                        <div className="space-y-2">
-                          {analysis.actionPlan.shortTermGoals.map((goal, i) => (
-                            <div key={i} className="flex items-start gap-2.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-1.5 flex-shrink-0" />
-                              <p className="text-sm text-gray-600 leading-relaxed">{goal}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                }
-              />
-
-              {/* Challenges */}
-              <ExpandableCard
-                id="challenges"
-                title="Challenges & Strategies"
-                icon={<AlertTriangle size={18} />}
-                content={
-                  <div className="space-y-4">
-                    {analysis.potentialChallenges?.challenges?.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Challenges</p>
-                        <div className="space-y-2">
-                          {analysis.potentialChallenges.challenges.map((c, i) => (
-                            <div key={i} className="flex items-start gap-2.5 p-3 bg-red-50 rounded-lg border-l-2 border-red-300">
-                              <p className="text-sm text-red-700 leading-relaxed">{c}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {analysis.potentialChallenges?.mitigationStrategies?.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">How to overcome</p>
-                        <div className="space-y-2">
-                          {analysis.potentialChallenges.mitigationStrategies.map((s, i) => (
-                            <div key={i} className="flex items-start gap-2.5 p-3 bg-green-50 rounded-lg border-l-2 border-green-400">
-                              <p className="text-sm text-green-700 leading-relaxed">{s}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                }
-              />
+                </div>
+              )}
             </div>
           </div>
         );
@@ -433,71 +335,67 @@ const CareerDashboard = () => {
       // ── SKILLS ────────────────────────────────────────────────────────────
       case "skills":
         return (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">Skills Profile</h2>
-              <p className="text-gray-500 text-sm mt-0.5">Your current strengths and areas to grow</p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Award size={18} className="text-purple-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Your Strengths</h3>
-                  <span className="ml-auto text-xs text-gray-400">{analysis.skillsAnalysis?.strengths?.length || 0} identified</span>
-                </div>
-                {analysis.skillsAnalysis?.strengths?.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {analysis.skillsAnalysis.strengths.map((s, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-sm font-medium">
-                        {s}
-                      </span>
-                    ))}
+          <div className="space-y-4">
+            {/* Strengths + Growth side by side in one card */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <Award size={15} className="text-purple-500" />
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Your Strengths</p>
+                    <span className="ml-auto text-xs text-gray-300">{analysis.skillsAnalysis?.strengths?.length || 0}</span>
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">No strengths identified yet.</p>
-                )}
-              </div>
-
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Zap size={18} className="text-orange-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Growth Areas</h3>
-                  <span className="ml-auto text-xs text-gray-400">{analysis.skillsAnalysis?.skillsToDevelop?.length || 0} identified</span>
-                </div>
-                {analysis.skillsAnalysis?.skillsToDevelop?.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {analysis.skillsAnalysis.skillsToDevelop.map((s, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-orange-50 text-orange-700 border border-orange-100 rounded-full text-sm font-medium">
-                        {s}
-                      </span>
-                    ))}
+                    {analysis.skillsAnalysis?.strengths?.length > 0
+                      ? analysis.skillsAnalysis.strengths.map((s, i) => (
+                          <span key={i} className="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-xs font-medium">
+                            {s}
+                          </span>
+                        ))
+                      : <p className="text-xs text-gray-400">None identified yet.</p>
+                    }
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">No growth areas identified yet.</p>
-                )}
+                </div>
+                <div className="sm:border-l sm:border-gray-50 sm:pl-6">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <Zap size={15} className="text-orange-500" />
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Growth Areas</p>
+                    <span className="ml-auto text-xs text-gray-300">{analysis.skillsAnalysis?.skillsToDevelop?.length || 0}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {analysis.skillsAnalysis?.skillsToDevelop?.length > 0
+                      ? analysis.skillsAnalysis.skillsToDevelop.map((s, i) => (
+                          <span key={i} className="px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-100 rounded-full text-xs font-medium">
+                            {s}
+                          </span>
+                        ))
+                      : <p className="text-xs text-gray-400">None identified yet.</p>
+                    }
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Key Insights */}
             {(analysis.insights?.keyTakeaways?.length > 0 || analysis.insights?.motivationalQuote) && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Lightbulb size={18} className="text-yellow-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Key Insights</h3>
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Lightbulb size={15} className="text-yellow-500" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Key Insights</p>
                 </div>
                 {analysis.insights.keyTakeaways?.length > 0 && (
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-2 mb-3">
                     {analysis.insights.keyTakeaways.map((t, i) => (
                       <div key={i} className="flex items-start gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0" />
-                        <p className="text-sm text-gray-600 leading-relaxed">{t}</p>
+                        <p className="text-sm text-gray-600 leading-snug">{t}</p>
                       </div>
                     ))}
                   </div>
                 )}
                 {analysis.insights.motivationalQuote && (
-                  <blockquote className="border-l-2 border-purple-200 pl-4 py-1">
-                    <p className="text-sm text-gray-500 italic">"{analysis.insights.motivationalQuote}"</p>
+                  <blockquote className="border-l-2 border-purple-200 pl-3 mt-3">
+                    <p className="text-xs text-gray-400 italic">"{analysis.insights.motivationalQuote}"</p>
                   </blockquote>
                 )}
               </div>
@@ -508,47 +406,41 @@ const CareerDashboard = () => {
       // ── PATHS ─────────────────────────────────────────────────────────────
       case "paths":
         return (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">Career Paths</h2>
-              <p className="text-gray-500 text-sm mt-0.5">Detailed view of your recommended career directions</p>
-            </div>
-            <div className="space-y-4">
-              {analysis.careerRecommendations.map((rec, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:border-purple-100 hover:shadow-md transition-all">
-                  <div className="flex items-start gap-4">
-                    <span className="w-9 h-9 rounded-xl bg-purple-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
+          <div className="space-y-3">
+            {analysis.careerRecommendations.map((rec, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 hover:border-purple-100 hover:shadow-md transition-all">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-7 h-7 rounded-lg bg-purple-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                       {i + 1}
                     </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3 flex-wrap">
-                        <h3 className="font-semibold text-gray-800">{rec.jobTitle}</h3>
-                        {rec.salaryRange && (
-                          <span className="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-1 rounded-full whitespace-nowrap">
-                            {rec.salaryRange}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-500 text-sm mt-1.5 leading-relaxed">{rec.explanation}</p>
-                      <div className="mt-4 flex gap-4">
-                        <Link
-                          to={`/schools/career/${slugify(rec.jobTitle)}`}
-                          className="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
-                        >
-                          <GraduationCap size={13} /> Schools
-                        </Link>
-                        <Link
-                          to={`/mentors/career/${slugify(rec.jobTitle)}`}
-                          className="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
-                        >
-                          <Users size={13} /> Mentors
-                        </Link>
-                      </div>
-                    </div>
+                    <h3 className="font-semibold text-gray-800 text-sm">{rec.jobTitle}</h3>
                   </div>
+                  {rec.salaryRange && (
+                    <span className="text-xs bg-green-50 text-green-700 border border-green-100 px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                      {rec.salaryRange}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
+                {rec.explanation && (
+                  <p className="text-gray-500 text-xs mt-2 leading-relaxed line-clamp-2 ml-10">{rec.explanation}</p>
+                )}
+                <div className="mt-3 ml-10 flex gap-3">
+                  <Link
+                    to={`/schools/career/${slugify(rec.jobTitle)}`}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100"
+                  >
+                    <GraduationCap size={11} /> Schools
+                  </Link>
+                  <Link
+                    to={`/mentors/career/${slugify(rec.jobTitle)}`}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100"
+                  >
+                    <Users size={11} /> Mentors
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         );
 
@@ -556,24 +448,23 @@ const CareerDashboard = () => {
       case "schools": {
         const schools = analysis.recommendedSchools || [];
         return (
-          <div className="space-y-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">Schools & Education</h2>
-                <p className="text-gray-500 text-sm mt-0.5">Institutions matched to your career goals</p>
-              </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                {schools.length} school{schools.length !== 1 ? "s" : ""} matched
+              </p>
               <Link
                 to="/schools/all"
-                className="flex-shrink-0 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1"
+                className="text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1"
               >
-                Browse all <ArrowRight size={14} />
+                Browse all <ArrowRight size={12} />
               </Link>
             </div>
 
             {schools.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
-                <GraduationCap size={28} className="text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 text-sm mb-3">No school recommendations yet. Complete the assessment to see matches.</p>
+                <GraduationCap size={40} className="text-gray-200 mx-auto mb-3" />
+                <p className="text-gray-500 text-sm mb-3">No school recommendations yet.</p>
                 <Link to="/schools/all" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">
                   Browse all schools
                 </Link>
@@ -619,7 +510,6 @@ const CareerDashboard = () => {
 
       // ── MENTORS ───────────────────────────────────────────────────────────
       case "mentors": {
-        // Extract unique tutors from all recommended school programs
         const seenNames = new Set();
         const mentors = (analysis.recommendedSchools || []).flatMap((school) =>
           (school.programs || []).flatMap((program) =>
@@ -633,47 +523,46 @@ const CareerDashboard = () => {
           )
         );
         return (
-          <div className="space-y-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">Mentors & Guidance</h2>
-                <p className="text-gray-500 text-sm mt-0.5">Professionals from your recommended schools</p>
-              </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                {mentors.length} mentor{mentors.length !== 1 ? "s" : ""} matched
+              </p>
               <Link
                 to="/mentors/all"
-                className="flex-shrink-0 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1"
+                className="text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1"
               >
-                Browse all <ArrowRight size={14} />
+                Browse all <ArrowRight size={12} />
               </Link>
             </div>
 
             {mentors.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
                 <UserCheck size={28} className="text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 text-sm mb-3">No mentors found yet. Complete the assessment to see matches.</p>
+                <p className="text-gray-500 text-sm mb-3">No mentors found yet.</p>
                 <Link to="/mentors/all" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">
                   Browse all mentors
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {mentors.slice(0, 6).map((mentor, i) => (
-                  <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:border-purple-100 hover:shadow-md transition-all flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-700 font-bold text-sm">
+                  <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-purple-100 hover:shadow-md transition-all flex flex-col gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-700 font-bold text-sm">
                         {mentor.name?.[0] || "M"}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="font-semibold text-gray-800 text-sm truncate">{mentor.name}</h4>
-                        <p className="text-xs text-gray-400 truncate">{mentor.role || mentor.specialization}</p>
+                        <h4 className="font-semibold text-gray-800 text-sm truncate leading-tight">{mentor.name}</h4>
+                        <p className="text-xs text-gray-400 truncate leading-tight">{mentor.role || mentor.specialization}</p>
                       </div>
                     </div>
                     {mentor.schoolName && (
-                      <p className="text-[10px] text-purple-500 font-medium mb-2 truncate">{mentor.schoolName}</p>
+                      <p className="text-xs text-purple-500 font-medium truncate">{mentor.schoolName}</p>
                     )}
                     {mentor.expertise?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 flex-1">
-                        {mentor.expertise.slice(0, 3).map((e, ei) => (
+                      <div className="flex flex-wrap gap-1">
+                        {mentor.expertise.slice(0, 2).map((e, ei) => (
                           <span key={ei} className="text-[10px] bg-gray-50 text-gray-500 border border-gray-100 px-2 py-0.5 rounded-full">
                             {e}
                           </span>
@@ -682,9 +571,9 @@ const CareerDashboard = () => {
                     )}
                     <Link
                       to="/mentors/all"
-                      className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors mt-auto pt-1"
                     >
-                      View profile <ArrowRight size={13} />
+                      View profile <ArrowRight size={11} />
                     </Link>
                   </div>
                 ))}
@@ -697,121 +586,94 @@ const CareerDashboard = () => {
       // ── DEVELOPMENT ───────────────────────────────────────────────────────
       case "development":
         return (
-          <div className="space-y-5">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">Learning Resources</h2>
-              <p className="text-gray-500 text-sm mt-0.5">Curated resources to accelerate your growth</p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Courses */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Book size={18} className="text-blue-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Recommended Courses</h3>
+          <div className="space-y-4">
+            {/* Courses + Readings */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Book size={14} className="text-blue-500" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Courses</p>
                 </div>
                 {analysis.resources.recommendedCourses?.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="divide-y divide-gray-50">
                     {analysis.resources.recommendedCourses.map((course, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div key={i} className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0">
+                        <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[9px] font-bold flex items-center justify-center flex-shrink-0">
                           {i + 1}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 leading-snug">{course.title || course}</p>
-                          {course.description && (
-                            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{course.description}</p>
-                          )}
+                          <p className="text-sm text-gray-700 leading-snug truncate">{course.title || course}</p>
                           {course.url && (
-                            <a
-                              href={course.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 mt-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                            >
-                              View course <ExternalLink size={11} />
+                            <a href={course.url} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-0.5 text-[10px] text-blue-500 hover:text-blue-600">
+                              Open <ExternalLink size={9} />
                             </a>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">No course recommendations yet.</p>
-                )}
+                ) : <p className="text-xs text-gray-400">None yet.</p>}
               </div>
 
-              {/* Readings */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Lightbulb size={18} className="text-yellow-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Suggested Readings</h3>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Lightbulb size={14} className="text-yellow-500" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Readings</p>
                 </div>
                 {analysis.resources.suggestedReadings?.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="divide-y divide-gray-50">
                     {analysis.resources.suggestedReadings.map((r, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <span className="w-5 h-5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div key={i} className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0">
+                        <span className="w-4 h-4 rounded-full bg-yellow-100 text-yellow-700 text-[9px] font-bold flex items-center justify-center flex-shrink-0">
                           {i + 1}
                         </span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 leading-snug">{r.title || r}</p>
-                          {r.author && <p className="text-xs text-gray-500 mt-0.5">by {r.author}</p>}
+                        <div className="min-w-0">
+                          <p className="text-sm text-gray-700 leading-snug truncate">{r.title || r}</p>
+                          {r.author && <p className="text-[10px] text-gray-400">by {r.author}</p>}
                         </div>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">No reading recommendations yet.</p>
-                )}
+                ) : <p className="text-xs text-gray-400">None yet.</p>}
               </div>
+            </div>
 
-              {/* Tools */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Zap size={18} className="text-orange-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Professional Tools</h3>
+            {/* Tools + Roadmap */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Zap size={14} className="text-orange-500" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tools</p>
                 </div>
                 {analysis.resources.professionalTools?.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {analysis.resources.professionalTools.map((tool, i) => (
-                      <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 text-orange-700 border border-orange-100 rounded-full text-xs font-medium">
-                        <Zap size={10} />
-                        {tool.name || tool}
+                      <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-100 rounded-full text-xs font-medium">
+                        <Zap size={9} />{tool.name || tool}
                       </span>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">No tool recommendations yet.</p>
-                )}
+                ) : <p className="text-xs text-gray-400">None yet.</p>}
               </div>
 
-              {/* Roadmap */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Target size={18} className="text-purple-500" />
-                  <h3 className="font-semibold text-gray-800 text-sm">Long-term Roadmap</h3>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Target size={14} className="text-purple-500" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Long-term Roadmap</p>
                 </div>
                 {analysis.actionPlan?.longTermRoadmap?.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {analysis.actionPlan.longTermRoadmap.map((milestone, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="flex flex-col items-center flex-shrink-0">
-                          <span className="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center">
-                            {i + 1}
-                          </span>
-                          {i < analysis.actionPlan.longTermRoadmap.length - 1 && (
-                            <div className="w-px h-6 bg-purple-200 mt-1" />
-                          )}
-                        </div>
-                        <div className={`flex-1 pb-3 ${i < analysis.actionPlan.longTermRoadmap.length - 1 ? "border-b border-gray-50" : ""}`}>
-                          <p className="text-sm text-gray-600 leading-relaxed">{milestone}</p>
-                        </div>
+                      <div key={i} className="flex items-start gap-2.5">
+                        <span className="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                          {i + 1}
+                        </span>
+                        <p className="text-sm text-gray-600 leading-snug">{milestone}</p>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">Roadmap will appear after assessment.</p>
-                )}
+                ) : <p className="text-xs text-gray-400">Roadmap will appear after assessment.</p>}
               </div>
             </div>
           </div>
@@ -958,22 +820,22 @@ const CareerDashboard = () => {
       <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-5 border-b border-gray-100">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">Career Dashboard</h1>
-            <p className="text-gray-500 text-sm mt-0.5">
-              {user?.firstName || user?.username || "Welcome back"}
+        <div className="flex items-center justify-between mb-6 pb-5 border-b border-gray-100 gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-gray-900 truncate">Career Dashboard</h1>
+            <p className="text-gray-500 text-sm mt-0.5 flex items-center gap-1 flex-wrap">
+              <span className="truncate">{user?.firstName || user?.username || "Welcome back"}</span>
               {assessmentDate && (
-                <span className="ml-2 text-gray-400 text-xs font-normal">
+                <span className="text-gray-400 text-xs font-normal hidden sm:inline whitespace-nowrap">
                   · Results from {assessmentDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                 </span>
               )}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleTakeNewAssessment}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-xl hover:bg-red-50 hover:border-red-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-1"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:text-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1"
             >
               <RefreshCw size={13} />
               Retake
@@ -982,7 +844,7 @@ const CareerDashboard = () => {
               <button
                 onClick={handleProfileClick}
                 aria-label="View profile"
-                className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-purple-200 transition-all focus-visible:outline-none focus-visible:ring-purple-400"
+                className="hidden sm:block w-11 h-11 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-purple-200 transition-all focus-visible:outline-none focus-visible:ring-purple-400 flex-shrink-0"
               >
                 <img src={user.imageUrl || "/placeholder.svg"} alt={user.fullName || "Profile"} className="w-full h-full object-cover" />
               </button>
@@ -995,10 +857,11 @@ const CareerDashboard = () => {
 
         {/* Content */}
         <div
+          key={activeSection}
           role="tabpanel"
           id={`panel-${activeSection}`}
           aria-labelledby={`tab-${activeSection}`}
-          className="min-h-[50vh]"
+          className="min-h-[50vh] animate-[fadeSlideIn_0.18s_ease-out]"
         >
           {renderSectionContent()}
         </div>
