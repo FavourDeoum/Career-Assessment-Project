@@ -11,6 +11,13 @@ import { useResults } from "../../contexts/ResultsContext";
 
 const slugify = (text) => text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, "");
 
+const formatSalary = (str) => {
+  if (!str) return null;
+  const usd = str.match(/(\d[\d,]+)\s*[-–]\s*(\d[\d,]+)\s*USD/i);
+  if (usd) return `${usd[1].replace(/,/g, "")}–${usd[2].replace(/,/g, "")} USD/mo`;
+  return str;
+};
+
 // ─── Mobile Bottom Nav (standalone so it doesn't re-mount on state changes) ──
 const MobileNav = () => {
   const { pathname } = useLocation();
@@ -165,30 +172,34 @@ const CareerDashboard = () => {
         </div>
 
         {/* Mobile scrollable pill tabs */}
-        <div className="md:hidden overflow-x-auto scrollbar-none -mx-4 px-4" role="tablist">
-          <div className="flex gap-2 pb-2">
-            {sections.map((s) => (
-              <button
-                key={s.id}
-                role="tab"
-                aria-selected={activeSection === s.id}
-                id={`tab-${s.id}`}
-                onClick={() => setActiveSection(s.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
-                  activeSection === s.id
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                {s.label}
-                {s.count !== null && (
-                  <span className={`text-xs font-medium ${activeSection === s.id ? "opacity-70" : "text-gray-400"}`}>
-                    {s.count}
-                  </span>
-                )}
-              </button>
-            ))}
+        <div className="md:hidden relative">
+          <div className="overflow-x-auto scrollbar-none -mx-4 px-4" role="tablist">
+            <div className="flex gap-2 pb-2">
+              {sections.map((s) => (
+                <button
+                  key={s.id}
+                  role="tab"
+                  aria-selected={activeSection === s.id}
+                  id={`tab-${s.id}`}
+                  onClick={() => setActiveSection(s.id)}
+                  className={`flex items-center gap-1.5 px-3 py-2.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+                    activeSection === s.id
+                      ? "bg-purple-600 text-white"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {s.label}
+                  {s.count !== null && (
+                    <span className={`text-xs font-medium ${activeSection === s.id ? "opacity-70" : "text-gray-400"}`}>
+                      {s.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
+          {/* Right-fade affordance — signals more tabs off-screen */}
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-gray-50 to-transparent" />
         </div>
       </div>
     );
@@ -245,23 +256,23 @@ const CareerDashboard = () => {
             {/* Top Match hero */}
             {analysis.careerRecommendations?.length > 0 && (
               <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-5 sm:p-6 text-white">
-                <p className="text-purple-200 text-xs font-semibold uppercase tracking-widest mb-1">Top Match</p>
+                <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Top Match</p>
                 <h2 className="text-2xl font-bold leading-tight">
                   {analysis.careerRecommendations[0].jobTitle}
                 </h2>
                 {analysis.careerRecommendations[0].salaryRange && (
-                  <p className="text-purple-200 text-sm mt-1">
-                    {analysis.careerRecommendations[0].salaryRange}
+                  <p className="text-white/80 text-sm mt-1">
+                    {formatSalary(analysis.careerRecommendations[0].salaryRange)}
                   </p>
                 )}
                 <div className="flex flex-wrap gap-2 mt-4">
                   {analysis.skillsAnalysis?.strengths?.[0] && (
-                    <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-white/25 text-white px-3 py-1 rounded-full font-medium">
                       {analysis.skillsAnalysis.strengths[0]}
                     </span>
                   )}
                   {analysis.actionPlan?.immediateNextSteps?.[0] && (
-                    <span className="text-xs bg-white/10 text-purple-100 px-3 py-1 rounded-full border border-white/20">
+                    <span className="text-xs bg-white/25 text-white px-3 py-1 rounded-full font-medium max-w-[200px] truncate">
                       {analysis.actionPlan.immediateNextSteps[0]}
                     </span>
                   )}
@@ -269,24 +280,22 @@ const CareerDashboard = () => {
               </div>
             )}
 
-            {/* Career Matches — flat list */}
+            {/* Career Matches — stacked title + salary */}
             {analysis.careerRecommendations?.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Career Matches</p>
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-gray-100">
                   {analysis.careerRecommendations.map((rec, i) => (
-                    <div key={i} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
-                          {i + 1}
-                        </span>
-                        <span className="text-sm font-medium text-gray-800 truncate">{rec.jobTitle}</span>
+                    <div key={i} className="flex items-start gap-3 py-2.5 first:pt-0 last:pb-0">
+                      <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                        {i + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-800 leading-snug">{rec.jobTitle}</p>
+                        {rec.salaryRange && (
+                          <p className="text-xs text-green-700 mt-0.5">{formatSalary(rec.salaryRange)}</p>
+                        )}
                       </div>
-                      {rec.salaryRange && (
-                        <span className="text-xs text-green-700 bg-green-50 border border-green-100 px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
-                          {rec.salaryRange}
-                        </span>
-                      )}
                     </div>
                   ))}
                 </div>
