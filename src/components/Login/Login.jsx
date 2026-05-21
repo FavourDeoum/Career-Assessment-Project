@@ -5,8 +5,8 @@ export default function Login() {
     <SignIn
       routing="path" // Use "path" instead of "hash"
       path="/login"
-      fallbackRedirectUrl="/cdashboard"
-      // afterSignInUrl="/cdashboard"
+      fallbackRedirectUrl="/dashboard"
+      // afterSignInUrl="/dashboard"
     />
   );
 }

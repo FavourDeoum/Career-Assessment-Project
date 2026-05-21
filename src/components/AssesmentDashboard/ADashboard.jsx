@@ -32,7 +32,7 @@ const formatSalary = (str) => {
 const MobileNav = () => {
   const { pathname } = useLocation();
   const navItems = [
-    { to: "/cdashboard", icon: Home, label: "Dashboard" },
+    { to: "/dashboard", icon: Home, label: "Dashboard" },
     { to: "/schools/all", icon: GraduationCap, label: "Schools" },
     { to: "/mentors/all", icon: Users, label: "Mentors" },
     { to: "/contact", icon: MessageCircle, label: "Contact" },

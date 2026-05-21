@@ -24,7 +24,7 @@ const SSOCallback = () => {
         } else if (afterSignUpUrl) {
           navigate(afterSignUpUrl);
         } else {
-          navigate('/cdashboard'); // Fallback to home if no redirect URL is provided
+          navigate('/dashboard'); // Fallback to home if no redirect URL is provided
         }
       } catch (error) {
         console.error('SSO Callback Error:', error);

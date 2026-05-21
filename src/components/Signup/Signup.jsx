@@ -6,9 +6,9 @@ export default function SignUpPage() {
     <SignUp
       routing="path" 
       path="/signup"
-      fallbackRedirectUrl="/cdashboard"
-      // afterSignUpUrl="/cdashboard" 
-      // afterSignInUrl="/cdashboard"
+      fallbackRedirectUrl="/dashboard"
+      // afterSignUpUrl="/dashboard" 
+      // afterSignInUrl="/dashboard"
     />
   );
 }

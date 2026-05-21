@@ -1,15 +1,12 @@
-"use client"
-
 import { useState, useEffect } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
-import { FaBars, FaTimes, FaHome, FaUser, FaEnvelope, FaTachometerAlt } from "react-icons/fa"
+import { Link, useLocation } from "react-router-dom"
+import { FaHome, FaUser, FaEnvelope, FaTachometerAlt } from "react-icons/fa"
 import "./Navbar.css"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const navigate = useNavigate()
   const location = useLocation()
 
   // Handle scroll effect
@@ -28,8 +25,8 @@ const Navbar = () => {
   }, [location.pathname])
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'unset'
-    return () => { document.body.style.overflow = 'unset' }
+    document.body.style.overflow = isOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
   }, [isOpen])
 
   const toggleMenu = () => {
@@ -52,17 +49,17 @@ const Navbar = () => {
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-container">
           {/* Logo */}
-          <Link to="/" className="navbar-logo" onClick={handleLinkClick}>
+          <Link to="/" className="navbar-logo">
             <div className="logo-container">
               <div className="logo-icon">
-                <img src="/images/logo2.png" alt="Logo" />
+                <img src="/images/logo2.png" alt="EduVate logo" />
               </div>
-              {/* <span className="logo-text">EduVate</span> */}
+              <span className="logo-text">EduVate</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="navbar-nav-desktop">
+          <nav className="navbar-nav-desktop" aria-label="Main navigation">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -77,22 +74,27 @@ const Navbar = () => {
 
             <SignedIn>
               <Link
-                to="/cdashboard"
-                className={`nav-link ${location.pathname === "/cdashboard" ? "active" : ""}`}
+                to="/dashboard"
+                className={`nav-link ${location.pathname === "/dashboard" ? "active" : ""}`}
                 onClick={handleLinkClick}
               >
                 <span className="nav-link-text">Dashboard</span>
                 <div className="nav-link-indicator"></div>
               </Link>
             </SignedIn>
-          </div>
+          </nav>
 
           {/* Auth Section */}
           <div className="navbar-auth">
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="auth-button signin-btn" onClick={handleLinkClick}>
+                <button className="auth-button signin-btn">
                   <span>Sign In</span>
+                </button>
+              </SignInButton>
+              <SignInButton mode="modal">
+                <button className="auth-button getstarted-btn">
+                  <span>Get Started</span>
                   <div className="button-glow"></div>
                 </button>
               </SignInButton>
@@ -113,10 +115,12 @@ const Navbar = () => {
             </SignedIn>
 
             {/* Mobile Menu Toggle */}
-            <button 
-              className={`mobile-menu-toggle ${isOpen ? 'active' : ''}`} 
-              onClick={toggleMenu} 
-              aria-label="Toggle menu"
+            <button
+              className={`mobile-menu-toggle ${isOpen ? 'active' : ''}`}
+              onClick={toggleMenu}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav"
             >
               <span className="hamburger-line"></span>
               <span className="hamburger-line"></span>
@@ -129,7 +133,7 @@ const Navbar = () => {
         <div className={`mobile-backdrop ${isOpen ? 'active' : ''}`} onClick={handleLinkClick}></div>
 
         {/* Mobile Navigation */}
-        <div className={`mobile-nav ${isOpen ? 'active' : ''}`}>
+        <nav id="mobile-nav" className={`mobile-nav ${isOpen ? 'active' : ''}`} aria-label="Mobile navigation">
           <div className="mobile-nav-header">
             <div className="mobile-logo">
               <div className="logo-icon">
@@ -156,8 +160,8 @@ const Navbar = () => {
 
               <SignedIn>
                 <Link
-                  to="/cdashboard"
-                  className={`mobile-nav-link ${location.pathname === "/cdashboard" ? "active" : ""}`}
+                  to="/dashboard"
+                  className={`mobile-nav-link ${location.pathname === "/dashboard" ? "active" : ""}`}
                   onClick={handleLinkClick}
                   style={{ animationDelay: `${navItems.length * 0.1}s` }}
                 >
@@ -196,7 +200,7 @@ const Navbar = () => {
               </SignedIn>
             </div>
           </div>
-        </div>
+        </nav>
       </nav>
 
       {/* Spacer to prevent content jump */}

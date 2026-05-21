@@ -480,7 +480,7 @@ const CareerExplorePage = () => {
       {/* Header Section */}
       <div className="header">
         <div className="header-content">
-          <button className="back-button" onClick={() => navigate("/cdashboard")}>
+          <button className="back-button" onClick={() => navigate("/dashboard")}>
             <ArrowLeft size={20} />
             <span className="back-text">Back to Dashboard</span>
           </button>

@@ -47,7 +47,7 @@ const AllSchoolsPage = () => {
             {error.message || 'Please check your connection and try again.'}
           </p>
           <Link
-            to="/cdashboard"
+            to="/dashboard"
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-xl hover:bg-purple-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
           >
             <ArrowLeft size={15} />
@@ -64,7 +64,7 @@ const AllSchoolsPage = () => {
 
         {/* Back link */}
         <Link
-          to="/cdashboard"
+          to="/dashboard"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-8 py-2 -my-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
         >
           <ArrowLeft size={15} />

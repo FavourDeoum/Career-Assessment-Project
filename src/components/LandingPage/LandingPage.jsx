@@ -27,7 +27,7 @@ const LandingPage = () => {
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      navigate("/cdashboard")
+      navigate("/dashboard")
     } else {
       navigate("/signup")
     }

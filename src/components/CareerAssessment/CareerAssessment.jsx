@@ -303,7 +303,7 @@ const CareerAssessment = () => {
 
   useEffect(() => {
     if (!showResults) return
-    const timer = setTimeout(() => navigate("/cdashboard"), 1500)
+    const timer = setTimeout(() => navigate("/dashboard"), 1500)
     return () => clearTimeout(timer)
   }, [showResults])
 

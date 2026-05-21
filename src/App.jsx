@@ -33,7 +33,7 @@
 
 // const protectedRoutes = [
 //   { path: '/assessment', element: <CareerAssessment /> },
-//   { path: '/cdashboard', element: <CareerDashboard /> },
+//   { path: '/dashboard', element: <CareerDashboard /> },
 //   { path: '/explore', element: <CareerExplorePage /> },
 //   { path: '/explore/school/:schoolId', element: <SchoolDetailsWrapper /> },
 //   { path: '/explore/school/:schoolId/apply', element: <SchoolApplicationFormWrapper /> },
@@ -151,7 +151,7 @@ const authRoutes = [
 
 const protectedRoutes = [
   { path: '/assessment', element: <CareerAssessment /> },
-  { path: '/cdashboard', element: <CareerDashboard /> }, 
+  { path: '/dashboard', element: <CareerDashboard /> }, 
   // School Routes
   { path: '/schools/career/:careerSlug', element: <RecommendedSchoolsPage /> },
   { path: '/schools/all', element: <AllSchoolsPage /> },
@@ -189,7 +189,7 @@ function AppContent() {
               <Route key={path} path={path} element={
                 <>
                   {/* Example: If you want to redirect signed-in users away from login/signup */}
-                  {/* <SignedIn><Navigate to="/cdashboard" /></SignedIn>
+                  {/* <SignedIn><Navigate to="/dashboard" /></SignedIn>
                   <SignedOut>{element}</SignedOut> */}
                   {/* For now, just rendering the element as per your original structure */}
                   {element}
