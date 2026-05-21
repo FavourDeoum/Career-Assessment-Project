@@ -46,7 +46,7 @@ const createPrompt = (answers, categories) => {
     });
 
     prompt += `\n\nGenerate a comprehensive career analysis with these specific requirements:
-1. CAREER RECOMMENDATIONS: Provide 5 specific job titles, explain why each is a match, and include salary ranges.
+1. CAREER RECOMMENDATIONS: Provide 5 specific job titles, explain why each is a match, and include salary ranges in XAF (FCFA) per month (e.g. "150,000 – 400,000 XAF/mo").
 2. SKILLS ANALYSIS: Identify top 5 strengths and recommend 3-5 critical skills to develop.
 3. ACTION PLAN: Provide immediate next steps, 6-12 month goals, and a long-term roadmap.
 4. POTENTIAL CHALLENGES: Identify top 3 obstacles and mitigation strategies.

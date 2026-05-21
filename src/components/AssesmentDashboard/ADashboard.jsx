@@ -13,8 +13,18 @@ const slugify = (text) => text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-
 
 const formatSalary = (str) => {
   if (!str) return null;
+  // XAF range: "150,000 – 400,000 XAF/mo" or "150000-400000 XAF"
+  const xaf = str.match(/(\d[\d,]+)\s*[-–]\s*(\d[\d,]+)\s*XAF/i);
+  if (xaf) {
+    const fmt = (n) => parseInt(n.replace(/,/g, ""), 10).toLocaleString("fr-CM");
+    return `${fmt(xaf[1])} – ${fmt(xaf[2])} XAF/mois`;
+  }
+  // Legacy USD: convert to XAF at ~600 XAF/USD
   const usd = str.match(/(\d[\d,]+)\s*[-–]\s*(\d[\d,]+)\s*USD/i);
-  if (usd) return `${usd[1].replace(/,/g, "")}–${usd[2].replace(/,/g, "")} USD/mo`;
+  if (usd) {
+    const fmt = (n) => (parseInt(n.replace(/,/g, ""), 10) * 600).toLocaleString("fr-CM");
+    return `${fmt(usd[1])} – ${fmt(usd[2])} XAF/mois`;
+  }
   return str;
 };
 
@@ -427,7 +437,7 @@ const CareerDashboard = () => {
                   </div>
                   {rec.salaryRange && (
                     <span className="text-xs bg-green-50 text-green-700 border border-green-100 px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
-                      {rec.salaryRange}
+                      {formatSalary(rec.salaryRange)}
                     </span>
                   )}
                 </div>

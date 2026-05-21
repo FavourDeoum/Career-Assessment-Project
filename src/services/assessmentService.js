@@ -65,7 +65,7 @@ const createPrompt = (answers, categories) => {
 }
 
 Rules:
-- careerRecommendations: 5 job titles with detailed explanation and salary in XAF/USD.
+- careerRecommendations: 5 job titles with detailed explanation and salary range in XAF (FCFA) per month (e.g. "150,000 – 400,000 XAF/mo").
 - skillsAnalysis: top 5 strengths, 3-5 skills to develop.
 - recommendedSchools: pick 3-4 from the SCHOOLS LIST below using their exact id. Only include id, identifiedRelevantPrograms, and reasonForRecommendation — no other fields.
 
