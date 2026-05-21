@@ -492,8 +492,11 @@ const CareerDashboard = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {schools.map((school, i) => (
                   <div key={school.id || i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:border-purple-100 hover:shadow-md transition-all flex flex-col">
-                    <div className="w-10 h-10 bg-purple-50 border border-purple-100 rounded-xl flex items-center justify-center mb-3 flex-shrink-0">
-                      <GraduationCap className="text-purple-600" size={18} />
+                    <div className="w-10 h-10 rounded-xl overflow-hidden border border-gray-100 mb-3 flex-shrink-0 bg-purple-50 flex items-center justify-center">
+                      {school.image
+                        ? <img src={school.image} alt={school.name} className="w-full h-full object-cover" />
+                        : <GraduationCap className="text-purple-600" size={18} />
+                      }
                     </div>
                     <h4 className="font-semibold text-gray-800 text-sm mb-0.5">{school.name}</h4>
                     {school.location && (
