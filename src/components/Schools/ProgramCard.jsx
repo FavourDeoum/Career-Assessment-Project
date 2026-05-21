@@ -6,10 +6,16 @@ const ProgramCard = ({ program, schoolId }) => {
   if (!program) return null;
 
   const programSlug = slugify(program.program);
+  const to = `/school/${schoolId}/program/${programSlug}`;
 
   return (
-    <div className="group bg-gray-50 rounded-xl border border-gray-100 p-4 flex flex-col hover:border-purple-200 hover:bg-white transition-colors duration-150">
-      <h3 className="text-sm font-semibold text-gray-800 leading-snug mb-2.5">
+    // Fix 4: entire card is a Link — no more tiny text-only CTA at the bottom
+    <Link
+      to={to}
+      aria-label={`View details for ${program.program}`}
+      className="group flex flex-col bg-gray-50 rounded-xl border border-gray-100 p-4 hover:border-purple-200 hover:bg-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-1"
+    >
+      <h3 className="text-sm font-semibold text-gray-800 leading-snug mb-2.5 group-hover:text-purple-700 transition-colors duration-150">
         {program.program}
       </h3>
 
@@ -25,28 +31,25 @@ const ProgramCard = ({ program, schoolId }) => {
             {program.degreeLevel}
           </span>
         )}
+        {/* Fix: tuition uses gray instead of green so program name is read first */}
         {program.tuition && (
-          <span className="text-[11px] text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full">
+          <span className="text-[11px] text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded-full">
             {program.tuition}
           </span>
         )}
       </div>
 
       {program.description && (
-        <p className="text-xs text-gray-500 leading-relaxed mb-3 line-clamp-2 flex-1">
+        <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 flex-1 mb-3">
           {program.description}
         </p>
       )}
 
-      <Link
-        to={`/school/${schoolId}/program/${programSlug}`}
-        className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 mt-auto transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
-        aria-label={`View details for ${program.program}`}
-      >
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 mt-auto">
         View details
         <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform duration-150" />
-      </Link>
-    </div>
+      </span>
+    </Link>
   );
 };
 

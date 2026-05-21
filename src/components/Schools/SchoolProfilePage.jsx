@@ -4,7 +4,7 @@ import { useResults } from '../../contexts/ResultsContext';
 import ProgramCard from './ProgramCard';
 import {
   ArrowLeft, MapPin, Globe, BookCheck, Users,
-  Building, Lightbulb, Star, GraduationCap
+  Building, Lightbulb, Star, GraduationCap, ChevronDown
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -44,7 +44,7 @@ const SchoolProfilePage = () => {
           <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <GraduationCap size={24} className="text-gray-400" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">School not found</h2>
+          <h1 className="text-lg font-semibold text-gray-800 mb-2">School not found</h1>
           <p className="text-sm text-gray-500 mb-6 leading-relaxed">
             This school profile couldn't be loaded. It may not be in your recommendations.
           </p>
@@ -66,14 +66,25 @@ const SchoolProfilePage = () => {
     reasonForRecommendation,
   } = schoolData;
 
+  // Count how many info sections exist so we can decide grid layout
+  const infoSections = [description, generalAdmissionsInfo].filter(Boolean).length;
+
+  // Pick program grid columns based on item count — avoids orphaned cards
+  const programColClass =
+    programs.length === 1
+      ? 'grid-cols-1 max-w-sm'
+      : programs.length === 2
+      ? 'grid-cols-1 sm:grid-cols-2'
+      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Back link */}
+        {/* Back link — py-2 expands tap target to ≥44px without visual change */}
         <Link
           to="/schools/all"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-8 py-2 -my-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
         >
           <ArrowLeft size={15} />
           Back to all schools
@@ -82,11 +93,12 @@ const SchoolProfilePage = () => {
         {/* ── School header ─────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
           <div className="flex items-start gap-5">
-            <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-100">
+            {/* Fix 3: object-contain keeps full crest visible on white bg */}
+            <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-white border border-gray-100 flex items-center justify-center">
               <img
                 src={image || '/placeholder.svg'}
                 alt={`${name} logo`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-1"
               />
             </div>
 
@@ -108,17 +120,29 @@ const SchoolProfilePage = () => {
                   )}
                 </div>
 
-                {website && (
-                  <a
-                    href={website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 border border-purple-200 px-3 py-1.5 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-                  >
-                    <Globe size={13} />
-                    Visit website
-                  </a>
-                )}
+                {/* Fix 2: Primary CTA + optional secondary website link */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {programs.length > 0 && (
+                    <a
+                      href="#programs"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                    >
+                      Browse programs
+                      <ChevronDown size={13} />
+                    </a>
+                  )}
+                  {website && (
+                    <a
+                      href={website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-purple-600 border border-purple-200 px-3 py-1.5 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                    >
+                      <Globe size={13} />
+                      Website
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -138,13 +162,14 @@ const SchoolProfilePage = () => {
         )}
 
         {/* ── Info cards ────────────────────────────────────────────────── */}
+        {/* Fix 1 (info grid): single card gets col-span-full so it stretches */}
         {(description || generalAdmissionsInfo || campusLife) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {description && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 ${infoSections === 1 ? 'md:col-span-2' : ''}`}>
                 <div className="flex items-center gap-2 mb-3">
                   <Building size={14} className="text-gray-400" />
-                  <h3 className="text-sm font-semibold text-gray-700">About the school</h3>
+                  <h2 className="text-sm font-semibold text-gray-700">About the school</h2>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
               </div>
@@ -154,7 +179,7 @@ const SchoolProfilePage = () => {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <BookCheck size={14} className="text-gray-400" />
-                  <h3 className="text-sm font-semibold text-gray-700">Admissions</h3>
+                  <h2 className="text-sm font-semibold text-gray-700">Admissions</h2>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{generalAdmissionsInfo}</p>
               </div>
@@ -164,7 +189,7 @@ const SchoolProfilePage = () => {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:col-span-2">
                 <div className="flex items-center gap-2 mb-3">
                   <Users size={14} className="text-gray-400" />
-                  <h3 className="text-sm font-semibold text-gray-700">Campus life & facilities</h3>
+                  <h2 className="text-sm font-semibold text-gray-700">Campus life & facilities</h2>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{campusLife}</p>
               </div>
@@ -173,7 +198,8 @@ const SchoolProfilePage = () => {
         )}
 
         {/* ── Programs ──────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        {/* Fix 1 (programs grid): col count matches item count */}
+        <div id="programs" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-semibold text-gray-800">Programs</h2>
             {programs.length > 0 && (
@@ -182,7 +208,7 @@ const SchoolProfilePage = () => {
           </div>
 
           {programs.length > 0 ? (
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className={`grid gap-3 ${programColClass}`}>
               {programs.map((program, index) => (
                 <ProgramCard
                   key={program.program || index}
@@ -194,14 +220,12 @@ const SchoolProfilePage = () => {
           ) : (
             <div className="text-center py-10">
               <GraduationCap size={22} className="text-gray-300 mx-auto mb-3" />
-              <p className="text-sm text-gray-400">
-                No programs identified for this school.
-              </p>
+              <p className="text-sm text-gray-400">No programs identified for this school.</p>
             </div>
           )}
         </div>
 
-      </div>
+      </main>
     </div>
   );
 };
