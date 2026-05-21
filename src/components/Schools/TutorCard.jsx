@@ -1,146 +1,127 @@
-// src/components/Schools/TutorCard.jsx
-
-import React from 'react';
-// Import Link from react-router-dom
 import { Link } from 'react-router-dom';
-import { Star, Briefcase, Award, CheckCircle, Languages, Quote, Phone, Calendar } from 'lucide-react';
+import { Star, Briefcase, Award, CheckCircle, Languages, Quote, Calendar } from 'lucide-react';
 
-// You'll need a slugify function here too
 const slugify = (text) => {
   if (!text) return '';
-  return text.toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+
+const renderStars = (ratingValue) => {
+  if (!ratingValue) return null;
+  const stars = [];
+  const full = Math.floor(ratingValue);
+  const half = ratingValue % 1 !== 0;
+  for (let i = 0; i < 5; i++) {
+    if (i < full) {
+      stars.push(<Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />);
+    } else if (i === full && half) {
+      stars.push(<Star key={i} size={14} className="text-yellow-400 fill-yellow-400/50" />);
+    } else {
+      stars.push(<Star key={i} size={14} className="text-gray-200 fill-gray-200" />);
+    }
+  }
+  return (
+    <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">{stars}</div>
+      <span className="text-xs text-gray-400 ml-1">({ratingValue})</span>
+    </div>
+  );
 };
 
 const TutorCard = ({ tutor }) => {
   if (!tutor) return null;
 
   const {
-    name, 
-    image, 
-    role, 
-    rating, 
-    experience, 
+    name,
+    image,
+    role,
+    rating,
+    experience,
     specialization,
-    languages = [], 
-    studentFeedback, 
-    completedSessions
+    languages = [],
+    studentFeedback,
+    completedSessions,
   } = tutor;
 
-  // Render stars function
-  const renderStars = (ratingValue) => {
-    if (!ratingValue) return null;
-    const stars = [];
-    const fullStars = Math.floor(ratingValue);
-    const hasHalfStar = ratingValue % 1 !== 0;
-    
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        stars.push(
-          <Star key={i} size={16} className="text-yellow-400 fill-yellow-400" />
-        );
-      } else if (i === fullStars && hasHalfStar) {
-        stars.push(
-          <Star key={i} size={16} className="text-yellow-400 fill-yellow-400/50" />
-        );
-      } else {
-        stars.push(
-          <Star key={i} size={16} className="text-gray-300" />
-        );
-      }
-    }
-    
-    return (
-      <div className="flex items-center space-x-1">
-        <div className="flex items-center space-x-0.5">
-          {stars}
-        </div>
-        <span className="text-sm text-gray-600 ml-2">({ratingValue})</span>
-      </div>
-    );
-  };
-
   return (
-    <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-100 hover:shadow-xl hover:border-purple-200 transition-all duration-300 hover:-translate-y-1">
-      {/* Header Section */}
-      <div className="flex items-start space-x-4 mb-6">
-        <div className="relative">
-          <img 
-            src={image || '/api/placeholder/64/64'} 
-            alt={name} 
-            className="w-16 h-16 rounded-full object-cover border-4 border-purple-100 shadow-md"
-          />
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="text-lg font-bold text-gray-800 truncate">{name}</h4>
-          <p className="text-purple-600 font-medium text-sm mb-2">{role}</p>
-          {rating && renderStars(rating)}
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
+
+      {/* Header */}
+      <div className="p-5 pb-4 flex items-start gap-3">
+        <img
+          src={image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ede9fe&color=7c3aed&size=64`}
+          alt={name}
+          className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0"
+        />
+        <div className="min-w-0 flex-1">
+          <h4 className="text-sm font-semibold text-gray-900 leading-snug">{name}</h4>
+          <p className="text-xs text-purple-600 font-medium mt-0.5 truncate">{role}</p>
+          {rating && <div className="mt-1.5">{renderStars(rating)}</div>}
         </div>
       </div>
 
-      {/* Key Stats */}
-      <div className="space-y-3 mb-6">
-        {experience && (
-          <div className="flex items-center space-x-3 text-sm">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Briefcase size={16} className="text-purple-600" />
+      <div className="px-5 pb-4 flex-1 space-y-2.5">
+        {/* Stats row */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          {experience && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Briefcase size={12} className="text-purple-400 flex-shrink-0" />
+              <span>{experience}</span>
             </div>
-            <span className="text-gray-700 font-medium">{experience} Experience</span>
-          </div>
-        )}
-        
+          )}
+          {completedSessions && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <CheckCircle size={12} className="text-purple-400 flex-shrink-0" />
+              <span>{completedSessions}+ sessions</span>
+            </div>
+          )}
+        </div>
+
+        {/* Specialization */}
         {specialization && (
-          <div className="flex items-center space-x-3 text-sm">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Award size={16} className="text-purple-600" />
-            </div>
-            <span className="text-gray-700 font-medium">{specialization}</span>
+          <div className="flex items-start gap-1.5 text-xs text-gray-500">
+            <Award size={12} className="text-purple-400 flex-shrink-0 mt-0.5" />
+            <span className="leading-relaxed">{specialization}</span>
           </div>
         )}
-        
-        {completedSessions && (
-          <div className="flex items-center space-x-3 text-sm">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <CheckCircle size={16} className="text-purple-600" />
+
+        {/* Quote */}
+        {studentFeedback && (
+          <div className="pt-1">
+            <div className="flex items-start gap-2 bg-purple-50 rounded-lg px-3 py-2.5">
+              <Quote size={12} className="text-purple-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-gray-600 italic leading-relaxed line-clamp-3">
+                "{studentFeedback}"
+              </p>
             </div>
-            <span className="text-gray-700 font-medium">{completedSessions}+ Sessions</span>
+          </div>
+        )}
+
+        {/* Languages */}
+        {languages.length > 0 && (
+          <div className="flex items-center gap-1.5 text-xs text-gray-400">
+            <Languages size={12} className="text-purple-400 flex-shrink-0" />
+            <span>{languages.join(', ')}</span>
           </div>
         )}
       </div>
 
-      {/* Student Feedback */}
-      {studentFeedback && (
-        <div className="mb-6 p-4 bg-purple-50/80 rounded-xl border border-purple-100">
-          <div className="flex items-start space-x-3">
-            <Quote size={18} className="text-purple-500 mt-0.5 flex-shrink-0" />
-            <p className="text-gray-700 text-sm italic leading-relaxed">
-              "{studentFeedback}"
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Languages */}
-      {languages.length > 0 && (
-        <div className="mb-6 p-3 bg-gray-50 rounded-xl">
-          <div className="flex items-center space-x-2">
-            <Languages size={16} className="text-purple-600" />
-            <span className="text-sm text-gray-700">
-              <span className="font-medium">Speaks:</span> {languages.join(', ')}
-            </span>
-          </div>
-        </div>
-      )}
-      
-      {/* Book Session Button */}
-      <Link
-        to={`/book-session/${slugify(name)}`}
-        state={{ tutor }}
-        className="w-full inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-md hover:shadow-lg group-hover:shadow-xl transform hover:scale-105"
-      >
-        <Calendar size={18} />
-        <span>Book Session</span>
-      </Link>
+      {/* CTA */}
+      <div className="px-5 pb-5">
+        <Link
+          to={`/book-session/${slugify(name)}`}
+          state={{ tutor }}
+          className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors duration-150"
+        >
+          <Calendar size={14} />
+          Book Session
+        </Link>
+      </div>
     </div>
   );
 };
