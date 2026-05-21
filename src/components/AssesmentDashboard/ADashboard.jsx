@@ -568,9 +568,11 @@ const CareerDashboard = () => {
                 {mentors.slice(0, 6).map((mentor, i) => (
                   <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-purple-100 hover:shadow-md transition-all flex flex-col gap-2">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-700 font-bold text-sm">
-                        {mentor.name?.[0] || "M"}
-                      </div>
+                      <img
+                        src={mentor.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor.name || 'M')}&background=ede9fe&color=7c3aed&size=36`}
+                        alt={mentor.name}
+                        className="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-gray-100"
+                      />
                       <div className="min-w-0">
                         <h4 className="font-semibold text-gray-800 text-sm truncate leading-tight">{mentor.name}</h4>
                         <p className="text-xs text-gray-400 truncate leading-tight">{mentor.role || mentor.specialization}</p>
