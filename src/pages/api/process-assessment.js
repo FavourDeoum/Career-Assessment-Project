@@ -19,8 +19,8 @@ export default async function handler(req) {
     try {
         const { answers, categories } = await req.json();
 
-        // Initialize Gemini (ideally API key should be in environment variables)
-        const API_KEY = "AIzaSyCbyINErf8ybs1M0OzkDrmHCzPZlTetmHU";
+        const API_KEY = process.env.GEMINI_API_KEY;
+        if (!API_KEY) throw new Error("GEMINI_API_KEY environment variable is not set");
         const genAI = new GoogleGenerativeAI(API_KEY);
         
         // Use gemini-1.5-flash if available for better recommendations,

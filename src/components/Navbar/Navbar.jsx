@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import { FaBars, FaTimes, FaHome, FaUser, FaEnvelope, FaTachometerAlt, FaRocket } from "react-icons/fa"
+import { FaBars, FaTimes, FaHome, FaUser, FaEnvelope, FaTachometerAlt } from "react-icons/fa"
 import "./Navbar.css"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react"
 
@@ -23,24 +23,17 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Close the mobile menu when location changes
   useEffect(() => {
     setIsOpen(false)
-    // Add body lock when menu is open
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
   }, [location.pathname])
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset'
+    return () => { document.body.style.overflow = 'unset' }
+  }, [isOpen])
 
   const toggleMenu = () => {
     setIsOpen(!isOpen)
-    console.log( `is open is ${isOpen}`)
   }
 
   // Function to handle link clicks
@@ -140,9 +133,8 @@ const Navbar = () => {
           <div className="mobile-nav-header">
             <div className="mobile-logo">
               <div className="logo-icon">
-                <FaRocket />
+                <img src="/images/logo2.png" alt="EduVate" />
               </div>
-              <span className="logo-text">EduVate</span>
             </div>
           </div>
 

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useResults } from '../../contexts/ResultsContext';
 import TutorCard from '../../components/Schools/TutorCard';
-import { ArrowLeft, Search, Frown, Users, Star, Filter, BookOpen } from 'lucide-react';
+import { ArrowLeft, Search, Frown, Users, Star, BookOpen } from 'lucide-react';
 
 const AllMentorsPage = () => {
   const { results, isLoading: resultsLoading } = useResults();
@@ -142,23 +142,17 @@ const AllMentorsPage = () => {
           <div className="mb-8">
             <div className="max-w-2xl mx-auto">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-100">
-                <div className="flex items-center space-x-4">
-                  <div className="flex-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Search className="text-gray-400" size={20} />
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Search by name, role, or expertise (e.g., Nursing, Paul, Technician)"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-                    />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search className="text-gray-400" size={20} />
                   </div>
-                  
-                  <button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white p-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-                    <Filter size={20} />
-                  </button>
+                  <input
+                    type="text"
+                    placeholder="Search by name, role, or expertise (e.g., Nursing, Paul, Technician)"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                  />
                 </div>
                 
                 {searchTerm && (

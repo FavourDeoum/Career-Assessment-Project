@@ -27,7 +27,7 @@ const LandingPage = () => {
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      navigate("/dashboard")
+      navigate("/cdashboard")
     } else {
       navigate("/signup")
     }
@@ -71,14 +71,14 @@ const LandingPage = () => {
                 <FaArrowRight className="button-icon" />
               </button>
 
-              <Link to="https://youtu.be/xNiFOWbpMRg?feature=shared">
-              <button className="cta-secondary">
-                <div className="play-button">
-                  <FaPlay />
-                </div>
-                <span>Watch Demo</span>
-              </button>
-              </Link>
+              <a href="https://youtu.be/xNiFOWbpMRg?feature=shared" target="_blank" rel="noopener noreferrer">
+                <button className="cta-secondary">
+                  <div className="play-button">
+                    <FaPlay />
+                  </div>
+                  <span>Watch Demo</span>
+                </button>
+              </a>
             </div>
 
             <div className="hero-stats">
@@ -176,7 +176,7 @@ const LandingPage = () => {
             <FeatureCard
               icon={<FaChartBar />}
               title="Career Recommendations"
-              description="Recieve tailred career suggestions based on your assessment results."
+              description="Receive tailored career suggestions based on your assessment results."
               color="blue"
               delay="200"
             />

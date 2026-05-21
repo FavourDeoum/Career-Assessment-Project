@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { FaBookOpen, FaBrain, FaBriefcase, FaHeart, FaChartBar, FaUsers, FaGraduationCap, FaArrowLeft, FaArrowRight, FaCheckCircle } from "react-icons/fa"
 import { useUser } from "@clerk/clerk-react"
+import { useNavigate } from "react-router-dom"
 import { storeAssessmentResults } from "../../supabaseClient"
 import { analyzeAssessment } from "../../services/assessmentService"
 
@@ -239,18 +240,53 @@ const categories = [
   },
 ]
 
-const LoadingSpinner = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-  >
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100 text-center">
-      <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-gray-700 font-medium">Analyzing your responses...</p>
-    </div>
-  </motion.div>
-)
+const LoadingSpinner = ({ showSuccess }) => {
+  const [step, setStep] = useState(0)
+  const steps = [
+    "Analyzing your responses...",
+    "Generating career recommendations...",
+    "Building your personalized roadmap...",
+  ]
+
+  useEffect(() => {
+    if (showSuccess) return
+    const interval = setInterval(() => setStep(s => (s + 1) % steps.length), 2500)
+    return () => clearInterval(interval)
+  }, [showSuccess])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+    >
+      <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-purple-100 text-center max-w-sm mx-4">
+        {showSuccess ? (
+          <>
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-gray-800 font-semibold text-lg mb-1">Assessment complete!</p>
+            <p className="text-gray-500 text-sm">Taking you to your results...</p>
+          </>
+        ) : (
+          <>
+            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-700 font-medium mb-1">{steps[step]}</p>
+            <div className="flex justify-center space-x-1 mt-3">
+              {steps.map((_, i) => (
+                <div key={i} className={`w-2 h-2 rounded-full transition-colors duration-300 ${i === step ? 'bg-purple-600' : 'bg-purple-200'}`} />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </motion.div>
+  )
+}
 
 const CareerAssessment = () => {
   const [currentCategory, setCurrentCategory] = useState(0)
@@ -259,9 +295,17 @@ const CareerAssessment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showResults, setShowResults] = useState(false)
   const [validationError, setValidationError] = useState("")
+  const [submitError, setSubmitError] = useState("")
   const { user } = useUser()
+  const navigate = useNavigate()
 
   const assessmentContainerRef = useRef(null)
+
+  useEffect(() => {
+    if (!showResults) return
+    const timer = setTimeout(() => navigate("/cdashboard"), 1500)
+    return () => clearTimeout(timer)
+  }, [showResults])
 
   const scrollToTop = () => {
     if (assessmentContainerRef.current) {
@@ -281,6 +325,7 @@ const CareerAssessment = () => {
     setAnswers((prev) => {
       if (multiple) {
         const currentAnswers = prev[questionId] || []
+        if (!currentAnswers.includes(value) && currentAnswers.length >= 3) return prev
         const updatedAnswers = currentAnswers.includes(value)
           ? currentAnswers.filter((v) => v !== value)
           : [...currentAnswers, value]
@@ -291,6 +336,7 @@ const CareerAssessment = () => {
     })
     setShowFeedback(true)
     setValidationError("")
+    setSubmitError("")
     setTimeout(() => setShowFeedback(false), 1000)
   }
 
@@ -333,12 +379,9 @@ const CareerAssessment = () => {
         }
 
         setShowResults(true)
-        setTimeout(() => {
-          window.location.href = "/cdashboard"
-        }, 2000)
       } catch (error) {
         console.error("Error submitting assessment:", error)
-        setValidationError(error.message || "There was an error processing your assessment. Please try again.")
+        setSubmitError(error.message || "There was an error processing your assessment. Please try again.")
       } finally {
         setIsSubmitting(false)
       }
@@ -381,7 +424,7 @@ const CareerAssessment = () => {
       </div>
 
       <AnimatePresence>
-        {isSubmitting && <LoadingSpinner />}
+        {(isSubmitting || showResults) && <LoadingSpinner showSuccess={showResults} />}
       </AnimatePresence>
 
       <motion.div
@@ -487,6 +530,29 @@ const CareerAssessment = () => {
                   <p className="text-red-800 font-medium">{validationError}</p>
                 </motion.div>
               )}
+              {/* API / Submit Error */}
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-start space-x-3"
+                >
+                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-orange-500 text-sm font-bold">!</span>
+                  </div>
+                  <div>
+                    <p className="text-orange-800 font-semibold text-sm mb-1">Something went wrong</p>
+                    <p className="text-orange-700 text-sm">{submitError}</p>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="mt-2 text-orange-600 hover:text-orange-700 text-sm font-medium underline"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Questions */}
               <div className="space-y-8">
@@ -504,20 +570,29 @@ const CareerAssessment = () => {
                     </div>
 
                     <div className="grid gap-3">
+                      {question.multiple && (
+                        <p className="text-xs text-gray-400 mb-1">
+                          {answers[question.id]?.length || 0}/3 selected
+                        </p>
+                      )}
                       {question.options.map((option) => {
                         const isSelected = question.multiple
                           ? answers[question.id]?.includes(option.value)
                           : answers[question.id] === option.value
+                        const atLimit = question.multiple && (answers[question.id]?.length || 0) >= 3 && !isSelected
 
                         return (
                           <motion.button
                             key={option.value}
-                            whileHover={{ scale: 1.02, x: 4 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileHover={atLimit ? {} : { scale: 1.02, x: 4 }}
+                            whileTap={atLimit ? {} : { scale: 0.98 }}
                             onClick={() => handleAnswer(question.id, option.value, question.multiple)}
+                            disabled={atLimit}
                             className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${isSelected
                                 ? 'border-purple-500 bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg'
-                                : 'border-gray-200 bg-white/70 hover:border-purple-300 hover:bg-purple-50/50 text-gray-700'
+                                : atLimit
+                                  ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50'
+                                  : 'border-gray-200 bg-white/70 hover:border-purple-300 hover:bg-purple-50/50 text-gray-700'
                               }`}
                           >
                             <div className="flex items-center justify-between">
