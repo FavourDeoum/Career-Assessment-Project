@@ -133,6 +133,7 @@ import MentorDetailsPage from './components/Mentors/MentorDetailsPage';
 import SchoolProfilePage from './components/Schools/SchoolProfilePage';
 import ProgramDetailsPage from './components/Schools/ProgramDetailsPage';
 import BookingPage from './components/Schools/BookingPage';
+import CareerPathDetail from './components/Paths/CareerPathDetail';
 
 // Define all routes in a single array for better maintainability
 const publicRoutes = [
@@ -151,7 +152,8 @@ const authRoutes = [
 
 const protectedRoutes = [
   { path: '/assessment', element: <CareerAssessment /> },
-  { path: '/dashboard', element: <CareerDashboard /> }, 
+  { path: '/dashboard', element: <CareerDashboard /> },
+  { path: '/path/:pathSlug', element: <CareerPathDetail /> },
   // School Routes
   { path: '/schools/career/:careerSlug', element: <RecommendedSchoolsPage /> },
   { path: '/schools/all', element: <AllSchoolsPage /> },

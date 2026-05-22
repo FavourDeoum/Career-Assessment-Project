@@ -444,7 +444,7 @@ const CareerDashboard = () => {
                 {rec.explanation && (
                   <p className="text-gray-500 text-xs mt-2 leading-relaxed line-clamp-2 ml-10">{rec.explanation}</p>
                 )}
-                <div className="mt-3 ml-10 flex gap-3">
+                <div className="mt-3 ml-10 flex items-center gap-3 flex-wrap">
                   <Link
                     to={`/schools/career/${slugify(rec.jobTitle)}`}
                     className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100"
@@ -456,6 +456,12 @@ const CareerDashboard = () => {
                     className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100"
                   >
                     <Users size={11} /> Mentors
+                  </Link>
+                  <Link
+                    to={`/path/${slugify(rec.jobTitle)}`}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-colors px-2.5 py-1 rounded-full ml-auto"
+                  >
+                    Read More <ArrowRight size={11} />
                   </Link>
                 </div>
               </div>
