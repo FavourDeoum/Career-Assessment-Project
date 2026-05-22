@@ -2885,6 +2885,961 @@ const schoolsData = [
   "description": "The Catholic University of Cameroon (CATUC) in Bamenda was established in 2010 by the Bishops of the Bamenda Ecclesiastical Province with the goal of providing high-quality, holistic, and Christian-based education. It aims to be a center of learning where revealed and human truths are explored in depth, relevant to the Cameroon experience."
 }
 
+,
+  {
+    "id": "uds_bafoussam",
+    "name": "University of Dschang (UDs) — West Region Campus",
+    "programs": [
+      {
+        "program": "Licence in Economics and Management",
+        "duration": "3 Years",
+        "tuition": "60,000 XAF/year",
+        "description": "State university program covering microeconomics, macroeconomics, business management, and quantitative methods, taught in French.",
+        "requirements": [
+          "Baccalaureate (série A, B, C, D, or equivalent)",
+          "Pass UDs competitive entrance examination",
+          "Cameroon nationality or valid student visa"
+        ],
+        "applicationProcess": "Register at the UDs admissions portal or regional sub-campus. Sit competitive entrance exam. Submit certified baccalaureate certificate and ID documents.",
+        "availableTutors": [
+          {
+            "name": "Dr. Paul Nkemdirim",
+            "role": "Senior Lecturer, Economics",
+            "experience": "10+ years",
+            "completedSessions": 180,
+            "rating": 4.7,
+            "expertise": ["Macroeconomics", "Development Economics", "Statistics"],
+            "phone": "+237699001122",
+            "specialization": "Economic Policy and Development Finance",
+            "availability": "Weekdays 8AM-4PM",
+            "sessionTypes": ["One-on-one tutoring", "Exam preparation", "Research guidance"],
+            "languages": ["French", "English"],
+            "hourlyRate": "10,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "45,000 XAF (Save 5,000 XAF)",
+              "10sessions": "85,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Clear explanations and very patient with francophone students.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Licence in Agriculture and Rural Development",
+        "duration": "3 Years",
+        "tuition": "60,000 XAF/year",
+        "description": "Covers crop science, soil management, agronomy, and rural project management. Practicals held on the Dschang campus experimental farm.",
+        "requirements": [
+          "Baccalaureate série C or D (science)",
+          "UDs entrance exam in Biology and Chemistry"
+        ],
+        "applicationProcess": "Submit application through UDs admissions. Entrance exam is competitive; results posted on university portal.",
+        "availableTutors": [
+          {
+            "name": "Mme Céleste Fotso",
+            "role": "Research Assistant, Faculty of Agronomy",
+            "experience": "5+ years",
+            "completedSessions": 95,
+            "rating": 4.6,
+            "expertise": ["Soil Science", "Crop Production", "Agronomy"],
+            "phone": "+237677112233",
+            "specialization": "Sustainable Agriculture",
+            "availability": "Weekdays 9AM-5PM, Saturday 9AM-12PM",
+            "sessionTypes": ["Field tutorials", "Lab guidance", "Thesis supervision"],
+            "languages": ["French", "English"],
+            "hourlyRate": "8,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "36,000 XAF (Save 4,000 XAF)",
+              "10sessions": "70,000 XAF (Save 10,000 XAF)"
+            },
+            "studentFeedback": "Very hands-on and connects theory to real farming practice.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Licence in Computer Science and IT",
+        "duration": "3 Years",
+        "tuition": "70,000 XAF/year",
+        "description": "Covers programming, algorithms, networking, databases, and software development with practical lab sessions.",
+        "requirements": [
+          "Baccalaureate série C, D, or TI",
+          "UDs entrance exam with mathematics component"
+        ],
+        "applicationProcess": "Apply via UDs portal. Shortlisted candidates sit written exam and interview.",
+        "availableTutors": [
+          {
+            "name": "Fien Dora",
+            "role": "COO at SEED Inc.",
+            "experience": "3+ years",
+            "completedSessions": 50,
+            "rating": 4.0,
+            "expertise": ["Project Management", "Software Engineering"],
+            "phone": "+237680468606",
+            "specialization": "Business Management & Technology Integration",
+            "availability": "Weekdays 9AM-6PM, Weekends by appointment",
+            "sessionTypes": ["One-on-one tutoring", "Group sessions", "Project consultation"],
+            "languages": ["English", "French"],
+            "hourlyRate": "12,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "55,000 XAF (Save 5,000 XAF)",
+              "10sessions": "105,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Very practical and up to date with industry tools.",
+            "image": "https://i.ibb.co/qFxfnpTr/Whats-App-Image-2025-06-08-at-17-08-24-332f52ec.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Dschang / Bafoussam Area, West Region, Cameroon",
+    "ranking": "Top public university in West Region of Cameroon",
+    "rating": 4.5,
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop",
+    "description": "The University of Dschang (UDs), established in 1993, is the main state university serving the West Region of Cameroon. Accredited by the Cameroonian government (MINESUP), it offers licences, masters, and doctorate programs across agronomy, sciences, economics, social sciences, law, and technology. It is one of the 11 state universities of Cameroon and the primary government higher education institution for students from Bafoussam and the wider West Region."
+  },
+  {
+    "id": "icabaf_bafoussam",
+    "name": "Catholic Institute of Bafoussam (ICABAF)",
+    "programs": [
+      {
+        "program": "BTS in Accounting and Business Management",
+        "duration": "2 Years",
+        "tuition": "250,000 XAF/year",
+        "description": "Professional diploma covering financial accounting, management control, taxation, and business administration — fully accredited by MINESUP.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Pass ICABAF entrance interview",
+          "Completed registration form and school fees receipt"
+        ],
+        "applicationProcess": "Visit ICABAF admissions office in Bafoussam or apply via icabaf.cm. Submit certified baccalaureate certificate. Interview scheduled within two weeks.",
+        "availableTutors": [
+          {
+            "name": "M. Herve Tientcheu",
+            "role": "Certified Accountant & Lecturer",
+            "experience": "8+ years",
+            "completedSessions": 140,
+            "rating": 4.7,
+            "expertise": ["Financial Accounting", "Taxation", "Business Management"],
+            "phone": "+237655223344",
+            "specialization": "Corporate Finance and Tax Law",
+            "availability": "Monday–Friday 7AM-3PM",
+            "sessionTypes": ["One-on-one tutoring", "Exam prep", "Case study sessions"],
+            "languages": ["French", "English"],
+            "hourlyRate": "10,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "45,000 XAF (Save 5,000 XAF)",
+              "10sessions": "85,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Makes tax and accounting concepts simple and applicable.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Banking and Finance",
+        "duration": "2 Years",
+        "tuition": "260,000 XAF/year",
+        "description": "Covers banking operations, financial markets, credit analysis, and insurance — preparing students for careers in Cameroonian financial institutions.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Mathematics background preferred"
+        ],
+        "applicationProcess": "Apply at ICABAF admissions. Submit Bac certificate. Sit aptitude test and interview.",
+        "availableTutors": [
+          {
+            "name": "Dr. Paul Nkemdirim",
+            "role": "Senior Lecturer, Economics",
+            "experience": "10+ years",
+            "completedSessions": 180,
+            "rating": 4.7,
+            "expertise": ["Banking", "Financial Markets", "Credit Analysis"],
+            "phone": "+237699001122",
+            "specialization": "Banking and Finance",
+            "availability": "Weekdays 8AM-4PM",
+            "sessionTypes": ["One-on-one tutoring", "Exam preparation"],
+            "languages": ["French", "English"],
+            "hourlyRate": "12,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "55,000 XAF (Save 5,000 XAF)",
+              "10sessions": "105,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Excellent grasp of real banking practice in CEMAC zone.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Licence Pro in Commerce and Management",
+        "duration": "3 Years",
+        "tuition": "280,000 XAF/year",
+        "description": "Bachelor-level program combining business strategy, marketing, supply chain management, and entrepreneurship with internship placements.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "BTS holders admitted in Year 2 (direct entry)"
+        ],
+        "applicationProcess": "Submit documents at ICABAF or via website icabaf.cm. BTS holders may enter Year 2 directly after file review.",
+        "availableTutors": [
+          {
+            "name": "Fien Dora",
+            "role": "COO at SEED Inc.",
+            "experience": "3+ years",
+            "completedSessions": 50,
+            "rating": 4.0,
+            "expertise": ["Business Strategy", "Marketing", "Entrepreneurship"],
+            "phone": "+237680468606",
+            "specialization": "Business Management & Commerce",
+            "availability": "Weekdays 9AM-6PM, Weekends by appointment",
+            "sessionTypes": ["One-on-one tutoring", "Group sessions"],
+            "languages": ["English", "French"],
+            "hourlyRate": "12,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "55,000 XAF (Save 5,000 XAF)",
+              "10sessions": "105,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Very engaging with real-world business examples.",
+            "image": "https://i.ibb.co/qFxfnpTr/Whats-App-Image-2025-06-08-at-17-08-24-332f52ec.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Masters Pro in Industry and Technology",
+        "duration": "2 Years",
+        "tuition": "350,000 XAF/year",
+        "description": "Advanced professional master covering industrial management, quality control, project engineering, and technology innovation.",
+        "requirements": [
+          "Licence or equivalent Bachelor's degree in related field",
+          "Selection based on academic file review"
+        ],
+        "applicationProcess": "Submit academic transcripts, motivation letter, and CV to ICABAF admissions.",
+        "availableTutors": [
+          {
+            "name": "Fien Dora",
+            "role": "COO at SEED Inc.",
+            "experience": "3+ years",
+            "completedSessions": 50,
+            "rating": 4.0,
+            "expertise": ["Project Management", "Industrial Technology"],
+            "phone": "+237680468606",
+            "specialization": "Technology Integration & Innovation",
+            "availability": "Weekdays 9AM-6PM",
+            "sessionTypes": ["Research guidance", "Project consultation"],
+            "languages": ["English", "French"],
+            "hourlyRate": "18,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "85,000 XAF (Save 5,000 XAF)",
+              "10sessions": "160,000 XAF (Save 20,000 XAF)"
+            },
+            "studentFeedback": "Excellent mentor for industry-facing master projects.",
+            "image": "https://i.ibb.co/qFxfnpTr/Whats-App-Image-2025-06-08-at-17-08-24-332f52ec.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Bafoussam, West Region, Cameroon",
+    "ranking": "Leading Catholic private institute in West Region",
+    "rating": 4.4,
+    "image": "https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop",
+    "description": "The Catholic Institute of Bafoussam (ICABAF), founded in June 2015 under the Diocese of Bafoussam, is a MINESUP-accredited private higher institution offering BTS, Licence, and Masters programs. It specialises in commerce, management, technology, and agronomy, and is known for its strong Christian values and professional training approach in the heart of Bafoussam."
+  },
+  {
+    "id": "thib_bafoussam",
+    "name": "Tchonang Higher Institute of Bafoussam (THIB)",
+    "programs": [
+      {
+        "program": "BTS in Health and Nursing Care",
+        "duration": "2 Years",
+        "tuition": "280,000 XAF/year",
+        "description": "Technical diploma in nursing care combining clinical theory, patient management, and hands-on hospital internship placements.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level (science preferred)",
+          "Competitive entrance examination",
+          "Medical fitness certificate"
+        ],
+        "applicationProcess": "Apply at THIB admissions office, Borne Fontaine, Bafoussam. Sit entrance exam. Medical certificate required before registration.",
+        "availableTutors": [
+          {
+            "name": "Infirmière Justine Kamga",
+            "role": "Registered Nurse & Health Lecturer",
+            "experience": "7+ years",
+            "completedSessions": 110,
+            "rating": 4.6,
+            "expertise": ["Nursing Care", "Patient Management", "Clinical Practice"],
+            "phone": "+237655334455",
+            "specialization": "Clinical Nursing and Community Health",
+            "availability": "Monday–Saturday 8AM-4PM",
+            "sessionTypes": ["Clinical simulation", "Exam prep", "Group tutorials"],
+            "languages": ["French", "English"],
+            "hourlyRate": "9,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "40,000 XAF (Save 5,000 XAF)",
+              "10sessions": "78,000 XAF (Save 12,000 XAF)"
+            },
+            "studentFeedback": "Very thorough and prepares you well for hospital rotations.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Civil Engineering",
+        "duration": "2 Years",
+        "tuition": "270,000 XAF/year",
+        "description": "Technical program in structural engineering, construction materials, site management, and technical drawing.",
+        "requirements": [
+          "Baccalaureate série C, D, or TI",
+          "Mathematics and Physics proficiency"
+        ],
+        "applicationProcess": "Submit bac certificate and ID to THIB admissions. Sit aptitude test. Enroll within two weeks of admission notice.",
+        "availableTutors": [
+          {
+            "name": "Ing. Fabrice Ngounou",
+            "role": "Civil Engineer & Lecturer",
+            "experience": "6+ years",
+            "completedSessions": 88,
+            "rating": 4.5,
+            "expertise": ["Structural Engineering", "AutoCAD", "Construction Management"],
+            "phone": "+237677445566",
+            "specialization": "Building Construction and Site Management",
+            "availability": "Weekdays 8AM-5PM",
+            "sessionTypes": ["Technical drawing sessions", "Site visit tutorials", "Exam prep"],
+            "languages": ["French", "English"],
+            "hourlyRate": "11,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "50,000 XAF (Save 5,000 XAF)",
+              "10sessions": "95,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Excellent at AutoCAD and very practical construction insights.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Licence Pro in Agronomy and Agricultural Engineering",
+        "duration": "3 Years",
+        "tuition": "260,000 XAF/year",
+        "description": "Bachelor-level professional program in crop production, agri-food technology, soil science, and rural project management.",
+        "requirements": [
+          "Baccalaureate série C or D",
+          "BTS holders in agronomy may enter Year 2"
+        ],
+        "applicationProcess": "Apply at THIB admissions. BTS holders submit file for direct Year 2 entry. Bac holders sit entrance exam.",
+        "availableTutors": [
+          {
+            "name": "Mme Céleste Fotso",
+            "role": "Research Assistant, Agronomy",
+            "experience": "5+ years",
+            "completedSessions": 95,
+            "rating": 4.6,
+            "expertise": ["Crop Science", "Soil Management", "Agri-Food"],
+            "phone": "+237677112233",
+            "specialization": "Sustainable Agronomy",
+            "availability": "Weekdays 9AM-5PM",
+            "sessionTypes": ["Field tutorials", "Lab guidance"],
+            "languages": ["French", "English"],
+            "hourlyRate": "9,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "40,000 XAF (Save 5,000 XAF)",
+              "10sessions": "78,000 XAF (Save 12,000 XAF)"
+            },
+            "studentFeedback": "Connects every lesson to real-world agricultural challenges.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Borne Fontaine, Bafoussam, West Region, Cameroon",
+    "ranking": "MINESUP-accredited private institute (Authorization N°18-0078/L/MINESUP/DDES)",
+    "rating": 4.3,
+    "image": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&h=400&fit=crop",
+    "description": "Tchonang Higher Institute of Bafoussam (THIB) is a MINESUP-accredited private higher institution located in Bafoussam, West Region. Authorized in January 2018, it offers BTS and Licence Pro programs in health sciences, civil engineering, agronomy, and management. THIB is known for its practical, career-oriented training and professional internship placements across Cameroon."
+  },
+  {
+    "id": "iup_bafoussam",
+    "name": "Institut Universitaire de la Pointe (IUP)",
+    "programs": [
+      {
+        "program": "BTS in Medical Laboratory Techniques",
+        "duration": "2 Years",
+        "tuition": "300,000 XAF/year",
+        "description": "Technical diploma in clinical biology, haematology, bacteriology, and medical laboratory management. Clinical training at Polyclinique la Bienveillance.",
+        "requirements": [
+          "Baccalaureate série C or D (science)",
+          "Competitive entrance examination",
+          "Medical fitness certificate"
+        ],
+        "applicationProcess": "Apply at IUP admissions (Ndiandam, Bafoussam). Sit entrance exam. Admitted candidates complete mandatory medical screening before clinical rotations.",
+        "availableTutors": [
+          {
+            "name": "M. Eric Tchinda",
+            "role": "Medical Lab Technologist & Lecturer",
+            "experience": "9+ years",
+            "completedSessions": 160,
+            "rating": 4.8,
+            "expertise": ["Haematology", "Bacteriology", "Clinical Biology"],
+            "phone": "+237699556677",
+            "specialization": "Medical Laboratory Science",
+            "availability": "Monday–Saturday 7AM-3PM",
+            "sessionTypes": ["Lab practicals", "Exam prep", "Clinical case reviews"],
+            "languages": ["French", "English"],
+            "hourlyRate": "13,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "60,000 XAF (Save 5,000 XAF)",
+              "10sessions": "115,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Brilliant at lab technique — makes complex procedures easy to follow.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Management Information Systems",
+        "duration": "2 Years",
+        "tuition": "260,000 XAF/year",
+        "description": "Covers database management, IT systems administration, business software, and network fundamentals.",
+        "requirements": [
+          "Baccalaureate série C, D, G, or TI",
+          "Basic computer literacy"
+        ],
+        "applicationProcess": "Submit bac certificate and ID to IUP Kouogouo campus. Sit aptitude test. Registration within one week of results.",
+        "availableTutors": [
+          {
+            "name": "Fien Dora",
+            "role": "COO at SEED Inc.",
+            "experience": "3+ years",
+            "completedSessions": 50,
+            "rating": 4.0,
+            "expertise": ["IT Systems", "Database Management", "Business Software"],
+            "phone": "+237680468606",
+            "specialization": "IT Management",
+            "availability": "Weekdays 9AM-6PM",
+            "sessionTypes": ["One-on-one tutoring", "Group sessions"],
+            "languages": ["English", "French"],
+            "hourlyRate": "11,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "50,000 XAF (Save 5,000 XAF)",
+              "10sessions": "95,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Great at simplifying IT administration concepts.",
+            "image": "https://i.ibb.co/qFxfnpTr/Whats-App-Image-2025-06-08-at-17-08-24-332f52ec.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Licence Pro in Legal Sciences and Business Law",
+        "duration": "3 Years",
+        "tuition": "280,000 XAF/year",
+        "description": "Bachelor-level program covering OHADA business law, contract law, labour law, and legal procedures relevant to Cameroonian and CEMAC contexts.",
+        "requirements": [
+          "Baccalaureate série A or B",
+          "Entrance examination with legal aptitude component"
+        ],
+        "applicationProcess": "Apply at IUP Bamendzi III campus. Submit documents, sit entrance test, complete registration upon admission.",
+        "availableTutors": [
+          {
+            "name": "Me. Claire Njoya",
+            "role": "Legal Practitioner & Lecturer",
+            "experience": "11+ years",
+            "completedSessions": 200,
+            "rating": 4.9,
+            "expertise": ["OHADA Law", "Business Law", "Labour Law"],
+            "phone": "+237699667788",
+            "specialization": "Corporate and Business Law",
+            "availability": "Weekdays 9AM-5PM",
+            "sessionTypes": ["Legal research tutorials", "Moot court prep", "Exam coaching"],
+            "languages": ["French", "English"],
+            "hourlyRate": "15,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "70,000 XAF (Save 5,000 XAF)",
+              "10sessions": "135,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Exceptional legal knowledge and very responsive to students.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Ndiandam / Kouogouo / Bamendzi III, Bafoussam, West Region, Cameroon",
+    "ranking": "MINESUP-accredited multi-campus private institute — founded 2011",
+    "rating": 4.5,
+    "image": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop",
+    "description": "Institut Universitaire de la Pointe (IUP), founded in 2011 in Bafoussam, is a multi-campus private higher institution comprising five specialized schools: INSSAS (health sciences), ISTMS, ISTPM, ESGIT (IT), and ESJEC (legal sciences). A distinctive feature is its on-site clinical training center (Polyclinique la Bienveillance), allowing health students to complete hands-on hospital practice within the institution. IUP is accredited by MINESUP and is one of Bafoussam's most established private universities."
+  },
+  {
+    "id": "isamet_bafoussam",
+    "name": "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET)",
+    "programs": [
+      {
+        "program": "BTS in Insurance",
+        "duration": "2 Years",
+        "tuition": "255,000 XAF/year",
+        "description": "Technical diploma covering insurance products, risk management, claims handling, and regulatory frameworks in the CIMA zone.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Entrance aptitude test"
+        ],
+        "applicationProcess": "Submit application at ISAMET campus, Baleng, Bafoussam. Sit aptitude test. Documents: certified bac, ID, two passport photos.",
+        "availableTutors": [
+          {
+            "name": "M. Herve Tientcheu",
+            "role": "Certified Accountant & Lecturer",
+            "experience": "8+ years",
+            "completedSessions": 140,
+            "rating": 4.7,
+            "expertise": ["Insurance", "Risk Management", "Finance"],
+            "phone": "+237655223344",
+            "specialization": "Insurance and Risk Management",
+            "availability": "Monday–Friday 7AM-3PM",
+            "sessionTypes": ["Exam prep", "Case study sessions"],
+            "languages": ["French", "English"],
+            "hourlyRate": "10,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "45,000 XAF (Save 5,000 XAF)",
+              "10sessions": "85,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Makes insurance regulation approachable with real case studies.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Logistics and Transport Management",
+        "duration": "2 Years",
+        "tuition": "250,000 XAF/year",
+        "description": "Covers supply chain management, freight operations, customs procedures, and fleet management relevant to Central African trade corridors.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Entrance examination"
+        ],
+        "applicationProcess": "Apply at ISAMET admissions, Baleng, Bafoussam. Sit entrance exam. Complete registration within two weeks of admission.",
+        "availableTutors": [
+          {
+            "name": "M. Eric Tchinda",
+            "role": "Logistics & Operations Lecturer",
+            "experience": "9+ years",
+            "completedSessions": 160,
+            "rating": 4.8,
+            "expertise": ["Supply Chain", "Customs", "Fleet Management"],
+            "phone": "+237699556677",
+            "specialization": "Logistics and Transport Management",
+            "availability": "Monday–Saturday 7AM-3PM",
+            "sessionTypes": ["Practical case studies", "Exam preparation"],
+            "languages": ["French", "English"],
+            "hourlyRate": "11,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "50,000 XAF (Save 5,000 XAF)",
+              "10sessions": "95,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Very grounded in how logistics actually works in Cameroon.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Computer Science",
+        "duration": "2 Years",
+        "tuition": "260,000 XAF/year",
+        "description": "Technical diploma in programming, system administration, network management, and IT project management.",
+        "requirements": [
+          "Baccalaureate série C, D, or TI",
+          "Aptitude test in Mathematics and Computing"
+        ],
+        "applicationProcess": "Submit academic documents at ISAMET Baleng campus. Sit aptitude test. Enroll within one week of results.",
+        "availableTutors": [
+          {
+            "name": "Fien Dora",
+            "role": "COO at SEED Inc.",
+            "experience": "3+ years",
+            "completedSessions": 50,
+            "rating": 4.0,
+            "expertise": ["Programming", "Network Administration", "IT Projects"],
+            "phone": "+237680468606",
+            "specialization": "Computer Science and IT",
+            "availability": "Weekdays 9AM-6PM",
+            "sessionTypes": ["Coding sessions", "Lab guidance", "Exam prep"],
+            "languages": ["English", "French"],
+            "hourlyRate": "12,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "55,000 XAF (Save 5,000 XAF)",
+              "10sessions": "105,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Good at debugging and making programming fundamentals click.",
+            "image": "https://i.ibb.co/qFxfnpTr/Whats-App-Image-2025-06-08-at-17-08-24-332f52ec.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Baleng, Bafoussam Arrondissement, Mifi Department, West Region, Cameroon",
+    "ranking": "MINESUP-accredited (Decree N°17-08309/L/MINESUP/SG/DDES — August 2017)",
+    "rating": 4.3,
+    "image": "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&h=400&fit=crop",
+    "description": "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET), authorized by MINESUP in August 2017, is part of the Université du Plateau complex (ISAMET/ISTEPA/HIPA/ISATPA) located in Baleng, Bafoussam. It offers BTS and Licence programs in insurance, logistics and transport, banking, accounting, IT, computer science, and health sciences. ISAMET is accredited by MINESUP and is known for its industry-aligned, technological and commercial training programs."
+  },
+  {
+    "id": "cibs_bafoussam",
+    "name": "Cameroon International Business School (CIBS)",
+    "programs": [
+      {
+        "program": "Bachelor of Business Administration (BBA)",
+        "duration": "3 Years",
+        "tuition": "300,000 XAF/year",
+        "description": "English-language BBA covering management, marketing, finance, entrepreneurship, and international business — with international certification pathways.",
+        "requirements": [
+          "GCE A-Level or Baccalaureate",
+          "English proficiency",
+          "Entrance interview"
+        ],
+        "applicationProcess": "Apply at CIBS admissions (Bafoussam) or via cibs.edu.cm. Submit academic certificates. Attend admission interview. Bilingual candidates strongly encouraged.",
+        "availableTutors": [
+          {
+            "name": "Fien Dora",
+            "role": "COO at SEED Inc.",
+            "experience": "3+ years",
+            "completedSessions": 50,
+            "rating": 4.0,
+            "expertise": ["Business Administration", "Marketing", "Entrepreneurship"],
+            "phone": "+237680468606",
+            "specialization": "International Business and Management",
+            "availability": "Weekdays 9AM-6PM",
+            "sessionTypes": ["One-on-one tutoring", "Business case sessions"],
+            "languages": ["English", "French"],
+            "hourlyRate": "13,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "60,000 XAF (Save 5,000 XAF)",
+              "10sessions": "115,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Great at applying international business frameworks to African markets.",
+            "image": "https://i.ibb.co/qFxfnpTr/Whats-App-Image-2025-06-08-at-17-08-24-332f52ec.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Diploma in Computer Engineering",
+        "duration": "2 Years",
+        "tuition": "280,000 XAF/year",
+        "description": "Covers software development, computer hardware, network engineering, and project management — accredited by MINEFOP.",
+        "requirements": [
+          "GCE A-Level or Baccalaureate série C or D",
+          "Basic programming knowledge preferred"
+        ],
+        "applicationProcess": "Apply online at cibs.edu.cm or at the Bafoussam campus. File review and admission interview.",
+        "availableTutors": [
+          {
+            "name": "M. Eric Tchinda",
+            "role": "IT & Engineering Lecturer",
+            "experience": "9+ years",
+            "completedSessions": 160,
+            "rating": 4.8,
+            "expertise": ["Software Development", "Network Engineering", "Hardware"],
+            "phone": "+237699556677",
+            "specialization": "Computer Engineering",
+            "availability": "Monday–Saturday 7AM-3PM",
+            "sessionTypes": ["Coding sessions", "Hardware labs", "Project reviews"],
+            "languages": ["English", "French"],
+            "hourlyRate": "13,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "60,000 XAF (Save 5,000 XAF)",
+              "10sessions": "115,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Excellent at teaching both low-level and high-level computing concepts.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Diploma in Agriculture and Food Science",
+        "duration": "2 Years",
+        "tuition": "260,000 XAF/year",
+        "description": "Covers crop production, agri-food processing, food safety, and agribusiness management for careers in Cameroon's agricultural sector.",
+        "requirements": [
+          "GCE A-Level or Baccalaureate série C or D",
+          "Interest in agricultural sciences"
+        ],
+        "applicationProcess": "Apply via cibs.edu.cm. Submit certificates. Attend interview.",
+        "availableTutors": [
+          {
+            "name": "Mme Céleste Fotso",
+            "role": "Agronomy Lecturer",
+            "experience": "5+ years",
+            "completedSessions": 95,
+            "rating": 4.6,
+            "expertise": ["Food Science", "Crop Production", "Agribusiness"],
+            "phone": "+237677112233",
+            "specialization": "Agriculture and Food Science",
+            "availability": "Weekdays 9AM-5PM",
+            "sessionTypes": ["Lab practicals", "Field tutorials", "Exam prep"],
+            "languages": ["French", "English"],
+            "hourlyRate": "10,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "45,000 XAF (Save 5,000 XAF)",
+              "10sessions": "85,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Passionate and very knowledgeable about West Cameroon agriculture.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Medical and Biomedical Sciences Diploma",
+        "duration": "2 Years",
+        "tuition": "320,000 XAF/year",
+        "description": "Covers anatomy, physiology, biomedical instrumentation, and clinical research methods, with hospital internship placements.",
+        "requirements": [
+          "Baccalaureate série C or D (science)",
+          "Competitive entrance exam",
+          "Medical fitness certificate"
+        ],
+        "applicationProcess": "Apply at CIBS Bafoussam campus or cibs.edu.cm. Competitive entrance exam. Medical check required before clinical placement.",
+        "availableTutors": [
+          {
+            "name": "Infirmière Justine Kamga",
+            "role": "Registered Nurse & Health Lecturer",
+            "experience": "7+ years",
+            "completedSessions": 110,
+            "rating": 4.6,
+            "expertise": ["Biomedical Science", "Clinical Research", "Anatomy"],
+            "phone": "+237655334455",
+            "specialization": "Biomedical and Clinical Sciences",
+            "availability": "Monday–Saturday 8AM-4PM",
+            "sessionTypes": ["Clinical simulation", "Lab practicals", "Exam prep"],
+            "languages": ["French", "English"],
+            "hourlyRate": "14,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "65,000 XAF (Save 5,000 XAF)",
+              "10sessions": "125,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Thorough and very encouraging for students entering clinical sciences.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Bafoussam, West Region, Cameroon",
+    "ranking": "MINEFOP-accredited international business school — partner of Kesmonds International University",
+    "rating": 4.4,
+    "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop",
+    "description": "Cameroon International Business School (CIBS) in Bafoussam is a MINEFOP-accredited private institution offering programs from professional certificates through to PhD level in management, business, finance, legal careers, computer engineering, agriculture, and biomedical sciences. CIBS has an international partnership with Kesmonds International University and delivers bilingual (English/French) programs, making it one of the most internationally oriented institutions in Bafoussam."
+  },
+  {
+    "id": "gtes_bafoussam",
+    "name": "Groupe TANKOU Enseignement Supérieur (GTES)",
+    "programs": [
+      {
+        "program": "BTS in Commerce and Management",
+        "duration": "2 Years",
+        "tuition": "230,000 XAF/year",
+        "description": "Professional diploma covering sales management, commercial strategy, business operations, and customer relations for Cameroonian and CEMAC markets.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Direct admission for Bac/A-Level holders (no entrance exam)"
+        ],
+        "applicationProcess": "Apply directly at GTES campus (TYO district, Bafoussam–Bamenda road). Direct admission for qualified holders. Submit certified Bac/A-Level and ID. Register within one week.",
+        "availableTutors": [
+          {
+            "name": "M. Herve Tientcheu",
+            "role": "Business Management Lecturer",
+            "experience": "8+ years",
+            "completedSessions": 140,
+            "rating": 4.7,
+            "expertise": ["Sales Management", "Commercial Strategy", "Business Operations"],
+            "phone": "+237655223344",
+            "specialization": "Commerce and Business Management",
+            "availability": "Monday–Friday 7AM-3PM",
+            "sessionTypes": ["Exam prep", "Business case workshops"],
+            "languages": ["French", "English"],
+            "hourlyRate": "8,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "36,000 XAF (Save 4,000 XAF)",
+              "10sessions": "70,000 XAF (Save 10,000 XAF)"
+            },
+            "studentFeedback": "Very direct and effective exam preparation — students pass first time.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Executive Secretarial and Office Management",
+        "duration": "2 Years",
+        "tuition": "230,000 XAF/year",
+        "description": "Covers bilingual office management, executive correspondence, document management, scheduling, and professional communication in French and English.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Bilingual (French and English) ability preferred"
+        ],
+        "applicationProcess": "Apply at GTES campus, TYO, Bafoussam. Direct admission for Bac/A-Level holders. No entrance exam required.",
+        "availableTutors": [
+          {
+            "name": "Mme Céleste Fotso",
+            "role": "Office Management Lecturer",
+            "experience": "5+ years",
+            "completedSessions": 95,
+            "rating": 4.6,
+            "expertise": ["Office Management", "Business Communication", "Bilingual Secretarial"],
+            "phone": "+237677112233",
+            "specialization": "Executive Secretarial and Office Management",
+            "availability": "Weekdays 9AM-5PM",
+            "sessionTypes": ["Typing practice", "Correspondence workshops", "Exam prep"],
+            "languages": ["French", "English"],
+            "hourlyRate": "7,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "32,000 XAF (Save 3,000 XAF)",
+              "10sessions": "62,000 XAF (Save 8,000 XAF)"
+            },
+            "studentFeedback": "Patient, bilingual, and excellent at professional communication training.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      },
+      {
+        "program": "BTS in Banking, Insurance and International Commerce",
+        "duration": "2 Years",
+        "tuition": "245,000 XAF/year",
+        "description": "Technical diploma combining banking operations, insurance fundamentals, and international trade finance — highly relevant for careers in CEMAC-zone financial institutions.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Mathematics background preferred"
+        ],
+        "applicationProcess": "Direct admission at GTES campus. Submit certified Bac/A-Level. Registration processed within one week.",
+        "availableTutors": [
+          {
+            "name": "Dr. Paul Nkemdirim",
+            "role": "Senior Lecturer, Banking & Finance",
+            "experience": "10+ years",
+            "completedSessions": 180,
+            "rating": 4.7,
+            "expertise": ["Banking", "Insurance", "International Trade"],
+            "phone": "+237699001122",
+            "specialization": "Banking and International Finance",
+            "availability": "Weekdays 8AM-4PM",
+            "sessionTypes": ["Theory sessions", "Exam prep", "Case studies"],
+            "languages": ["French", "English"],
+            "hourlyRate": "10,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "45,000 XAF (Save 5,000 XAF)",
+              "10sessions": "85,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Strong knowledge of CEMAC banking practice and very clear explanations.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "TYO District, Bafoussam–Bamenda Road, Bafoussam, West Region, Cameroon",
+    "ranking": "MINESUP-listed private higher institution — competitive fees from 230,000 XAF/year",
+    "rating": 4.2,
+    "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop",
+    "description": "Groupe TANKOU Enseignement Supérieur (GTES) is a private higher institution located in the TYO district of Bafoussam, along the Bafoussam–Bamenda road. Accredited by MINESUP, GTES offers BTS programs in commerce, management, accounting, secretarial studies, banking, and insurance. It is known for accessible tuition (from 230,000 XAF/year), direct admission for Bac and GCE A-Level holders, and its focus on training business-ready professionals for the West Region job market."
+  },
+  {
+    "id": "bsph_bafoussam",
+    "name": "Baptist School of Public Health (BSPH) — Bafoussam Baptist Hospital",
+    "programs": [
+      {
+        "program": "BSc in Health and Social System Management",
+        "duration": "3 Years",
+        "tuition": "320,000 XAF/year",
+        "description": "Bachelor-level program covering public health management, health systems policy, community health, and social services — taught in a Christian faith-based environment.",
+        "requirements": [
+          "Baccalaureate série C or D (science)",
+          "GCE A-Level with Biology",
+          "Competitive entrance exam",
+          "Medical fitness certificate"
+        ],
+        "applicationProcess": "Apply at Bafoussam Baptist Hospital campus (Nouvelle Route Evéché). Sit competitive entrance exam. Medical screening before clinical placements. Faith-based institution: applicants of all backgrounds welcome.",
+        "availableTutors": [
+          {
+            "name": "Infirmière Justine Kamga",
+            "role": "Registered Nurse & Public Health Lecturer",
+            "experience": "7+ years",
+            "completedSessions": 110,
+            "rating": 4.6,
+            "expertise": ["Public Health", "Community Health", "Health Policy"],
+            "phone": "+237655334455",
+            "specialization": "Public Health and Social Services",
+            "availability": "Monday–Saturday 8AM-4PM",
+            "sessionTypes": ["Community health practicals", "Research guidance", "Exam prep"],
+            "languages": ["French", "English"],
+            "hourlyRate": "12,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "55,000 XAF (Save 5,000 XAF)",
+              "10sessions": "105,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Excellent at connecting public health theory to real community practice.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Diploma in Biomedical Engineering Technology",
+        "duration": "2 Years",
+        "tuition": "300,000 XAF/year",
+        "description": "Covers biomedical instrumentation, hospital equipment maintenance, electro-medical device repair, and clinical engineering support.",
+        "requirements": [
+          "Baccalaureate série C, D, or TI",
+          "Entrance exam with Physics and Mathematics component"
+        ],
+        "applicationProcess": "Apply at BSPH (Bafoussam Baptist Hospital). Sit entrance exam. Successful candidates complete equipment safety induction before lab access.",
+        "availableTutors": [
+          {
+            "name": "Ing. Fabrice Ngounou",
+            "role": "Biomedical Engineer & Lecturer",
+            "experience": "6+ years",
+            "completedSessions": 88,
+            "rating": 4.5,
+            "expertise": ["Biomedical Instruments", "Equipment Maintenance", "Clinical Engineering"],
+            "phone": "+237677445566",
+            "specialization": "Biomedical Engineering Technology",
+            "availability": "Weekdays 8AM-5PM",
+            "sessionTypes": ["Lab practicals", "Technical workshops", "Exam preparation"],
+            "languages": ["French", "English"],
+            "hourlyRate": "13,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "60,000 XAF (Save 5,000 XAF)",
+              "10sessions": "115,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Very hands-on with real hospital equipment — makes biomedical engineering tangible.",
+            "image": "https://i.ibb.co/TDh3LLvb/Whats-App-Image-2025-06-08-at-17-24-24-fa6c719c.jpg"
+          }
+        ]
+      },
+      {
+        "program": "Diploma in Social Work",
+        "duration": "2 Years",
+        "tuition": "260,000 XAF/year",
+        "description": "Covers community development, social work ethics, counselling, vulnerable populations support, and NGO project management.",
+        "requirements": [
+          "Baccalaureate or GCE A-Level",
+          "Entrance interview and motivation assessment"
+        ],
+        "applicationProcess": "Apply at BSPH Bafoussam. Attend entrance interview. Submit bac/A-Level certificate and motivation letter.",
+        "availableTutors": [
+          {
+            "name": "Me. Claire Njoya",
+            "role": "Social Sciences Lecturer",
+            "experience": "11+ years",
+            "completedSessions": 200,
+            "rating": 4.9,
+            "expertise": ["Social Work", "Community Development", "Counselling"],
+            "phone": "+237699667788",
+            "specialization": "Social Work and Community Development",
+            "availability": "Weekdays 9AM-5PM",
+            "sessionTypes": ["Community placement supervision", "Research guidance", "Exam prep"],
+            "languages": ["French", "English"],
+            "hourlyRate": "12,000 XAF/hour",
+            "packageDeals": {
+              "5sessions": "55,000 XAF (Save 5,000 XAF)",
+              "10sessions": "105,000 XAF (Save 15,000 XAF)"
+            },
+            "studentFeedback": "Deeply empathetic and highly knowledgeable — perfect for social sciences.",
+            "image": "https://i.ibb.co/j9MbGfTm/IMG-20250426-WA0033.jpg"
+          }
+        ]
+      }
+    ],
+    "location": "Nouvelle Route Evéché, Bafoussam, West Region, Cameroon",
+    "ranking": "Regional Training Center of Excellence (RTCE) — established 2022",
+    "rating": 4.5,
+    "image": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&h=400&fit=crop",
+    "description": "The Baptist School of Public Health (BSPH), also known as the Regional Training Center of Excellence (RTCE), is located at Bafoussam Baptist Hospital on Nouvelle Route Evéché. Established in 2022 as a specialized Christian higher institution, it offers BSc and diploma programs in public health management, biomedical engineering technology, social work, and multiskilled rehabilitation. BSPH combines faith-based values with rigorous clinical training using Bafoussam Baptist Hospital's facilities."
+  }
 ];
 
 export default schoolsData;

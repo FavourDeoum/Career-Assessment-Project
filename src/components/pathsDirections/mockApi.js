@@ -159,20 +159,27 @@ const cameroonianProgramData = {
       "Ebenezer Higher Institute of Science and Technology (EHIST)",
       "Florence Nightingale Higher Institute of Health and Biomedical Science (FLENHIHBS)",
       "Training School For State Registered Nurses, Bamenda",
-      "BIHS - Mbingo Baptist Hospital"
+      "BIHS - Mbingo Baptist Hospital",
+      "Tchonang Higher Institute of Bafoussam (THIB)",
+      "Institut Universitaire de la Pointe (IUP) — Bafoussam",
+      "Baptist School of Public Health (BSPH) — Bafoussam"
     ],
     "Civil Engineering": [
       "University of Bamenda (UBa) – NAHPI & COLTECH",
       "Catholic University of Cameroon (CATUC)",
       "National Polytechnic University Institute (NPUI) Bamenda",
       "Bamenda University of Science and Technology (BUST)",
-      "International University, Bamenda"
+      "International University, Bamenda",
+      "Tchonang Higher Institute of Bafoussam (THIB)",
+      "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET)"
     ],
     "Computer Engineering": [
       "University of Bamenda (UBa) – NAHPI & COLTECH",
       "Catholic University of Cameroon (CATUC)",
       "Taniform University Institute of Bamenda (TUIB)",
-      "National Polytechnic University Institute (NPUI)"
+      "National Polytechnic University Institute (NPUI)",
+      "Cameroon International Business School (CIBS) — Bafoussam",
+      "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET)"
     ],
     "Medicine and Surgery": [
       "Catholic University of Cameroon (CATUC)",
@@ -181,14 +188,18 @@ const cameroonianProgramData = {
     "Law": [
       "Faculty of Law and Political Science (UBa)",
       "Taniform University Institute of Bamenda",
-      "National Polytechnic University Institute (NPUI)"
+      "National Polytechnic University Institute (NPUI)",
+      "Institut Universitaire de la Pointe (IUP) — Bafoussam"
     ],
     "Agricultural Business (Agri Business)": [
       "College of Technology (COLTECH, UBa)",
       "Catholic University of Cameroon (CATUC)",
       "Taniform University Institute of Bamenda",
       "National Polytechnic University Institute (NPUI)",
-      "Bamenda University of Science and Technology (BUST)"
+      "Bamenda University of Science and Technology (BUST)",
+      "University of Dschang (UDs) — West Region",
+      "Tchonang Higher Institute of Bafoussam (THIB)",
+      "Cameroon International Business School (CIBS) — Bafoussam"
     ],
     "Accounting and Finance": [
       "Faculty of Economics and Management Science (FEMS, UBa)",
@@ -197,7 +208,10 @@ const cameroonianProgramData = {
       "Taniform University Institute of Bamenda",
       "National Polytechnic University Institute (NPUI)",
       "Bamenda University of Science and Technology (BUST)",
-      "FONAB Polytechnic University"
+      "FONAB Polytechnic University",
+      "Catholic Institute of Bafoussam (ICABAF)",
+      "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET)",
+      "Groupe TANKOU Enseignement Supérieur (GTES) — Bafoussam"
     ],
     "Architecture": [
       "National Higher Polytechnic Institute (NAHPI, UBa)"
@@ -240,14 +254,19 @@ const cameroonianProgramData = {
     "Public Health": [
       "Faculty of Health Science (UBa)",
       "Faculty of Science (UBa)",
-      "Catholic University of Cameroon (CATUC)"
+      "Catholic University of Cameroon (CATUC)",
+      "Baptist School of Public Health (BSPH) — Bafoussam",
+      "University of Dschang (UDs) — West Region"
     ],
     "Business Administration": [
       "Catholic University of Cameroon (CATUC)",
       "National Polytechnic University Institute (NPUI)",
       "Taniform University Institute of Bamenda",
       "Faculty of Economics and Management Science (FEMS, UBa)",
-      "Higher Institute of Commerce and Management (HICM)"
+      "Higher Institute of Commerce and Management (HICM)",
+      "Cameroon International Business School (CIBS) — Bafoussam",
+      "Catholic Institute of Bafoussam (ICABAF)",
+      "Groupe TANKOU Enseignement Supérieur (GTES) — Bafoussam"
     ],
     "Teachers Training": [
       "Higher Technical Teachers Training College (HTTTC, UBa)",
@@ -267,43 +286,66 @@ const cameroonianProgramData = {
       "National Higher Polytechnic Institute (NAHPI, UBa)",
       "Catholic University of Cameroon (CATUC)",
       "National Polytechnic University Institute (NPUI)",
-      "Taniform University Institute of Bamenda"
+      "Taniform University Institute of Bamenda",
+      "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET)",
+      "Institut Universitaire de la Pointe (IUP) — Bafoussam",
+      "University of Dschang (UDs) — West Region"
     ],
     "Management": [
       "Faculty of Economics and Management Science (FEMS, UBa)",
       "Higher Institute of Commerce and Management (HICM)",
       "Catholic University of Cameroon (CATUC)",
       "National Polytechnic University Institute (NPUI)",
-      "Taniform University Institute of Bamenda"
+      "Taniform University Institute of Bamenda",
+      "Catholic Institute of Bafoussam (ICABAF)",
+      "Cameroon International Business School (CIBS) — Bafoussam",
+      "Groupe TANKOU Enseignement Supérieur (GTES) — Bafoussam",
+      "University of Dschang (UDs) — West Region"
     ],
     "Marketing and Sales": [
       "University of Bamenda (UBa)",
       "Catholic University of Cameroon (CATUC)",
       "National Polytechnic University Institute (NPUI)",
-      "Taniform University Institute of Bamenda"
+      "Taniform University Institute of Bamenda",
+      "Cameroon International Business School (CIBS) — Bafoussam",
+      "Catholic Institute of Bafoussam (ICABAF)"
     ],
     "Other Fields": {
       "Law and Political Science": [
         "Faculty of Law and Political Science (UBa)",
         "Taniform University Institute of Bamenda",
-        "National Polytechnic University Institute (NPUI)"
+        "National Polytechnic University Institute (NPUI)",
+        "Institut Universitaire de la Pointe (IUP) — Bafoussam"
       ],
       "Agriculture and Rural Development": [
         "College of Technology (COLTECH, UBa)",
         "Catholic University of Cameroon (CATUC)",
         "Bamenda University of Science and Technology (BUST)",
         "National Polytechnic University Institute (NPUI)",
-        "Taniform University Institute of Bamenda"
+        "Taniform University Institute of Bamenda",
+        "University of Dschang (UDs) — West Region",
+        "Tchonang Higher Institute of Bafoussam (THIB)",
+        "Cameroon International Business School (CIBS) — Bafoussam"
       ],
       "Economics": [
         "Faculty of Economics and Management Science (FEMS, UBa)",
         "Catholic University of Cameroon (CATUC)",
-        "Taniform University Institute of Bamenda"
+        "Taniform University Institute of Bamenda",
+        "University of Dschang (UDs) — West Region",
+        "Catholic Institute of Bafoussam (ICABAF)"
       ],
       "Linguistics and Language Studies": [
         "Faculty of Arts (UBa) – Linguistics & African Languages",
         "University of Bamenda Language Centre (UBALAC)",
         "Taniform University Institute of Bamenda"
+      ],
+      "Logistics and Transport Management": [
+        "Institut Supérieur des Arts et Métiers de Bafoussam (ISAMET)",
+        "Higher Institute of Transport and Logistics (HITL, UBa)"
+      ],
+      "Biomedical Engineering Technology": [
+        "Baptist School of Public Health (BSPH) — Bafoussam",
+        "Cameroon International Business School (CIBS) — Bafoussam"
       ]
     }
   }
