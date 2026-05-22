@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Compass, TrendingUp, Target, AlertTriangle, ChevronDown,
   Book, Lightbulb, Award, Briefcase, Zap, ArrowRight, GraduationCap, UserCheck,
-  ExternalLink, Home, Users, MessageCircle, RefreshCw, Menu
+  ExternalLink, Home, Users, MessageCircle, RefreshCw, Menu, PlayCircle, Globe
 } from "lucide-react";
 import { deleteAssessmentResults, supabaseAdmin } from "../../supabaseClient";
 import { useResults } from "../../contexts/ResultsContext";
@@ -149,7 +149,7 @@ const CareerDashboard = () => {
       { id: "paths",        label: "Paths",      count: a?.careerRecommendations?.length || null },
       { id: "schools",      label: "Schools",    count: a?.recommendedSchools?.length || null },
       { id: "mentors",      label: "Mentors",    count: (a?.recommendedSchools || []).reduce((acc, s) => acc + (s.programs || []).reduce((pa, p) => pa + (p.availableTutors?.length || 0), 0), 0) || null },
-      { id: "development",  label: "Resources",  count: ((a?.resources?.recommendedCourses?.length || 0) + (a?.resources?.suggestedReadings?.length || 0) + (a?.resources?.professionalTools?.length || 0)) || null },
+      { id: "development",  label: "Resources",  count: ((a?.resources?.recommendedCourses?.length || 0) + (a?.resources?.suggestedReadings?.length || 0) + (a?.resources?.professionalTools?.length || 0) + (a?.resources?.videos?.length || 0) + (a?.resources?.communities?.length || 0) + (a?.resources?.certifications?.length || 0)) || null },
     ];
 
     return (
@@ -608,119 +608,220 @@ const CareerDashboard = () => {
       }
 
       // ── DEVELOPMENT ───────────────────────────────────────────────────────
-      case "development":
+      case "development": {
+        const res = analysis.resources || {};
+        const courses      = res.recommendedCourses || [];
+        const readings     = res.suggestedReadings  || [];
+        const tools        = res.professionalTools  || [];
+        const videos       = res.videos             || [];
+        const communities  = res.communities        || [];
+        const certifications = res.certifications   || [];
+        const roadmap      = analysis.actionPlan?.longTermRoadmap || [];
+
+        const totalCount = courses.length + readings.length + tools.length + videos.length + communities.length + certifications.length;
+
+        const ResourceCard = ({ icon, label, color, children, isEmpty }) => (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col">
+            <div className="flex items-center gap-1.5 mb-3">
+              <span className={`text-${color}-500`}>{icon}</span>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{label}</p>
+            </div>
+            {isEmpty
+              ? <p className="text-xs text-gray-400">None yet — retake the assessment to get suggestions.</p>
+              : children}
+          </div>
+        );
+
+        const LinkRow = ({ href, label, sub, badge, badgeColor = "gray" }) => (
+          <div className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
+            <div className="flex-1 min-w-0">
+              {href ? (
+                <a href={href} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm font-medium leading-snug text-blue-600 hover:text-blue-700 hover:underline">
+                  {label}
+                  <ExternalLink size={11} className="flex-shrink-0 opacity-70" />
+                </a>
+              ) : (
+                <p className="text-sm font-medium text-gray-700 leading-snug">{label}</p>
+              )}
+              {badge && (
+                <span className={`inline-block mt-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded bg-${badgeColor}-100 text-${badgeColor}-700`}>
+                  {badge}
+                </span>
+              )}
+              {sub && <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{sub}</p>}
+            </div>
+          </div>
+        );
+
         return (
           <div className="space-y-4">
-            {/* Courses + Readings */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex items-center gap-1.5 mb-3">
-                  <Book size={14} className="text-blue-500" />
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Courses</p>
+            {/* Summary banner */}
+            {totalCount > 0 && (
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-purple-100 p-4">
+                <p className="text-sm font-semibold text-purple-800 mb-0.5">Your Learning Toolkit</p>
+                <p className="text-xs text-gray-500 mb-2">Curated resources to guide your career journey — click any link to get started.</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "Courses",       count: courses.length,       color: "blue"   },
+                    { label: "Videos",        count: videos.length,        color: "red"    },
+                    { label: "Books",         count: readings.length,      color: "yellow" },
+                    { label: "Tools",         count: tools.length,         color: "orange" },
+                    { label: "Certs",         count: certifications.length,color: "green"  },
+                    { label: "Communities",   count: communities.length,   color: "purple" },
+                  ].filter(s => s.count > 0).map(s => (
+                    <span key={s.label} className={`text-[11px] font-semibold px-2 py-0.5 rounded-full bg-${s.color}-100 text-${s.color}-700`}>
+                      {s.count} {s.label}
+                    </span>
+                  ))}
                 </div>
-                {analysis.resources.recommendedCourses?.length > 0 ? (
-                  <div className="divide-y divide-gray-50">
-                    {analysis.resources.recommendedCourses.map((course, i) => (
-                      <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
-                        <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                          {i + 1}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          {course.url ? (
-                            <a href={course.url} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium leading-snug">
-                              {course.title || course}
-                              <ExternalLink size={11} className="flex-shrink-0" />
-                            </a>
-                          ) : (
-                            <p className="text-sm text-gray-700 leading-snug">{course.title || course}</p>
-                          )}
-                          {course.platform && (
-                            <p className="text-[10px] text-gray-400 mt-0.5">{course.platform}</p>
-                          )}
-                          {course.description && (
-                            <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{course.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : <p className="text-xs text-gray-400">None yet.</p>}
               </div>
+            )}
 
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex items-center gap-1.5 mb-3">
-                  <Lightbulb size={14} className="text-yellow-500" />
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Readings</p>
-                </div>
-                {analysis.resources.suggestedReadings?.length > 0 ? (
-                  <div className="divide-y divide-gray-50">
-                    {analysis.resources.suggestedReadings.map((r, i) => (
-                      <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
-                        <span className="w-4 h-4 rounded-full bg-yellow-100 text-yellow-700 text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                          {i + 1}
-                        </span>
-                        <div className="min-w-0">
-                          {r.url ? (
-                            <a href={r.url} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-yellow-700 hover:text-yellow-800 hover:underline font-medium leading-snug">
-                              {r.title || r}
-                              <ExternalLink size={11} className="flex-shrink-0" />
-                            </a>
-                          ) : (
-                            <p className="text-sm text-gray-700 leading-snug">{r.title || r}</p>
-                          )}
-                          {r.author && <p className="text-[10px] text-gray-400 mt-0.5">by {r.author}</p>}
-                        </div>
-                      </div>
-                    ))}
+            {/* Row 1: Courses (full width, grid inside) */}
+            <ResourceCard icon={<Book size={14} />} label="Courses" color="blue" isEmpty={courses.length === 0}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 divide-y sm:divide-y-0 divide-gray-50">
+                {courses.map((c, i) => (
+                  <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 sm:[&:nth-child(2)]:pt-0 last:pb-0">
+                    <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      {c.url ? (
+                        <a href={c.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline leading-snug">
+                          {c.title || c}
+                          <ExternalLink size={11} className="flex-shrink-0 opacity-70" />
+                        </a>
+                      ) : (
+                        <p className="text-sm font-medium text-gray-700 leading-snug">{c.title || c}</p>
+                      )}
+                      {c.platform && (
+                        <span className="inline-block mt-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-600">{c.platform}</span>
+                      )}
+                      {c.description && (
+                        <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{c.description}</p>
+                      )}
+                    </div>
                   </div>
-                ) : <p className="text-xs text-gray-400">None yet.</p>}
+                ))}
               </div>
+            </ResourceCard>
+
+            {/* Row 2: Videos + Readings */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ResourceCard icon={<PlayCircle size={14} />} label="Videos" color="red" isEmpty={videos.length === 0}>
+                <div className="divide-y divide-gray-50">
+                  {videos.map((v, i) => (
+                    <LinkRow key={i}
+                      href={v.url}
+                      label={v.title || v}
+                      badge={v.channel}
+                      badgeColor="red"
+                      sub={v.description}
+                    />
+                  ))}
+                </div>
+              </ResourceCard>
+
+              <ResourceCard icon={<Lightbulb size={14} />} label="Readings" color="yellow" isEmpty={readings.length === 0}>
+                <div className="divide-y divide-gray-50">
+                  {readings.map((r, i) => (
+                    <div key={i} className="py-2 first:pt-0 last:pb-0">
+                      {r.url ? (
+                        <a href={r.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm font-medium text-yellow-700 hover:text-yellow-800 hover:underline leading-snug">
+                          {r.title || r}
+                          <ExternalLink size={11} className="flex-shrink-0 opacity-70" />
+                        </a>
+                      ) : (
+                        <p className="text-sm font-medium text-gray-700 leading-snug">{r.title || r}</p>
+                      )}
+                      {r.author && <p className="text-[11px] text-gray-500 mt-0.5">by {r.author}</p>}
+                    </div>
+                  ))}
+                </div>
+              </ResourceCard>
             </div>
 
-            {/* Tools + Roadmap */}
+            {/* Row 3: Tools + Certifications */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                <div className="flex items-center gap-1.5 mb-3">
-                  <Zap size={14} className="text-orange-500" />
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tools</p>
+              <ResourceCard icon={<Zap size={14} />} label="Tools" color="orange" isEmpty={tools.length === 0}>
+                <div className="divide-y divide-gray-50">
+                  {tools.map((t, i) => (
+                    <LinkRow key={i}
+                      href={t.url}
+                      label={t.name || t}
+                      sub={t.description}
+                    />
+                  ))}
                 </div>
-                {analysis.resources.professionalTools?.length > 0 ? (
-                  <div className="divide-y divide-gray-50">
-                    {analysis.resources.professionalTools.map((tool, i) => (
-                      <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
-                        <Zap size={13} className="text-orange-400 flex-shrink-0 mt-0.5" />
-                        <div className="min-w-0">
-                          {tool.url ? (
-                            <a href={tool.url} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-orange-700 hover:text-orange-800 hover:underline font-medium leading-snug">
-                              {tool.name || tool}
-                              <ExternalLink size={11} className="flex-shrink-0" />
-                            </a>
-                          ) : (
-                            <p className="text-sm text-gray-700 font-medium leading-snug">{tool.name || tool}</p>
-                          )}
-                          {tool.description && (
-                            <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{tool.description}</p>
-                          )}
-                        </div>
+              </ResourceCard>
+
+              <ResourceCard icon={<Award size={14} />} label="Certifications" color="green" isEmpty={certifications.length === 0}>
+                <div className="divide-y divide-gray-50">
+                  {certifications.map((cert, i) => (
+                    <div key={i} className="py-2 first:pt-0 last:pb-0">
+                      {cert.url ? (
+                        <a href={cert.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm font-medium text-green-700 hover:text-green-800 hover:underline leading-snug">
+                          {cert.name || cert}
+                          <ExternalLink size={11} className="flex-shrink-0 opacity-70" />
+                        </a>
+                      ) : (
+                        <p className="text-sm font-medium text-gray-700 leading-snug">{cert.name || cert}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        {cert.provider && <p className="text-[11px] text-gray-500">{cert.provider}</p>}
+                        {cert.level && (
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                            cert.level === "Beginner"     ? "bg-green-100 text-green-700" :
+                            cert.level === "Intermediate" ? "bg-yellow-100 text-yellow-700" :
+                                                            "bg-red-100 text-red-700"
+                          }`}>{cert.level}</span>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                ) : <p className="text-xs text-gray-400">None yet.</p>}
-              </div>
+                      {cert.description && <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{cert.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </ResourceCard>
+            </div>
+
+            {/* Row 4: Communities + Long-term Roadmap */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ResourceCard icon={<Globe size={14} />} label="Communities" color="purple" isEmpty={communities.length === 0}>
+                <div className="divide-y divide-gray-50">
+                  {communities.map((c, i) => (
+                    <div key={i} className="py-2 first:pt-0 last:pb-0">
+                      {c.url ? (
+                        <a href={c.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm font-medium text-purple-700 hover:text-purple-800 hover:underline leading-snug">
+                          {c.name || c}
+                          <ExternalLink size={11} className="flex-shrink-0 opacity-70" />
+                        </a>
+                      ) : (
+                        <p className="text-sm font-medium text-gray-700 leading-snug">{c.name || c}</p>
+                      )}
+                      {c.platform && (
+                        <span className="inline-block mt-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-purple-100 text-purple-600">{c.platform}</span>
+                      )}
+                      {c.description && <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{c.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </ResourceCard>
 
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                 <div className="flex items-center gap-1.5 mb-3">
-                  <Target size={14} className="text-purple-500" />
+                  <Target size={14} className="text-indigo-500" />
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Long-term Roadmap</p>
                 </div>
-                {analysis.actionPlan?.longTermRoadmap?.length > 0 ? (
+                {roadmap.length > 0 ? (
                   <div className="space-y-2.5">
-                    {analysis.actionPlan.longTermRoadmap.map((milestone, i) => (
+                    {roadmap.map((milestone, i) => (
                       <div key={i} className="flex items-start gap-2.5">
-                        <span className="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="w-4 h-4 rounded-full bg-indigo-600 text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                           {i + 1}
                         </span>
                         <p className="text-sm text-gray-600 leading-snug">{milestone}</p>
@@ -732,6 +833,7 @@ const CareerDashboard = () => {
             </div>
           </div>
         );
+      }
 
       default:
         return (

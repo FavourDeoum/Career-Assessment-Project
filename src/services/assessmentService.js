@@ -63,7 +63,10 @@ const createPrompt = (answers, categories) => {
   "resources": {
     "recommendedCourses": [{ "title": "...", "platform": "Coursera|Udemy|YouTube|edX|LinkedIn Learning|freeCodeCamp|Khan Academy", "url": "https://...", "description": "..." }],
     "suggestedReadings": [{ "title": "...", "author": "...", "url": "https://..." }],
-    "professionalTools": [{ "name": "...", "url": "https://...", "description": "..." }]
+    "professionalTools": [{ "name": "...", "url": "https://...", "description": "..." }],
+    "videos": [{ "title": "...", "channel": "...", "url": "https://...", "description": "..." }],
+    "communities": [{ "name": "...", "platform": "Reddit|Discord|LinkedIn|Facebook|Slack|WhatsApp|Telegram", "url": "https://...", "description": "..." }],
+    "certifications": [{ "name": "...", "provider": "...", "url": "https://...", "description": "...", "level": "Beginner|Intermediate|Advanced" }]
   },
   "recommendedSchools": [{ "id": "school_id_from_list", "identifiedRelevantPrograms": ["program name"], "reasonForRecommendation": "..." }]
 }
@@ -71,6 +74,12 @@ const createPrompt = (answers, categories) => {
 Rules:
 - careerRecommendations: 5 job titles with detailed explanation and salary range in XAF (FCFA) per month (e.g. "150,000 – 400,000 XAF/mo").
 - skillsAnalysis: top 5 strengths, 3-5 skills to develop.
+- resources.recommendedCourses: 3-4 online courses with real platform URLs (Coursera, Udemy, edX, freeCodeCamp, Khan Academy, YouTube).
+- resources.suggestedReadings: 2-3 books or articles with real URL if available.
+- resources.professionalTools: 2-3 tools with real website URLs.
+- resources.videos: 2-3 YouTube videos or channels relevant to the career path with real URLs.
+- resources.communities: 2-3 online communities (Reddit subreddits, Discord servers, LinkedIn groups) with real URLs where possible.
+- resources.certifications: 2-3 professional certifications to pursue with provider URLs and difficulty level.
 - recommendedSchools: pick 5-6 from the SCHOOLS LIST below using their exact id. IMPORTANT: select schools whose listed programs directly match the career fields in careerRecommendations. For each recommended career (e.g. Nursing, Medical Lab, Health Sciences), find schools that have matching programs. Include schools from different regions/cities so results are geographically diverse. Only include id, identifiedRelevantPrograms, and reasonForRecommendation — no other fields.
 
 SCHOOLS LIST:
@@ -91,7 +100,7 @@ const processResponse = (response) => {
     potentialChallenges: { challenges: [], mitigationStrategies: [] },
     growthOpportunities: { sectors: [], emergingRoles: [] },
     personalInsights: { keyTakeaways: [], motivationalQuote: "" },
-    resources: { recommendedCourses: [], suggestedReadings: [], professionalTools: [] },
+    resources: { recommendedCourses: [], suggestedReadings: [], professionalTools: [], videos: [], communities: [], certifications: [] },
     recommendedSchools: [],
   };
 
@@ -138,6 +147,9 @@ const processResponse = (response) => {
         recommendedCourses: p.resources?.recommendedCourses || [],
         suggestedReadings: p.resources?.suggestedReadings || [],
         professionalTools: p.resources?.professionalTools || [],
+        videos: p.resources?.videos || [],
+        communities: p.resources?.communities || [],
+        certifications: p.resources?.certifications || [],
       },
       recommendedSchools: validatedSchools,
     };
