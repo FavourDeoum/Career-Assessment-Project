@@ -116,7 +116,7 @@ const Navbar = () => {
 
             {/* Mobile Menu Toggle */}
             <button
-              className={`mobile-menu-toggle ${isOpen ? 'active' : ''}`}
+              className="mobile-menu-toggle"
               onClick={toggleMenu}
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isOpen}
@@ -132,73 +132,76 @@ const Navbar = () => {
         {/* Mobile Menu Backdrop */}
         <div className={`mobile-backdrop ${isOpen ? 'active' : ''}`} onClick={handleLinkClick}></div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation — right-side drawer */}
         <nav id="mobile-nav" className={`mobile-nav ${isOpen ? 'active' : ''}`} aria-label="Mobile navigation">
+          {/* Drawer Header */}
           <div className="mobile-nav-header">
-            <div className="mobile-logo">
-              <div className="logo-icon">
-                <img src="/images/logo2.png" alt="EduVate" />
-              </div>
-            </div>
+            <Link to="/" className="mobile-nav-brand" onClick={handleLinkClick}>
+              <img src="/images/logo2.png" alt="EduVate logo" />
+              <span className="mobile-nav-brand-text">EduVate</span>
+            </Link>
+            <button className="mobile-nav-close" onClick={handleLinkClick} aria-label="Close menu">
+              ✕
+            </button>
           </div>
 
-          <div className="mobile-nav-content">
-            <div className="mobile-nav-links">
-              {navItems.map((item, index) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`mobile-nav-link ${location.pathname === item.path ? "active" : ""}`}
-                  onClick={handleLinkClick}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="mobile-link-icon">{item.icon}</div>
-                  <span className="mobile-link-text">{item.label}</span>
-                  <div className="mobile-link-indicator"></div>
-                </Link>
-              ))}
+          {/* Nav Links */}
+          <div className="mobile-nav-links">
+            <p className="mobile-nav-section-label">Navigation</p>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`mobile-nav-link ${location.pathname === item.path ? "active" : ""}`}
+                onClick={handleLinkClick}
+              >
+                <div className="mobile-link-icon">{item.icon}</div>
+                <span className="mobile-link-text">{item.label}</span>
+              </Link>
+            ))}
 
-              <SignedIn>
-                <Link
-                  to="/dashboard"
-                  className={`mobile-nav-link ${location.pathname === "/dashboard" ? "active" : ""}`}
-                  onClick={handleLinkClick}
-                  style={{ animationDelay: `${navItems.length * 0.1}s` }}
-                >
-                  <div className="mobile-link-icon"><FaTachometerAlt /></div>
-                  <span className="mobile-link-text">Dashboard</span>
-                  <div className="mobile-link-indicator"></div>
-                </Link>
-              </SignedIn>
-            </div>
+            <SignedIn>
+              <Link
+                to="/dashboard"
+                className={`mobile-nav-link ${location.pathname === "/dashboard" ? "active" : ""}`}
+                onClick={handleLinkClick}
+              >
+                <div className="mobile-link-icon"><FaTachometerAlt /></div>
+                <span className="mobile-link-text">Dashboard</span>
+              </Link>
+            </SignedIn>
+          </div>
 
-            <div className="mobile-nav-footer">
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="mobile-auth-button" onClick={handleLinkClick}>
-                    <span>Sign In to Continue</span>
-                    <div className="button-shimmer"></div>
-                  </button>
-                </SignInButton>
-              </SignedOut>
+          {/* Spacer pushes footer down */}
+          <div className="mobile-nav-spacer" />
 
-              <SignedIn>
-                <div className="mobile-user-section">
-                  <UserButton 
-                    afterSignOutUrl="/" 
-                    appearance={{
-                      elements: {
-                        avatarBox: "mobile-user-avatar",
-                        userButtonPopoverCard: "mobile-user-popover"
-                      }
-                    }}
-                  />
-                  <div className="user-info">
-                    <span className="user-greeting">Welcome back!</span>
-                  </div>
+          {/* Footer */}
+          <div className="mobile-nav-footer">
+            <SignedOut>
+              <p className="mobile-footer-hint">Discover your career path — it's free.</p>
+              <SignInButton mode="modal">
+                <button className="mobile-auth-button" onClick={handleLinkClick}>
+                  Get Started Free
+                </button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <div className="mobile-user-section">
+                <UserButton
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "mobile-user-avatar",
+                      userButtonPopoverCard: "mobile-user-popover"
+                    }
+                  }}
+                />
+                <div className="user-info">
+                  <span className="user-greeting">Welcome back!</span>
                 </div>
-              </SignedIn>
-            </div>
+              </div>
+            </SignedIn>
           </div>
         </nav>
       </nav>

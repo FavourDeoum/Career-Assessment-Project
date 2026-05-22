@@ -3,26 +3,18 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
-import { FaRocket, FaChartBar, FaUserGraduate, FaStar, FaArrowRight, FaPlay, FaBrain } from "react-icons/fa"
+import { FaRocket, FaChartBar, FaUserGraduate, FaStar, FaArrowRight, FaPlay, FaCompass } from "react-icons/fa"
 import "./LandingPage.css"
 import { Link } from "react-router-dom"
 
 const LandingPage = () => {
   const [isVisible, setIsVisible] = useState(false)
-  const [activeTestimonial, setActiveTestimonial] = useState(0)
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % 2)
-    }, 5000)
-    return () => clearInterval(interval)
   }, [])
 
   const handleGetStarted = () => {
@@ -48,11 +40,6 @@ const LandingPage = () => {
         <div className="hero-container">
           {/* Left Content */}
           <div className={`hero-content ${isVisible ? "animate-slide-in-left" : ""}`}>
-            <div className="badge">
-              <FaStar className="badge-icon" />
-              <span>Trusted by 10,000+ Students</span>
-            </div>
-
             <h1 className="hero-title">
               <span className="title-line-1">Discover Your</span>
               <span className="title-line-2">Perfect Career</span>
@@ -61,8 +48,8 @@ const LandingPage = () => {
 
             <p className="hero-description">
               <span className="brand-name">EduVate</span>, a blend of <strong>Education</strong> and{" "}
-              <strong>Elevate</strong>. Our AI-powered career assessment tool which helps Advanced Level students in
-              Cameroon discover their ideal career based on background, skills, interests, and personality.
+              <strong>Elevate</strong>. A career assessment tool built for Advanced Level students in
+              Cameroon — helping you discover the right path based on your background, skills, interests, and personality.
             </p>
 
             <div className="hero-buttons">
@@ -71,13 +58,9 @@ const LandingPage = () => {
                 <FaArrowRight className="button-icon" />
               </button>
 
-              <a href="https://youtu.be/xNiFOWbpMRg?feature=shared" target="_blank" rel="noopener noreferrer">
-                <button className="cta-secondary">
-                  <div className="play-button">
-                    <FaPlay />
-                  </div>
-                  <span>Watch Demo</span>
-                </button>
+              <a className="cta-secondary" href="https://youtu.be/xNiFOWbpMRg?feature=shared" target="_blank" rel="noopener noreferrer">
+                <FaPlay className="play-icon" />
+                <span>Watch Demo</span>
               </a>
             </div>
 
@@ -99,53 +82,49 @@ const LandingPage = () => {
             </div>
           </div>
 
-          {/* Right Illustration */}
+          {/* Right — Mock Assessment Preview */}
           <div className={`hero-illustration ${isVisible ? "animate-slide-in-right" : ""}`}>
-            <div className="illustration-container">
-              {/* Main Illustration */}
-              <div className="main-illustration">
-                <div className="student-figures">
-                  <div className="student student-1">
-                    <div className="student-head"></div>
-                    <div className="student-body"></div>
+            <div className="mock-card">
+              <div className="mock-card-header">
+                <div className="mock-progress-bar">
+                  <div className="mock-progress-fill" style={{ width: "40%" }}></div>
+                </div>
+                <span className="mock-step-label">Step 2 of 5</span>
+              </div>
+
+              <div className="mock-card-body">
+                <p className="mock-question">What kind of activities do you enjoy most?</p>
+
+                <div className="mock-options">
+                  <div className="mock-option mock-option-selected">
+                    <div className="mock-option-dot"></div>
+                    <span>Working with people and helping others</span>
                   </div>
-                  <div className="student student-2">
-                    <div className="student-head"></div>
-                    <div className="student-body"></div>
+                  <div className="mock-option">
+                    <div className="mock-option-dot"></div>
+                    <span>Building or fixing things</span>
                   </div>
-                  <div className="student student-3">
-                    <div className="student-head"></div>
-                    <div className="student-body"></div>
+                  <div className="mock-option">
+                    <div className="mock-option-dot"></div>
+                    <span>Analysing data and solving problems</span>
+                  </div>
+                  <div className="mock-option">
+                    <div className="mock-option-dot"></div>
+                    <span>Writing, drawing, or creating</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="graduation-cap">
-                  <FaUserGraduate />
+              <div className="mock-card-footer">
+                <button className="mock-next-btn">Next Question →</button>
+              </div>
+
+              <div className="mock-result-badge">
+                <FaUserGraduate className="mock-result-icon" />
+                <div>
+                  <div className="mock-result-title">Top Match</div>
+                  <div className="mock-result-value">Environmental Science</div>
                 </div>
-              </div>
-
-              {/* Floating Elements */}
-              <div className="floating-element element-1">
-                <FaRocket />
-              </div>
-
-              <div className="floating-element element-2">
-                <FaChartBar />
-              </div>
-
-              <div className="floating-element element-3">
-                <FaBrain />
-              </div>
-
-              {/* Floating Cards */}
-              <div className="floating-card card-1">
-                <div className="card-indicator"></div>
-                <span>Career Match Found!</span>
-              </div>
-
-              <div className="floating-card card-2">
-                <FaStar className="card-star" />
-                <span>4.9/5 Rating</span>
               </div>
             </div>
           </div>
@@ -157,33 +136,33 @@ const LandingPage = () => {
         <div className="section-container">
           <div className="section-header">
             <h2 className="section-title">
-              Why Choose <span className="highlight">EduVate?</span>
+              How <span className="highlight">EduVate</span> Works
             </h2>
             <p className="section-subtitle">
-              Our comprehensive platform combines cutting-edge technology with educational expertise to guide your
-              career journey.
+              A simple, structured way to explore your strengths, match them to careers that suit you, and find
+              the schools and people who can help you get there.
             </p>
           </div>
 
           <div className="features-grid">
             <FeatureCard
               icon={<FaRocket />}
-              title="Personalized Assessments"
-              description="Take our comprehensive assessment to discover your unique strengths and interest."
+              title="Know Your Strengths"
+              description="Answer honest questions about your interests, skills, and personality. Takes about 15 minutes and gives you real clarity."
               color="purple"
               delay="0"
             />
             <FeatureCard
               icon={<FaChartBar />}
-              title="Career Recommendations"
-              description="Receive tailored career suggestions based on your assessment results."
+              title="See Your Options"
+              description="Get a clear list of careers that match who you are — not generic advice, but paths grounded in the Cameroonian job market."
               color="blue"
               delay="200"
             />
             <FeatureCard
               icon={<FaUserGraduate />}
-              title="Expert Guidance"
-              description="Access resources and guidance from industry professionals and career counselors specialized in the Cameroonian job market."
+              title="Get Real Guidance"
+              description="Connect with counselors and professionals who know the local landscape and can walk you through the next steps."
               color="pink"
               delay="400"
             />
@@ -198,38 +177,24 @@ const LandingPage = () => {
             <h2 className="section-title">
               Success <span className="highlight">Stories</span>
             </h2>
-            <p className="section-subtitle">Join thousands of students who discovered their dream careers</p>
+            <p className="section-subtitle">Hear from students who used EduVate to find direction</p>
           </div>
 
-          <div className="testimonials-container">
-            <div className={`testimonial-slide ${activeTestimonial === 0 ? "active" : ""}`}>
-              <TestimonialCard
-                name="Acha Grace"
-                role="Environmental Science Student"
-                text="EduVate didn't just help me find my passion for environmental science - it showed me exactly how to turn that passion into a meaningful career. The personalized recommendations were spot-on!"
-                avatar="AG"
-              />
-            </div>
-
-            <div className={`testimonial-slide ${activeTestimonial === 1 ? "active" : ""}`}>
-              <TestimonialCard
-                name="Neba Kevin"
-                role="Web Developer"
-                text="Thanks to EduVate, I discovered the perfect balance between my technical skills and creative interests. The platform guided me towards web development, and I couldn't be happier with my career choice!"
-                avatar="NK"
-              />
-            </div>
-          </div>
-
-          <div className="testimonial-indicators">
-            <button
-              className={`indicator ${activeTestimonial === 0 ? "active" : ""}`}
-              onClick={() => setActiveTestimonial(0)}
-            ></button>
-            <button
-              className={`indicator ${activeTestimonial === 1 ? "active" : ""}`}
-              onClick={() => setActiveTestimonial(1)}
-            ></button>
+          <div className="testimonials-grid">
+            <TestimonialCard
+              name="Acha Grace"
+              role="Environmental Science Student"
+              text="Before EduVate, I had no idea what to study. After the assessment, I knew environmental science was the right fit. It gave me the confidence to make a real decision."
+              avatar="AG"
+              color="purple"
+            />
+            <TestimonialCard
+              name="Neba Kevin"
+              role="Web Developer"
+              text="The assessment helped me see that my love for building things could actually lead to a career. I've been doing web development for two years now and it still feels like the right call."
+              avatar="NK"
+              color="blue"
+            />
           </div>
         </div>
       </section>
@@ -248,22 +213,19 @@ const FeatureCard = ({ icon, title, description, color, delay }) => (
   </div>
 )
 
-const TestimonialCard = ({ name, role, text, avatar }) => (
+const TestimonialCard = ({ name, role, text, avatar, color }) => (
   <div className="testimonial-card">
-    <div className="testimonial-content">
-      <div className="quote-icon">"</div>
-      <p className="testimonial-text">{text}</p>
-      <div className="testimonial-author">
-        <div className="author-avatar">
-          <span>{avatar}</span>
-        </div>
-        <div className="author-info">
-          <div className="author-name">{name}</div>
-          <div className="author-role">{role}</div>
-        </div>
+    <div className={`testimonial-accent testimonial-accent-${color}`}></div>
+    <p className="testimonial-text">"{text}"</p>
+    <div className="testimonial-author">
+      <div className={`author-avatar author-avatar-${color}`}>
+        <span>{avatar}</span>
+      </div>
+      <div className="author-info">
+        <div className="author-name">{name}</div>
+        <div className="author-role">{role}</div>
       </div>
     </div>
-    <div className="testimonial-decoration"></div>
   </div>
 )
 
