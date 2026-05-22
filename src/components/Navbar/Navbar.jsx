@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { FaHome, FaUser, FaEnvelope, FaTachometerAlt } from "react-icons/fa"
 import "./Navbar.css"
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react"
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -87,17 +87,13 @@ const Navbar = () => {
           {/* Auth Section */}
           <div className="navbar-auth">
             <SignedOut>
-              <SignInButton mode="modal">
-                <button className="auth-button signin-btn">
-                  <span>Sign In</span>
-                </button>
-              </SignInButton>
-              <SignInButton mode="modal">
-                <button className="auth-button getstarted-btn">
-                  <span>Get Started</span>
-                  <div className="button-glow"></div>
-                </button>
-              </SignInButton>
+              <Link to="/login" className="auth-button signin-btn">
+                <span>Sign In</span>
+              </Link>
+              <Link to="/signup" className="auth-button getstarted-btn">
+                <span>Get Started</span>
+                <div className="button-glow"></div>
+              </Link>
             </SignedOut>
 
             <SignedIn>
@@ -179,11 +175,9 @@ const Navbar = () => {
           <div className="mobile-nav-footer">
             <SignedOut>
               <p className="mobile-footer-hint">Discover your career path — it's free.</p>
-              <SignInButton mode="modal">
-                <button className="mobile-auth-button" onClick={handleLinkClick}>
-                  Get Started Free
-                </button>
-              </SignInButton>
+              <Link to="/signup" className="mobile-auth-button" onClick={handleLinkClick}>
+                Get Started Free
+              </Link>
             </SignedOut>
 
             <SignedIn>

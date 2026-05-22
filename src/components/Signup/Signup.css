@@ -1,5 +1,8 @@
-*{
+.signup-page {
+  min-height: calc(100vh - 64px);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #ddd6fe 100%);
+  padding: 24px 16px;
 }

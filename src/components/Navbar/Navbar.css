@@ -148,6 +148,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   overflow: hidden;
+  text-decoration: none;
 }
 
 /* Secondary — Sign In */
@@ -424,6 +425,7 @@
   transition: box-shadow 0.2s ease, transform 0.2s ease;
   letter-spacing: 0.01em;
   min-height: 48px;
+  text-decoration: none;
 }
 
 .mobile-auth-button:hover {
@@ -462,9 +464,10 @@
   .navbar-spacer { height: 60px; }
   .navbar-nav-desktop { display: none; }
   .mobile-menu-toggle { display: flex; }
-  .signin-btn { display: none; }
+  .getstarted-btn { display: none; }
 
-  .getstarted-btn {
+  .signin-btn {
+    display: inline-flex;
     font-size: 0.8rem;
     padding: 0.5rem 0.875rem;
     border-radius: 10px;

@@ -1,12 +1,14 @@
 import { SignIn } from '@clerk/clerk-react';
+import "./Login.css";
 
 export default function Login() {
   return (
-    <SignIn
-      routing="path" // Use "path" instead of "hash"
-      path="/login"
-      fallbackRedirectUrl="/dashboard"
-      // afterSignInUrl="/dashboard"
-    />
+    <div className="login-page">
+      <SignIn
+        routing="path"
+        path="/login"
+        fallbackRedirectUrl="/dashboard"
+      />
+    </div>
   );
 }

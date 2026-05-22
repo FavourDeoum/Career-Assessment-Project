@@ -1,14 +1,14 @@
 import { SignUp } from '@clerk/clerk-react';
-// import "./Signup.css";
+import "./Signup.css";
 
 export default function SignUpPage() {
   return (
-    <SignUp
-      routing="path" 
-      path="/signup"
-      fallbackRedirectUrl="/dashboard"
-      // afterSignUpUrl="/dashboard" 
-      // afterSignInUrl="/dashboard"
-    />
+    <div className="signup-page">
+      <SignUp
+        routing="path"
+        path="/signup"
+        fallbackRedirectUrl="/dashboard"
+      />
+    </div>
   );
 }
