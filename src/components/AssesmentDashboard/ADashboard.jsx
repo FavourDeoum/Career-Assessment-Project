@@ -621,17 +621,25 @@ const CareerDashboard = () => {
                 {analysis.resources.recommendedCourses?.length > 0 ? (
                   <div className="divide-y divide-gray-50">
                     {analysis.resources.recommendedCourses.map((course, i) => (
-                      <div key={i} className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0">
-                        <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[9px] font-bold flex items-center justify-center flex-shrink-0">
+                      <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
+                        <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                           {i + 1}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-700 leading-snug truncate">{course.title || course}</p>
-                          {course.url && (
+                          {course.url ? (
                             <a href={course.url} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-0.5 text-[10px] text-blue-500 hover:text-blue-600">
-                              Open <ExternalLink size={9} />
+                              className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium leading-snug">
+                              {course.title || course}
+                              <ExternalLink size={11} className="flex-shrink-0" />
                             </a>
+                          ) : (
+                            <p className="text-sm text-gray-700 leading-snug">{course.title || course}</p>
+                          )}
+                          {course.platform && (
+                            <p className="text-[10px] text-gray-400 mt-0.5">{course.platform}</p>
+                          )}
+                          {course.description && (
+                            <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{course.description}</p>
                           )}
                         </div>
                       </div>
@@ -648,13 +656,21 @@ const CareerDashboard = () => {
                 {analysis.resources.suggestedReadings?.length > 0 ? (
                   <div className="divide-y divide-gray-50">
                     {analysis.resources.suggestedReadings.map((r, i) => (
-                      <div key={i} className="flex items-center gap-2.5 py-2 first:pt-0 last:pb-0">
-                        <span className="w-4 h-4 rounded-full bg-yellow-100 text-yellow-700 text-[9px] font-bold flex items-center justify-center flex-shrink-0">
+                      <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
+                        <span className="w-4 h-4 rounded-full bg-yellow-100 text-yellow-700 text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                           {i + 1}
                         </span>
                         <div className="min-w-0">
-                          <p className="text-sm text-gray-700 leading-snug truncate">{r.title || r}</p>
-                          {r.author && <p className="text-[10px] text-gray-400">by {r.author}</p>}
+                          {r.url ? (
+                            <a href={r.url} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-sm text-yellow-700 hover:text-yellow-800 hover:underline font-medium leading-snug">
+                              {r.title || r}
+                              <ExternalLink size={11} className="flex-shrink-0" />
+                            </a>
+                          ) : (
+                            <p className="text-sm text-gray-700 leading-snug">{r.title || r}</p>
+                          )}
+                          {r.author && <p className="text-[10px] text-gray-400 mt-0.5">by {r.author}</p>}
                         </div>
                       </div>
                     ))}
@@ -671,11 +687,25 @@ const CareerDashboard = () => {
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tools</p>
                 </div>
                 {analysis.resources.professionalTools?.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="divide-y divide-gray-50">
                     {analysis.resources.professionalTools.map((tool, i) => (
-                      <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-100 rounded-full text-xs font-medium">
-                        <Zap size={9} />{tool.name || tool}
-                      </span>
+                      <div key={i} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
+                        <Zap size={13} className="text-orange-400 flex-shrink-0 mt-0.5" />
+                        <div className="min-w-0">
+                          {tool.url ? (
+                            <a href={tool.url} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-sm text-orange-700 hover:text-orange-800 hover:underline font-medium leading-snug">
+                              {tool.name || tool}
+                              <ExternalLink size={11} className="flex-shrink-0" />
+                            </a>
+                          ) : (
+                            <p className="text-sm text-gray-700 font-medium leading-snug">{tool.name || tool}</p>
+                          )}
+                          {tool.description && (
+                            <p className="text-[11px] text-gray-500 mt-0.5 leading-snug line-clamp-2">{tool.description}</p>
+                          )}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : <p className="text-xs text-gray-400">None yet.</p>}

@@ -60,14 +60,18 @@ const createPrompt = (answers, categories) => {
   "potentialChallenges": { "challenges": [], "mitigationStrategies": [] },
   "growthOpportunities": { "sectors": [], "emergingRoles": [] },
   "personalInsights": { "keyTakeaways": [], "motivationalQuote": "" },
-  "resources": { "recommendedCourses": [], "suggestedReadings": [], "professionalTools": [] },
+  "resources": {
+    "recommendedCourses": [{ "title": "...", "platform": "Coursera|Udemy|YouTube|edX|LinkedIn Learning|freeCodeCamp|Khan Academy", "url": "https://...", "description": "..." }],
+    "suggestedReadings": [{ "title": "...", "author": "...", "url": "https://..." }],
+    "professionalTools": [{ "name": "...", "url": "https://...", "description": "..." }]
+  },
   "recommendedSchools": [{ "id": "school_id_from_list", "identifiedRelevantPrograms": ["program name"], "reasonForRecommendation": "..." }]
 }
 
 Rules:
 - careerRecommendations: 5 job titles with detailed explanation and salary range in XAF (FCFA) per month (e.g. "150,000 – 400,000 XAF/mo").
 - skillsAnalysis: top 5 strengths, 3-5 skills to develop.
-- recommendedSchools: pick 3-4 from the SCHOOLS LIST below using their exact id. Only include id, identifiedRelevantPrograms, and reasonForRecommendation — no other fields.
+- recommendedSchools: pick 5-6 from the SCHOOLS LIST below using their exact id. IMPORTANT: select schools whose listed programs directly match the career fields in careerRecommendations. For each recommended career (e.g. Nursing, Medical Lab, Health Sciences), find schools that have matching programs. Include schools from different regions/cities so results are geographically diverse. Only include id, identifiedRelevantPrograms, and reasonForRecommendation — no other fields.
 
 SCHOOLS LIST:
 ${JSON.stringify(schoolsSummary)}
