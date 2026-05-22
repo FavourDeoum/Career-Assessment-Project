@@ -18,10 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <AuthProvider>
     <ClerkProvider
   publishableKey={PUBLISHABLE_KEY}
-  afterSignInUrl="/"
-  afterSignUpUrl="/"
-  signInUrl="/sign-in"
-  signUpUrl="/sign-up"
+  afterSignInUrl="/dashboard"
+  afterSignUpUrl="/dashboard"
+  signInUrl="/login"
+  signUpUrl="/signup"
 
 >
 <MultisessionAppSupport>

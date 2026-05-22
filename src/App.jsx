@@ -184,15 +184,12 @@ function AppContent() {
               <Route key={path} path={path} element={element} />
             ))}
 
-            {/* Authentication routes - these often use SignedOut or custom logic */}
+            {/* Authentication routes - redirect signed-in users to dashboard */}
             {authRoutes.map(({ path, element }) => (
               <Route key={path} path={path} element={
                 <>
-                  {/* Example: If you want to redirect signed-in users away from login/signup */}
-                  {/* <SignedIn><Navigate to="/dashboard" /></SignedIn>
-                  <SignedOut>{element}</SignedOut> */}
-                  {/* For now, just rendering the element as per your original structure */}
-                  {element}
+                  <SignedIn><Navigate to="/dashboard" replace /></SignedIn>
+                  <SignedOut>{element}</SignedOut>
                 </>
               } />
             ))}
